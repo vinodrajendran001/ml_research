@@ -9,7 +9,7 @@ from sklearn import dummy
 import numpy
 
 import features
-# import clfs
+import clfs
 from utils import cross_clf_kfold, tokenize, ARYL
 
 def main(features, properties, groups, clfs, cross_validate,
