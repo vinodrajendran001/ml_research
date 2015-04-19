@@ -24,6 +24,23 @@ def get_null_feature(names, paths, **kwargs):
     return numpy.matrix(numpy.zeros((len(names), 0)))
 
 
+def get_atom_feature(names, paths, **kwargs):
+    '''
+    A feature vector based entirely off the number of atoms in the structure.
+    '''
+    vectors = []
+    for path in paths:
+        # This will need replacing when doing more elements
+        counts = [0, 0, 0, 0]
+        types = {'C': 0, 'H': 1, 'O': 2, 'N': 3}
+        with open(path, 'r') as f:
+            for line in f:
+                ele, x, y, z = line.strip().split()
+                counts[types[ele]] += 1
+            vectors.append(counts)
+    return numpy.matrix(vectors)
+
+
 def get_binary_feature(names, paths, limit=4, **kwargs):
     '''
     Creates a simple boolean feature vector based on whether or not a part is
