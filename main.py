@@ -97,10 +97,7 @@ def init_data(functions, names, geom_paths, meta, lengths, properties):
     groups = numpy.matrix(xrange(len(names))).T
 
     for function in functions:
-        if function.__name__.startswith('get_'):
-            key = function.__name__[4:]
-        else:
-            key = function.__name__
+        key = function.__name__.lstrip("get_").rstrip("_feature")
         temp = function(names, geom_paths)
         # Add the associtated file/data/opt meta data to each of the feature vectors
         features[key] = numpy.concatenate((temp, meta), 1)
