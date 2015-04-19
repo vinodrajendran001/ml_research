@@ -113,13 +113,6 @@ if __name__ == '__main__':
     struct_set = ['O']#, 'N']
     prop_set = ["homo", "lumo", "gap"]
 
-    start = time.time()
-    names, geom_paths, properties, meta, lengths = load_data(
-                                                        calc_set,
-                                                        opt_set,
-                                                        struct_set,
-                                                        prop_set,
-                                                    )
 
     FEATURE_FUNCTIONS = (
         features.get_flip_binary_feature,
@@ -147,6 +140,16 @@ if __name__ == '__main__':
             }
         ),
     )
+
+
+
+    start = time.time()
+    names, geom_paths, properties, meta, lengths = load_data(
+                                                        calc_set,
+                                                        opt_set,
+                                                        struct_set,
+                                                        prop_set,
+                                                    )
 
     features, properties, groups = init_data(
                                             FEATURE_FUNCTIONS,
