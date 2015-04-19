@@ -160,5 +160,11 @@ if __name__ == '__main__':
                                             properties,
                                         )
     properties = zip(prop_set, properties)
+    print "Took %.4f secs to load %d data points." % ((time.time() - start), properties[0][1].shape[0])
+    print "Sizes of Feature Matrices"
+    for name, feat in features.items():
+        print "\t" + name, feat.shape
+    print
+    sys.stdout.flush()
     results = main(features, properties, groups, CLFS, cross_clf_kfold)
     pprint.pprint(results)
