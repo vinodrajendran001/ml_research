@@ -109,8 +109,8 @@ def init_data(functions, names, geom_paths, meta, lengths, properties):
 def init_data_multi(functions, names, geom_paths, meta, lengths, properties):
     # Construct (name, vector) pairs to auto label features when iterating over them
     features = {}
-    groups = numpy.matrix(xrange(len(names))).T
-    groups = numpy.concatenate([groups for x in properties])
+    temp_groups = numpy.matrix(xrange(len(names))).T
+    groups = numpy.concatenate([temp_groups for x in properties])
 
     for function in functions:
         key = function.__name__.lstrip("get_").rstrip("_feature")
