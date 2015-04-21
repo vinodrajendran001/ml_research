@@ -127,6 +127,57 @@ def init_data_multi(functions, names, geom_paths, meta, lengths, properties):
 
     return features, properties, groups
 
+
+def get_splits(names, lengths):
+    name_idxs = {name: i for i, name in enumerate(names)}
+    for name, length in zip(names, lengths):
+        try:
+            if length > 2:
+                tokens = tokenize(name, explicit_flips=True)
+                first = ''.join(tokens[:3]).replace('*', '')
+                second = ''.join(tokens[4:7]).replace('*', '')
+                third = first + second
+                yield [name_idxs[first], name_idxs[second], name_idxs[third]], name_idxs[name]
+        except KeyError:
+            continue
+
+
+def init_data_length(functions, names, geom_paths, meta, lengths, properties):
+    # Construct (name, vector) pairs to auto label features when iterating over them
+    features = {}
+
+    for function in functions:
+        key = function.__name__.lstrip("get_").rstrip("_feature")
+        temp = function(names, geom_paths)
+
+        groups = []
+
+        new_temp = []
+        other_props = []
+
+        new_meta  = []
+        new_properties = []
+        new_lengths = []
+
+        for i, (other_idxs, long_idx) in enumerate(get_splits(names, lengths)):
+            short_props = [[x[idx] for x in properties] for idx in other_idxs]
+            other_props.append(sum(short_props, []))
+
+            new_meta.append(meta[long_idx])
+            new_properties.append([x[long_idx] for x in properties])
+            new_temp.append(temp[long_idx,:].tolist()[0])
+            new_lengths.append(lengths[long_idx])
+
+            groups.append(i)
+        # Add the associtated file/data/opt meta data to each of the feature vectors
+        features[key] = numpy.concatenate((new_temp, other_props, new_meta), 1)
+
+    groups = numpy.matrix(groups).T
+    properties = [numpy.matrix(x).T for x in properties]
+    return features, properties, groups
+
+
+
 if __name__ == '__main__':
     # Select the data set to use
     calc_set = ("b3lyp", )#"cam", "m06hf")
