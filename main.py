@@ -106,6 +106,27 @@ def init_data(functions, names, geom_paths, meta, lengths, properties):
     return features, properties, groups
 
 
+def init_data_multi(functions, names, geom_paths, meta, lengths, properties):
+    # Construct (name, vector) pairs to auto label features when iterating over them
+    features = {}
+    groups = numpy.matrix(xrange(len(names))).T
+    groups = numpy.concatenate([groups for x in properties])
+
+    for function in functions:
+        key = function.__name__.lstrip("get_").rstrip("_feature")
+        temp = function(names, geom_paths)
+        # Add the associtated file/data/opt meta data to each of the feature vectors
+        temps = []
+        for i, x in enumerate(properties):
+            bla = numpy.matrix(numpy.zeros((temp.shape[0], len(properties))))
+            bla[:,i] = 1
+            temps.append(numpy.concatenate((temp, meta, bla), 1))
+        features[key] = numpy.concatenate(temps)
+    properties = numpy.concatenate([numpy.matrix(x).T for x in properties])
+
+
+    return features, properties, groups
+
 if __name__ == '__main__':
     # Select the data set to use
     calc_set = ("b3lyp", )#"cam", "m06hf")
@@ -159,6 +180,7 @@ if __name__ == '__main__':
                                             lengths,
                                             properties,
                                         )
+    # properties = [["all", properties]]
     properties = zip(prop_set, properties)
     print "Took %.4f secs to load %d data points." % ((time.time() - start), properties[0][1].shape[0])
     print "Sizes of Feature Matrices"
