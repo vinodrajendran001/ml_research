@@ -128,16 +128,20 @@ def init_data_multi(functions, names, geom_paths, meta, lengths, properties):
     return features, properties, groups
 
 
-def get_splits(names, lengths):
+def get_splits(names, lengths, split_length=2):
     name_idxs = {name: i for i, name in enumerate(names)}
     for name, length in zip(names, lengths):
         try:
             if length > 2:
                 tokens = tokenize(name, explicit_flips=True)
-                first = ''.join(tokens[:3]).replace('*', '')
-                second = ''.join(tokens[4:7]).replace('*', '')
-                third = first + second
-                yield [name_idxs[first], name_idxs[second], name_idxs[third]], name_idxs[name]
+
+                parts = []
+                max_idx = 4 * split_length
+                for i in xrange(0, max_idx, 4):
+                    parts.append(''.join(tokens[i:i + 3]).replace('*', ''))
+                parts.append(''.join(parts))
+
+                yield [name_idxs[(x, dataset)] for x in parts], name_idxs[(name, dataset)]
         except KeyError:
             continue
 
