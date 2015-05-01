@@ -311,6 +311,19 @@ def get_coulomb_feature(names, paths, **kwargs):
     return homogenize_lengths(vectors)
 
 
+def get_eigen_coulomb_feature(names, paths, **kwargs):
+    '''
+    NOTE: This feature vector scales O(N) where N is the number of atoms in
+    largest structure.
+    '''
+    vectors = []
+    for path in paths:
+        elements, numbers, coords = read_file_data(path)
+        mat = get_coulomb_matrix(numbers, coords)
+        eigvals = numpy.linalg.eigvals(mat)
+        eigvals.sort()
+        vectors.append(eigvals[::-1])
+    return homogenize_lengths(vectors)
 
 
 def get_pca_coulomb_feature(names, paths, dimensions=100, **kwargs):
