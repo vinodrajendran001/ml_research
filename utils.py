@@ -9,6 +9,14 @@ from sklearn import cross_validation
 from sklearn.metrics import mean_absolute_error
 
 
+def true_strip(string, left, right):
+    if string.startswith(left):
+        string = string[len(left):]
+    if string.endswith(right):
+        string = string[:-len(right)]
+    return string
+
+
 def read_file_data(path):
     elements = []
     numbers = []

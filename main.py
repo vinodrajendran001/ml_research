@@ -10,7 +10,7 @@ import numpy
 
 import features
 import clfs
-from utils import cross_clf_kfold, tokenize, ARYL
+from utils import cross_clf_kfold, tokenize, ARYL, true_strip
 
 def main(features, properties, groups, clfs, cross_validate,
                         test_folds=5, cross_folds=2):
@@ -97,7 +97,7 @@ def init_data(functions, names, geom_paths, meta, lengths, properties):
     groups = numpy.matrix(xrange(len(names))).T
 
     for function in functions:
-        key = function.__name__.lstrip("get_").rstrip("_feature")
+        key = true_strip(function.__name__, "get_", "_feature")
         temp = function(names, geom_paths)
         # Add the associtated file/data/opt meta data to each of the feature vectors
         features[key] = numpy.concatenate((temp, meta), 1)
@@ -113,7 +113,7 @@ def init_data_multi(functions, names, geom_paths, meta, lengths, properties):
     groups = numpy.concatenate([temp_groups for x in properties])
 
     for function in functions:
-        key = function.__name__.lstrip("get_").rstrip("_feature")
+        key = true_strip(function.__name__, "get_", "_feature")
         temp = function(names, geom_paths)
         # Add the associtated file/data/opt meta data to each of the feature vectors
         temps = []
@@ -151,7 +151,7 @@ def init_data_length(functions, names, geom_paths, meta, lengths, properties):
     features = {}
 
     for function in functions:
-        key = function.__name__.lstrip("get_").rstrip("_feature")
+        key = true_strip(function.__name__, "get_", "_feature")
         temp = function(names, geom_paths)
 
         groups = []
