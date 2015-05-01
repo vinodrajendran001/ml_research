@@ -37,6 +37,14 @@ def get_coulomb_matrix(numbers, coords):
     return data
 
 
+def homogenize_lengths(vectors):
+    n = max(len(x) for x in vectors)
+    feat = numpy.zeros((len(vectors), n))
+    for i, x in enumerate(vectors):
+        feat[i, 0:len(x)] = x
+    return numpy.matrix(feat)
+
+
 class CLF(object):
     def __init__(self, **kwargs):
         '''
