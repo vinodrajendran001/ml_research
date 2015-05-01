@@ -3,6 +3,7 @@ from itertools import product
 from multiprocessing import Pool, cpu_count
 
 import numpy
+from numpy.linalg import norm
 
 from sklearn import cross_validation
 from sklearn.metrics import mean_absolute_error
@@ -21,6 +22,19 @@ def read_file_data(path):
             numbers.append(types[ele])
             coords.append(numpy.matrix(point))
     return elements, numbers, coords
+
+
+def get_coulomb_matrix(numbers, coords):
+    n = len(numbers)
+    data = numpy.zeros((n, n))
+    for i, x in enumerate(coords):
+        for j, y in enumerate(coords[:i + 1]):
+            if i == j:
+                val = 0.5 * numbers[i] ** 2.4
+            else:
+                val = (numbers[i] * numbers[j]) / norm(x - y)
+            data[i,j] = data[j,i] = val
+    return data
 
 
 class CLF(object):
