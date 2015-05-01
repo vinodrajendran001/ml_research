@@ -1,12 +1,12 @@
 import os
 
 import numpy
-from numpy.linalg import norm
 
 from sklearn import decomposition
 
 from utils import tokenize, ARYL, RGROUPS, \
-        decay_function, gauss_decay_function
+        decay_function, gauss_decay_function, read_file_data, \
+        get_coulomb_matrix, homogenize_lengths
 
 
 # Example Feature function
@@ -305,34 +305,12 @@ def get_coulomb_feature(names, paths, **kwargs):
     '''
     vectors = []
     for path in paths:
-        coords = []
-        other = []
-        types = {'C': 6, 'H': 1, 'O': 8, 'N': 7}
-        with open(path, 'r') as f:
-            # print path
-            for line in f:
-                ele, x, y, z = line.strip().split()
-                point = (float(x), float(y), float(z))
-                coords.append(numpy.matrix(point))
-                other.append(types[ele])
+        elements, numbers, coords = read_file_data(path)
+        mat = get_coulomb_matrix(numbers, coords)
+        vectors.append(mat)
+    return homogenize_lengths(vectors)
 
-        data = []
-        for i, x in enumerate(coords):
-            for j, y in enumerate(coords[:i + 1]):
-                if i == j:
-                    val = 0.5 * other[i] ** 2.4
-                else:
-                    val = (other[i]*other[j])/norm(x-y)
-                data.append(val)
-        vectors.append(data)
 
-    # Hack to create feature matrix from hetero length feature vectors
-    N = max(len(x) for x in vectors)
-    FEAT = numpy.zeros((len(vectors), N))
-    for i, x in enumerate(vectors):
-        for j, y in enumerate(x):
-            FEAT[i,j] = y
-    return numpy.matrix(FEAT)
 
 
 def get_pca_coulomb_feature(names, paths, dimensions=100, **kwargs):
