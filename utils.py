@@ -8,6 +8,21 @@ from sklearn import cross_validation
 from sklearn.metrics import mean_absolute_error
 
 
+def read_file_data(path):
+    elements = []
+    numbers = []
+    coords = []
+    types = {'C': 6, 'H': 1, 'O': 8, 'N': 7}
+    with open(path, 'r') as f:
+        for line in f:
+            ele, x, y, z = line.strip().split()
+            point = (float(x), float(y), float(z))
+            elements.append(ele)
+            numbers.append(types[ele])
+            coords.append(numpy.matrix(point))
+    return elements, numbers, coords
+
+
 class CLF(object):
     def __init__(self, **kwargs):
         '''
