@@ -307,7 +307,30 @@ def get_coulomb_feature(names, paths, **kwargs):
     for path in paths:
         elements, numbers, coords = read_file_data(path)
         mat = get_coulomb_matrix(numbers, coords)
+        vectors.append(mat[numpy.tril_indices(mat.shape[0])])
+    return homogenize_lengths(vectors)
+
+
+def get_random_coulomb_feature(names, paths, size=1, **kwargs):
+    '''
+    NOTE: This feature vector scales O(N^2) where N is the number of atoms in
+    largest structure.
+    '''
+    vectors = []
+    for path in paths:
+        elements, numbers, coords = read_file_data(path)
+        mat = get_coulomb_matrix(numbers, coords)
         vectors.append(mat)
+
+    for mat in vectors[:]:
+        shape = mat.shape
+        for x in xrange(size - 1):
+            order = numpy.arange(shape[0])
+            out = numpy.random.permutation(order)
+            perm = numpy.zeros(shape)
+            perm[order, out] = 1
+            vectors.append(perm.T * mat * perm)
+    vectors = [mat[numpy.tril_indices(mat.shape[0])] for mat in vectors]
     return homogenize_lengths(vectors)
 
 
