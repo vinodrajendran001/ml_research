@@ -12,6 +12,7 @@ import features
 import clfs
 from utils import cross_clf_kfold, tokenize, ARYL, true_strip
 
+
 def main(features, properties, groups, clfs, cross_validate,
                         test_folds=5, cross_folds=2):
     results = {}
@@ -53,6 +54,7 @@ def load_data(calc_set, opt_set, struct_set, prop_set=None):
     to the geometry data, the properties, and the meta data.
     '''
     names = []
+    datasets = []
     geom_paths = []
     properties = []
     meta = []
@@ -68,6 +70,7 @@ def load_data(calc_set, opt_set, struct_set, prop_set=None):
                         name, props = temp[0], temp[1:]
 
                         names.append(name)
+                        datasets.append((base_path, file_path, atom_set))
 
                         geom_path = os.path.join('../mol_data', base_path, 'geoms', 'out', name + '.out')
                         geom_paths.append(geom_path)
@@ -88,13 +91,26 @@ def load_data(calc_set, opt_set, struct_set, prop_set=None):
                         aryl_count = sum([1 for x in tokens if x in ARYL])
                         lengths.append(aryl_count)
 
-    return names, geom_paths, zip(*properties), meta, lengths
+    return names, datasets, geom_paths, zip(*properties), meta, lengths
 
 
-def init_data(functions, names, geom_paths, meta, lengths, properties):
+def get_name_groups(names, datasets):
+    groups = []
+    seen = {}
+    count = 0
+    for name in names:
+        if name not in seen:
+            seen[name] = count
+            count += 1
+        groups.append(seen[name])
+
+    return numpy.matrix(groups).T
+
+
+def init_data(functions, names, datasets, geom_paths, meta, lengths, properties):
     # Construct (name, vector) pairs to auto label features when iterating over them
     features = {}
-    groups = numpy.matrix(xrange(len(names))).T
+    groups = get_name_groups(names, datasets)
 
     for function in functions:
         key = true_strip(function.__name__, "get_", "_feature")
@@ -106,10 +122,10 @@ def init_data(functions, names, geom_paths, meta, lengths, properties):
     return features, properties, groups
 
 
-def init_data_multi(functions, names, geom_paths, meta, lengths, properties):
+def init_data_multi(functions, names, datasets, geom_paths, meta, lengths, properties):
     # Construct (name, vector) pairs to auto label features when iterating over them
     features = {}
-    temp_groups = numpy.matrix(xrange(len(names))).T
+    temp_groups = get_name_groups(names, datasets)
     groups = numpy.concatenate([temp_groups for x in properties])
 
     for function in functions:
@@ -128,9 +144,9 @@ def init_data_multi(functions, names, geom_paths, meta, lengths, properties):
     return features, properties, groups
 
 
-def get_splits(names, lengths, split_length=2):
-    name_idxs = {name: i for i, name in enumerate(names)}
-    for name, length in zip(names, lengths):
+def get_splits(names, datasets, lengths, split_length=2):
+    name_idxs = {pair: i for i, pair in enumerate(zip(names, datasets))}
+    for name, dataset, length in zip(names, datasets, lengths):
         try:
             if length > 2:
                 tokens = tokenize(name, explicit_flips=True)
@@ -146,7 +162,7 @@ def get_splits(names, lengths, split_length=2):
             continue
 
 
-def init_data_length(functions, names, geom_paths, meta, lengths, properties):
+def init_data_length(functions, names, datasets, geom_paths, meta, lengths, properties):
     # Construct (name, vector) pairs to auto label features when iterating over them
     features = {}
 
@@ -163,7 +179,7 @@ def init_data_length(functions, names, geom_paths, meta, lengths, properties):
         new_properties = []
         new_lengths = []
 
-        for i, (other_idxs, long_idx) in enumerate(get_splits(names, lengths)):
+        for i, (other_idxs, long_idx) in enumerate(get_splits(names, datasets, lengths)):
             short_props = [[x[idx] for x in properties] for idx in other_idxs]
             other_props.append(sum(short_props, []))
 
@@ -220,7 +236,7 @@ if __name__ == '__main__':
 
 
     start = time.time()
-    names, geom_paths, properties, meta, lengths = load_data(
+    names, datasets, geom_paths, properties, meta, lengths = load_data(
                                                         calc_set,
                                                         opt_set,
                                                         struct_set,
@@ -230,6 +246,7 @@ if __name__ == '__main__':
     features, properties, groups = init_data(
                                             FEATURE_FUNCTIONS,
                                             names,
+                                            datasets,
                                             geom_paths,
                                             meta,
                                             lengths,
