@@ -2,6 +2,7 @@ import re
 from itertools import product
 from multiprocessing import Pool, cpu_count
 
+from scipy.spatial.distance import cdist
 import numpy
 from numpy.linalg import norm
 
@@ -43,6 +44,12 @@ def get_coulomb_matrix(numbers, coords):
                 val = (numbers[i] * numbers[j]) / norm(x - y)
             data[i,j] = data[j,i] = val
     return data
+
+
+def get_distance_matrix(coords, power=-1):
+    coords = numpy.matrix([x.tolist()[0] for x in coords])
+    dist = cdist(coords, coords)
+    return dist ** power
 
 
 def homogenize_lengths(vectors):

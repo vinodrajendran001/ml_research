@@ -6,7 +6,7 @@ from sklearn import decomposition
 
 from utils import tokenize, ARYL, RGROUPS, \
         decay_function, gauss_decay_function, read_file_data, \
-        get_coulomb_matrix, homogenize_lengths
+        get_coulomb_matrix, homogenize_lengths, get_distance_matrix
 
 
 # Example Feature function
@@ -315,7 +315,7 @@ def get_coulomb_feature(names, paths, **kwargs):
     return homogenize_lengths(vectors)
 
 
-def get_distance_feature(names, paths, **kwargs):
+def get_distance_feature(names, paths, power=-1, **kwargs):
     '''
     This feature vector is based on a distance matrix between all of the atoms
     in the structure.
@@ -328,8 +328,8 @@ def get_distance_feature(names, paths, **kwargs):
         if path in cache:
             continue
         elements, numbers, coords = read_file_data(path)
-        numbers = [1. for x in numbers]
-        mat = get_coulomb_matrix(numbers, coords)
+        mat = get_distance_matrix(coords, power)
+        mat[mat == numpy.Infinity] = 1
         cache[path] = mat[numpy.tril_indices(mat.shape[0])]
 
     vectors = [cache[path] for path in paths]
@@ -381,7 +381,7 @@ def get_eigen_coulomb_feature(names, paths, **kwargs):
     return homogenize_lengths(vectors)
 
 
-def get_eigen_distance_feature(names, paths, **kwargs):
+def get_eigen_distance_feature(names, paths, power=-1, **kwargs):
     '''
     This feature vector is from the eigenvalues of the 1/r distance matrix.
     The eigenvalues are sorted so that the largest values come first.
@@ -394,8 +394,8 @@ def get_eigen_distance_feature(names, paths, **kwargs):
         if path in cache:
             continue
         elements, numbers, coords = read_file_data(path)
-        numbers = [1. for x in numbers]
-        mat = get_coulomb_matrix(numbers, coords)
+        mat = get_distance_matrix(coords, power)
+        mat[mat == numpy.Infinity] = 1
         eigvals = numpy.linalg.eigvals(mat)
         eigvals.sort()
         cache[path] = eigvals[::-1]
