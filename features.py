@@ -315,6 +315,27 @@ def get_coulomb_feature(names, paths, **kwargs):
     return homogenize_lengths(vectors)
 
 
+def get_distance_feature(names, paths, **kwargs):
+    '''
+    This feature vector is based on a distance matrix between all of the atoms
+    in the structure.
+
+    NOTE: This feature vector scales O(N^2) where N is the number of atoms in
+    largest structure.
+    '''
+    cache = {}
+    for path in paths:
+        if path in cache:
+            continue
+        elements, numbers, coords = read_file_data(path)
+        numbers = [1. for x in numbers]
+        mat = get_coulomb_matrix(numbers, coords)
+        cache[path] = mat[numpy.tril_indices(mat.shape[0])]
+
+    vectors = [cache[path] for path in paths]
+    return homogenize_lengths(vectors)
+
+
 def get_random_coulomb_feature(names, paths, size=1, **kwargs):
     '''
     NOTE: This feature vector scales O(N^2) where N is the number of atoms in
@@ -351,6 +372,29 @@ def get_eigen_coulomb_feature(names, paths, **kwargs):
         if path in cache:
             continue
         elements, numbers, coords = read_file_data(path)
+        mat = get_coulomb_matrix(numbers, coords)
+        eigvals = numpy.linalg.eigvals(mat)
+        eigvals.sort()
+        cache[path] = eigvals[::-1]
+
+    vectors = [cache[path] for path in paths]
+    return homogenize_lengths(vectors)
+
+
+def get_eigen_distance_feature(names, paths, **kwargs):
+    '''
+    This feature vector is from the eigenvalues of the 1/r distance matrix.
+    The eigenvalues are sorted so that the largest values come first.
+
+    NOTE: This feature vector scales O(N) where N is the number of atoms in
+    largest structure.
+    '''
+    cache = {}
+    for path in paths:
+        if path in cache:
+            continue
+        elements, numbers, coords = read_file_data(path)
+        numbers = [1. for x in numbers]
         mat = get_coulomb_matrix(numbers, coords)
         eigvals = numpy.linalg.eigvals(mat)
         eigvals.sort()
