@@ -340,6 +340,9 @@ def get_random_coulomb_feature(names, paths, size=1, **kwargs):
 
 def get_eigen_coulomb_feature(names, paths, **kwargs):
     '''
+    This feature vector is from the eigenvalues of the coulomb matrix.
+    The eigenvalues are sorted so that the largest values come first.
+
     NOTE: This feature vector scales O(N) where N is the number of atoms in
     largest structure.
     '''
