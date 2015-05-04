@@ -2,6 +2,7 @@ import sys
 import time
 import pprint
 import os
+from itertools import product
 
 from sklearn import linear_model
 from sklearn import svm
@@ -112,9 +113,9 @@ def init_data(functions, names, datasets, geom_paths, meta, lengths, properties)
     features = {}
     groups = get_name_groups(names, datasets)
 
-    for function in functions:
-        key = true_strip(function.__name__, "get_", "_feature")
-        temp = function(names, geom_paths)
+    for function, kwargs in functions:
+        key = true_strip(function.__name__, "get_", "_feature") + " " + repr(kwargs)
+        temp = function(names, geom_paths, **kwargs)
         # Add the associtated file/data/opt meta data to each of the feature vectors
         features[key] = numpy.concatenate((temp, meta), 1)
     properties = [numpy.matrix(x).T for x in properties]
@@ -197,6 +198,12 @@ def init_data_length(functions, names, datasets, geom_paths, meta, lengths, prop
     return features, properties, groups
 
 
+def expand_functions(function, kwargs_sets):
+    functions = []
+    for x in product(*kwargs_sets.values()):
+        functions.append((function, dict(zip(kwargs_sets.keys(), x))))
+    return functions
+
 
 if __name__ == '__main__':
     # Select the data set to use
@@ -207,8 +214,19 @@ if __name__ == '__main__':
 
 
     FEATURE_FUNCTIONS = (
-        features.get_flip_binary_feature,
+        # (features.get_flip_binary_feature, {}),
+        # (features.get_coulomb_feature, {}),
+        # (features.get_distance_feature, {"power": [-2, -1, 1, 2]}),
+        (features.get_eigen_new_distance_feature, {"power": [-2, -1, 1, 2]}),
+        # (features.get_eigen_coulomb_feature, {}),
+        (features.get_eigen_distance_feature, {"power": [-2, -1, 1, 2]}),
+        # (features.get_mul_feature, {}),
     )
+
+    bla = []
+    for function, kwargs_sets in FEATURE_FUNCTIONS:
+        bla.extend(expand_functions(function, kwargs_sets))
+    FEATURE_FUNCTIONS = bla
 
     CLFS = (
         (
