@@ -145,7 +145,7 @@ def init_data_multi(functions, names, datasets, geom_paths, meta, lengths, prope
     return features, properties, groups
 
 
-def get_splits(names, datasets, lengths, split_length=2):
+def get_length_splits(names, datasets, lengths, split_length=2):
     name_idxs = {pair: i for i, pair in enumerate(zip(names, datasets))}
     for name, dataset, length in zip(names, datasets, lengths):
         try:
@@ -180,7 +180,7 @@ def init_data_length(functions, names, datasets, geom_paths, meta, lengths, prop
         new_properties = []
         new_lengths = []
 
-        for i, (other_idxs, long_idx) in enumerate(get_splits(names, datasets, lengths)):
+        for i, (other_idxs, long_idx) in enumerate(get_length_splits(names, datasets, lengths)):
             short_props = [[x[idx] for x in properties] for idx in other_idxs]
             other_props.append(sum(short_props, []))
 
