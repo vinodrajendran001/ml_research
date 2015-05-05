@@ -129,9 +129,9 @@ def init_data_multi(functions, names, datasets, geom_paths, meta, lengths, prope
     temp_groups = get_name_groups(names, datasets)
     groups = numpy.concatenate([temp_groups for x in properties])
 
-    for function in functions:
-        key = true_strip(function.__name__, "get_", "_feature")
-        temp = function(names, geom_paths)
+    for function, kwargs in functions:
+        key = true_strip(function.__name__, "get_", "_feature") + " " + repr(kwargs)
+        temp = function(names, geom_paths, **kwargs)
         # Add the associtated file/data/opt meta data to each of the feature vectors
         temps = []
         for i, x in enumerate(properties):
@@ -167,9 +167,9 @@ def init_data_length(functions, names, datasets, geom_paths, meta, lengths, prop
     # Construct (name, vector) pairs to auto label features when iterating over them
     features = {}
 
-    for function in functions:
-        key = true_strip(function.__name__, "get_", "_feature")
-        temp = function(names, geom_paths)
+    for function, kwargs in functions:
+        key = true_strip(function.__name__, "get_", "_feature") + " " + repr(kwargs)
+        temp = function(names, geom_paths, **kwargs)
 
         groups = []
 
