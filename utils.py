@@ -36,15 +36,16 @@ def read_file_data(path):
 def get_coulomb_matrix(numbers, coords):
     top = numpy.outer(numbers, numbers)
     r = get_distance_matrix(coords, power=1)
-    temp = top / r
-    numpy.fill_diagonal(temp, 0.5 * numpy.array(numbers) ** 2.4)
-    return temp
+    numpy.divide(top, r, top)
+    numpy.fill_diagonal(top, 0.5 * numpy.array(numbers) ** 2.4)
+    return top
 
 
 def get_distance_matrix(coords, power=-1):
     coords = numpy.matrix([x.tolist()[0] for x in coords])
     dist = cdist(coords, coords)
-    return dist ** power
+    numpy.power(dist, power, dist)
+    return dist
 
 
 def homogenize_lengths(vectors):
