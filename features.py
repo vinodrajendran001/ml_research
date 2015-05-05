@@ -318,7 +318,10 @@ def get_coulomb_feature(names, paths, **kwargs):
 def get_distance_feature(names, paths, power=-1, **kwargs):
     '''
     This feature vector is based on a distance matrix between all of the atoms
-    in the structure.
+    in the structure. The value of `power` determines what power each of the
+    values in the matrix will be raised to. Leaving it at -1 will result in
+    same base as the coulomb matrix just without the inclusion of the Z
+    values.
 
     NOTE: This feature vector scales O(N^2) where N is the number of atoms in
     largest structure.
@@ -338,8 +341,13 @@ def get_distance_feature(names, paths, power=-1, **kwargs):
 
 def get_random_coulomb_feature(names, paths, size=1, **kwargs):
     '''
+    This is the same as the coulomb matrix feature with the addition that it
+    adds additional randomly permuted coulomb matricies based on the value of
+    `size`.
+
     NOTE: This feature vector scales O(N^2) where N is the number of atoms in
     largest structure.
+    NOTE: The number of feature vectors this returns is len(names) * size.
     '''
     vectors = []
     for path in paths:
@@ -383,8 +391,10 @@ def get_eigen_coulomb_feature(names, paths, **kwargs):
 
 def get_eigen_distance_feature(names, paths, power=-1, **kwargs):
     '''
-    This feature vector is from the eigenvalues of the 1/r distance matrix.
-    The eigenvalues are sorted so that the largest values come first.
+    This feature vector is from the eigenvalues of the distance matrix. The
+    eigenvalues are sorted so that the largest values come first. The `power`
+    parameter defines the power that the distance matrix should be raised to
+    before getting the eigenvalues.
 
     NOTE: This feature vector scales O(N) where N is the number of atoms in
     largest structure.
