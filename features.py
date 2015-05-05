@@ -339,6 +339,35 @@ def get_distance_feature(names, paths, power=-1, **kwargs):
     return homogenize_lengths(vectors)
 
 
+def get_custom_distance_feature(names, paths, f=None, **kwargs):
+    '''
+    This allows the insertion of custom functions for how the distance
+    interactions should be handled. If no function is passed into `f` it will
+    default to using 1/(exp(-r) + r).
+
+    All of the functions used should take a single argument which will be a
+    numpy array with the (i,j) pairwise distances (The diagonal will be all
+    zeros).
+
+    NOTE: This feature vector scales O(N^2) where N is the number of atoms in
+    largest structure.
+    '''
+    if f is None:
+        f = lambda mat: 1/(numpy.exp(-r) + r)
+
+    cache = {}
+    for path in paths:
+        if path in cache:
+            continue
+        elements, numbers, coords = read_file_data(path)
+        mat = get_distance_matrix(coords, 1)
+        temp = f(mat)
+        cache[path] = temp[numpy.tril_indices(temp.shape[0])]
+
+    vectors = [cache[path] for path in paths]
+    return homogenize_lengths(vectors)
+
+
 def get_random_coulomb_feature(names, paths, size=1, **kwargs):
     '''
     This is the same as the coulomb matrix feature with the addition that it
@@ -412,6 +441,36 @@ def get_eigen_distance_feature(names, paths, power=-1, **kwargs):
 
     vectors = [cache[path] for path in paths]
     return homogenize_lengths(vectors)
+
+
+def get_eigen_custom_distance_feature(names, paths, f=None, **kwargs):
+    '''
+    This is the same as the custom_distance_feature except it returns the
+    eigenvalues of the matrices. If no function is passed into `f` it will
+    default to using 1/(exp(-r) + r).
+
+    All of the functions used should take a single argument which will be a
+    numpy array with the (i,j) pairwise distances (The diagonal will be all
+    zeros).
+
+    NOTE: This feature vector scales O(N) where N is the number of atoms in
+    largest structure.
+    '''
+    if f is None:
+        f = lambda mat: 1/(numpy.exp(-r) + r)
+    cache = {}
+    for path in paths:
+        if path in cache:
+            continue
+        elements, numbers, coords = read_file_data(path)
+        mat = get_distance_matrix(coords, 1)
+        eigvals = numpy.linalg.eigvals(f(mat))
+        eigvals.sort()
+        cache[path] = eigvals[::-1]
+
+    vectors = [cache[path] for path in paths]
+    return homogenize_lengths(vectors)
+
 
 
 def get_pca_coulomb_feature(names, paths, dimensions=100, **kwargs):
