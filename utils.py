@@ -34,16 +34,11 @@ def read_file_data(path):
 
 
 def get_coulomb_matrix(numbers, coords):
-    n = len(numbers)
-    data = numpy.zeros((n, n))
-    for i, x in enumerate(coords):
-        for j, y in enumerate(coords[:i + 1]):
-            if i == j:
-                val = 0.5 * numbers[i] ** 2.4
-            else:
-                val = (numbers[i] * numbers[j]) / norm(x - y)
-            data[i,j] = data[j,i] = val
-    return data
+    top = numpy.outer(numbers, numbers)
+    r = get_distance_matrix(coords, power=1)
+    temp = top / r
+    numpy.fill_diagonal(temp, 0.5 * numpy.array(numbers) ** 2.4)
+    return temp
 
 
 def get_distance_matrix(coords, power=-1):
