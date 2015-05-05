@@ -149,7 +149,7 @@ def get_length_splits(names, datasets, lengths, split_length=2):
     name_idxs = {pair: i for i, pair in enumerate(zip(names, datasets))}
     for name, dataset, length in zip(names, datasets, lengths):
         try:
-            if length > 2:
+            if length > split_length:
                 tokens = tokenize(name, explicit_flips=True)
 
                 parts = []
