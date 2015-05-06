@@ -41,9 +41,10 @@ def get_coulomb_matrix(numbers, coords):
     return top
 
 
-def get_distance_matrix(coords, power=-1):
+def get_distance_matrix(coords, power=-1, inf_val=1):
     dist = cdist(coords, coords)
     numpy.power(dist, power, dist)
+    dist[dist == numpy.Infinity] = inf_val
     return dist
 
 

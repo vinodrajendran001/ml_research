@@ -332,7 +332,6 @@ def get_distance_feature(names, paths, power=-1, **kwargs):
             continue
         elements, numbers, coords = read_file_data(path)
         mat = get_distance_matrix(coords, power)
-        mat[mat == numpy.Infinity] = 1
         cache[path] = mat[numpy.tril_indices(mat.shape[0])]
 
     vectors = [cache[path] for path in paths]
@@ -434,7 +433,6 @@ def get_eigen_distance_feature(names, paths, power=-1, **kwargs):
             continue
         elements, numbers, coords = read_file_data(path)
         mat = get_distance_matrix(coords, power)
-        mat[mat == numpy.Infinity] = 1
         eigvals = numpy.linalg.eigvals(mat)
         eigvals.sort()
         cache[path] = eigvals[::-1]
