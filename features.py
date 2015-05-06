@@ -316,6 +316,35 @@ def get_coulomb_feature(names, paths, **kwargs):
     return homogenize_lengths(vectors)
 
 
+def get_bin_coulomb_feature(names, paths, step=1, **kwargs):
+    cache = {}
+    for path in paths:
+        if path in cache:
+            continue
+        elements, numbers, coords = read_file_data(path)
+        mat = get_distance_matrix(coords, -1)
+        temp = mat[numpy.tril_indices(mat.shape[0])]
+        cache[path] = get_thermometer_encoding(temp, step=step)
+
+    vectors = [cache[path] for path in paths]
+    return homogenize_lengths(vectors)
+
+
+def get_bin_eigen_coulomb_feature(names, paths, step=1, **kwargs):
+    cache = {}
+    for path in paths:
+        if path in cache:
+            continue
+        elements, numbers, coords = read_file_data(path)
+        mat = get_distance_matrix(coords, -1)
+        eigvals = get_eigenvalues(mat)
+        cache[path] = expand(eigvals, step=step)
+
+    vectors = [cache[path] for path in paths]
+    return homogenize_lengths(vectors)
+
+
+
 def get_distance_feature(names, paths, power=-1, **kwargs):
     '''
     This feature vector is based on a distance matrix between all of the atoms

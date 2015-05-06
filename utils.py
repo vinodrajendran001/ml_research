@@ -56,6 +56,21 @@ def homogenize_lengths(vectors):
     return numpy.matrix(feat)
 
 
+def get_thermometer_encoding(X, step=1):
+    '''
+    This is another method of encoding floating point values so that they work
+    better with neural nets.
+
+    This is based off the work in:
+    Yunho Jeon and Chong-Ho Choi. IJCNN, volume 3, pages 1685–1690, 1999.
+    and the recommendation from:
+    Grégoire Montavon. On Layer-Wise Representations in Deep Neural Networks
+    '''
+    b = numpy.arange(0, X.max() + step, step)
+    temp = numpy.tanh(numpy.subtract.outer(X,b) / step)
+    return temp.reshape(-1)
+
+
 def get_eigenvalues(X):
     '''
     This returns the eigenvalues of a matrix in descending order.
