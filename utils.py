@@ -29,8 +29,8 @@ def read_file_data(path):
             point = (float(x), float(y), float(z))
             elements.append(ele)
             numbers.append(types[ele])
-            coords.append(numpy.matrix(point))
-    return elements, numbers, coords
+            coords.append(point)
+    return elements, numbers, numpy.matrix(coords)
 
 
 def get_coulomb_matrix(numbers, coords):
@@ -42,7 +42,6 @@ def get_coulomb_matrix(numbers, coords):
 
 
 def get_distance_matrix(coords, power=-1):
-    coords = numpy.matrix([x.tolist()[0] for x in coords])
     dist = cdist(coords, coords)
     numpy.power(dist, power, dist)
     return dist
