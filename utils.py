@@ -56,6 +56,15 @@ def homogenize_lengths(vectors):
     return numpy.matrix(feat)
 
 
+def get_eigenvalues(X):
+    '''
+    This returns the eigenvalues of a matrix in descending order.
+    '''
+    eigvals = numpy.linalg.eigvals(mat)
+    eigvals.sort()
+    return eigvals[::-1]
+
+
 class CLF(object):
     def __init__(self, **kwargs):
         '''

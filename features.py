@@ -6,7 +6,8 @@ from sklearn import decomposition
 
 from utils import tokenize, ARYL, RGROUPS, \
         decay_function, gauss_decay_function, read_file_data, \
-        get_coulomb_matrix, homogenize_lengths, get_distance_matrix
+        get_coulomb_matrix, homogenize_lengths, get_distance_matrix, \
+        get_thermometer_encoding, get_eigenvalues
 
 
 # Example Feature function
@@ -409,9 +410,7 @@ def get_eigen_coulomb_feature(names, paths, **kwargs):
             continue
         elements, numbers, coords = read_file_data(path)
         mat = get_coulomb_matrix(numbers, coords)
-        eigvals = numpy.linalg.eigvals(mat)
-        eigvals.sort()
-        cache[path] = eigvals[::-1]
+        cache[path] = get_eigenvalues(mat)
 
     vectors = [cache[path] for path in paths]
     return homogenize_lengths(vectors)
@@ -433,9 +432,7 @@ def get_eigen_distance_feature(names, paths, power=-1, **kwargs):
             continue
         elements, numbers, coords = read_file_data(path)
         mat = get_distance_matrix(coords, power)
-        eigvals = numpy.linalg.eigvals(mat)
-        eigvals.sort()
-        cache[path] = eigvals[::-1]
+        cache[path] = get_eigenvalues(mat)
 
     vectors = [cache[path] for path in paths]
     return homogenize_lengths(vectors)
@@ -462,9 +459,7 @@ def get_eigen_custom_distance_feature(names, paths, f=None, **kwargs):
             continue
         elements, numbers, coords = read_file_data(path)
         mat = get_distance_matrix(coords, 1)
-        eigvals = numpy.linalg.eigvals(f(mat))
-        eigvals.sort()
-        cache[path] = eigvals[::-1]
+        cache[path] = get_eigenvalues(mat)
 
     vectors = [cache[path] for path in paths]
     return homogenize_lengths(vectors)
