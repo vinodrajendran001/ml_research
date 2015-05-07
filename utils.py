@@ -62,9 +62,9 @@ def get_thermometer_encoding(X, step=1):
     better with neural nets.
 
     This is based off the work in:
-    Yunho Jeon and Chong-Ho Choi. IJCNN, volume 3, pages 1685–1690, 1999.
+    Yunho Jeon and Chong-Ho Choi. IJCNN, (3) 1685-1690, 1999.
     and the recommendation from:
-    Grégoire Montavon. On Layer-Wise Representations in Deep Neural Networks
+    Gregoire Montavon. On Layer-Wise Representations in Deep Neural Networks.
     '''
     b = numpy.arange(0, X.max() + step, step)
     temp = numpy.tanh(numpy.subtract.outer(X,b) / step)
@@ -75,7 +75,7 @@ def get_eigenvalues(X):
     '''
     This returns the eigenvalues of a matrix in descending order.
     '''
-    eigvals = numpy.linalg.eigvals(mat)
+    eigvals = numpy.linalg.eigvals(X)
     eigvals.sort()
     return eigvals[::-1]
 
