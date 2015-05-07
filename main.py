@@ -162,9 +162,9 @@ if __name__ == '__main__':
                                             meta,
                                             lengths,
                                             properties,
+                                            prop_set,
                                         )
-    # properties = [["all", properties]]
-    properties = zip(prop_set, properties)
+
     print "Took %.4f secs to load %d data points." % ((time.time() - start), properties[0][1].shape[0])
     print "Sizes of Feature Matrices"
     for name, feat in features.items():

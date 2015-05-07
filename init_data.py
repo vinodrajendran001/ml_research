@@ -16,7 +16,7 @@ def get_name_groups(names, datasets):
     return numpy.matrix(groups).T
 
 
-def init_data(functions, names, datasets, geom_paths, meta, lengths, properties):
+def init_data(functions, names, datasets, geom_paths, meta, lengths, properties, prop_set):
     # Construct (name, vector) pairs to auto label features when iterating over them
     features = {}
     groups = get_name_groups(names, datasets)
@@ -26,12 +26,11 @@ def init_data(functions, names, datasets, geom_paths, meta, lengths, properties)
         temp = function(names, geom_paths, **kwargs)
         # Add the associtated file/data/opt meta data to each of the feature vectors
         features[key] = numpy.concatenate((temp, meta), 1)
-    properties = [numpy.matrix(x).T for x in properties]
-
+    properties = [(x, numpy.matrix(y).T) for x, y in zip(prop_set, properties)]
     return features, properties, groups
 
 
-def init_data_multi(functions, names, datasets, geom_paths, meta, lengths, properties):
+def init_data_multi(functions, names, datasets, geom_paths, meta, lengths, properties, prop_set):
     # Construct (name, vector) pairs to auto label features when iterating over them
     features = {}
     temp_groups = get_name_groups(names, datasets)
@@ -47,9 +46,8 @@ def init_data_multi(functions, names, datasets, geom_paths, meta, lengths, prope
             bla[:,i] = 1
             temps.append(numpy.concatenate((temp, meta, bla), 1))
         features[key] = numpy.concatenate(temps)
-    properties = numpy.concatenate([numpy.matrix(x).T for x in properties])
-
-
+    temp_properties = numpy.concatenate([numpy.matrix(x).T for x in properties])
+    properties = [("all", temp_properties)]
     return features, properties, groups
 
 
@@ -71,7 +69,7 @@ def get_length_splits(names, datasets, lengths, split_length=2):
             continue
 
 
-def init_data_length(functions, names, datasets, geom_paths, meta, lengths, properties):
+def init_data_length(functions, names, datasets, geom_paths, meta, lengths, properties, prop_set):
     # Construct (name, vector) pairs to auto label features when iterating over them
     features = {}
 
@@ -102,5 +100,5 @@ def init_data_length(functions, names, datasets, geom_paths, meta, lengths, prop
         features[key] = numpy.concatenate((new_temp, other_props, new_meta), 1)
 
     groups = numpy.matrix(groups).T
-    properties = [numpy.matrix(x).T for x in properties]
+    properties = [(x, numpy.matrix(y).T) for x, y in zip(prop_set, properties)]
     return features, properties, groups
