@@ -213,7 +213,7 @@ if __name__ == '__main__':
     prop_set = ["homo", "lumo", "gap"]
 
 
-    FEATURE_FUNCTIONS = (
+    feature_sets = (
         # (features.get_flip_binary_feature, {}),
         # (features.get_coulomb_feature, {}),
         # (features.get_distance_feature, {"power": [-2, -1, 1, 2]}),
@@ -223,10 +223,9 @@ if __name__ == '__main__':
         # (features.get_mul_feature, {}),
     )
 
-    bla = []
-    for function, kwargs_sets in FEATURE_FUNCTIONS:
-        bla.extend(expand_functions(function, kwargs_sets))
-    FEATURE_FUNCTIONS = bla
+    FEATURE_FUNCTIONS = []
+    for function, kwargs_sets in feature_sets:
+        FEATURE_FUNCTIONS.extend(expand_functions(function, kwargs_sets))
 
     CLFS = (
         (
