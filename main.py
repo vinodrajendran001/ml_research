@@ -198,12 +198,6 @@ def init_data_length(functions, names, datasets, geom_paths, meta, lengths, prop
     return features, properties, groups
 
 
-def expand_functions(function, kwargs_sets):
-    functions = []
-    for x in product(*kwargs_sets.values()):
-        functions.append((function, dict(zip(kwargs_sets.keys(), x))))
-    return functions
-
 
 if __name__ == '__main__':
     # Select the data set to use
@@ -225,7 +219,9 @@ if __name__ == '__main__':
 
     FEATURE_FUNCTIONS = []
     for function, kwargs_sets in feature_sets:
-        FEATURE_FUNCTIONS.extend(expand_functions(function, kwargs_sets))
+        for x in product(*kwargs_sets.values()):
+            temp = (function, dict(zip(kwargs_sets.keys(), x)))
+            FEATURE_FUNCTIONS.append(temp)
 
     CLFS = (
         (
