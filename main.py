@@ -26,7 +26,7 @@ def main(features, properties, groups, clfs, cross_validate,
             print "\t" + feat_name
             for clf_name, clf, clf_kwargs in clfs:
                 start = time.time()
-                opt_params, test = cross_validate(
+                opt_params, (test_mean, test_std) = cross_validate(
                                                     feat,
                                                     prop,
                                                     groups,
@@ -35,15 +35,15 @@ def main(features, properties, groups, clfs, cross_validate,
                                                     test_folds=test_folds,
                                                     cross_folds=cross_folds,
                                                 )
-                finished = time.time() - start
+                time_taken = time.time() - start
                 string = "\t\t%s: %.4f +/- %.4f eV (%.4f secs)" % (
                                                         clf_name,
-                                                        test[0],
-                                                        test[1],
-                                                        finished
+                                                        test_mean,
+                                                        test_std,
+                                                        time_taken
                                                     )
                 print string, opt_params
-                results[prop_name][feat_name][clf_name] = test
+                results[prop_name][feat_name][clf_name] = (test_mean, test_std, opt_params)
             print
             sys.stdout.flush()
         print
