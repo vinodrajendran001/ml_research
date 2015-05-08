@@ -96,6 +96,17 @@ def load_data(calc_set, opt_set, struct_set, prop_set=None):
     return names, datasets, geom_paths, zip(*properties), meta, lengths
 
 
+def print_best_methods(results):
+    for prop, prop_data in results.items():
+        best = None
+        for feat_name, feat_data in prop_data.items():
+            for clf_name, value in feat_data.items():
+                if best is None or value[0] < best[2][0]:
+                    best = (feat_name, clf_name, value)
+        print prop
+        print best
+        print
+
 
 if __name__ == '__main__':
     # Select the data set to use
@@ -171,5 +182,7 @@ if __name__ == '__main__':
         print "\t" + name, feat.shape
     print
     sys.stdout.flush()
+
     results = main(features, properties, groups, CLFS, cross_clf_kfold)
-    pprint.pprint(results)
+    print_best_methods(results)
+    # pprint.pprint(results)
