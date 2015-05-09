@@ -55,6 +55,11 @@ def load_data(calc_set, opt_set, struct_set, prop_set=None):
     Load data from data sets and return lists of structure names, full paths
     to the geometry data, the properties, and the meta data.
     '''
+    print "Dataset options used"
+    print "\tCalculation methods", calc_set
+    print "\tOptimization methods:", opt_set
+    print "\tStructure sets:", struct_set
+    print "\tProperties:", prop_set
     names = []
     datasets = []
     geom_paths = []
@@ -93,6 +98,11 @@ def load_data(calc_set, opt_set, struct_set, prop_set=None):
                         aryl_count = sum([1 for x in tokens if x in ARYL])
                         lengths.append(aryl_count)
 
+    print "Loaded data"
+    print "\t%d datapoints." % len(names)
+    print "\t%d unique molecules" % len(set(names))
+    print "\t%d unique geometries" % len(set(geom_paths))
+    print
     return names, datasets, geom_paths, zip(*properties), meta, lengths
 
 
@@ -176,7 +186,7 @@ if __name__ == '__main__':
                                             prop_set,
                                         )
 
-    print "Took %.4f secs to load %d data points." % ((time.time() - start), properties[0][1].shape[0])
+    print "Took %.4f secs to load %d data points in %d groups." % ((time.time() - start), properties[0][1].shape[0], groups.max() + 1)
     print "Sizes of Feature Matrices"
     for name, feat in features.items():
         print "\t" + name, feat.shape
