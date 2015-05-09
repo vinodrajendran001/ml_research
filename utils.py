@@ -79,7 +79,7 @@ def get_eigenvalues(X):
     '''
     eigvals = numpy.linalg.eigvals(X)
     eigvals.sort()
-    return eigvals[::-1]
+    return numpy.real(eigvals[::-1])
 
 
 class CLF(object):
