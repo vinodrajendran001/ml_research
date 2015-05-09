@@ -56,7 +56,7 @@ def load_data(calc_set, opt_set, struct_set, prop_set=None):
     to the geometry data, the properties, and the meta data.
     '''
     print "Dataset options used"
-    print "\tCalculation methods", calc_set
+    print "\tCalculation methods:", calc_set
     print "\tOptimization methods:", opt_set
     print "\tStructure sets:", struct_set
     print "\tProperties:", prop_set
@@ -99,7 +99,7 @@ def load_data(calc_set, opt_set, struct_set, prop_set=None):
                         lengths.append(aryl_count)
 
     print "Loaded data"
-    print "\t%d datapoints." % len(names)
+    print "\t%d datapoints" % len(names)
     print "\t%d unique molecules" % len(set(names))
     print "\t%d unique geometries" % len(set(geom_paths))
     print
@@ -122,8 +122,8 @@ if __name__ == '__main__':
     # Select the data set to use
     calc_set = ("b3lyp", )#"cam", "m06hf")
     opt_set = tuple("opt/" + x for x in calc_set)
-    struct_set = ['O']#, 'N']
-    prop_set = ["homo", "lumo", "gap"]
+    struct_set = ('O', )# 'N', '4']
+    prop_set = ("homo", "lumo", "gap")
 
 
     feature_sets = (
