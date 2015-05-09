@@ -1,3 +1,5 @@
+import time
+
 import numpy
 
 from utils import true_strip, tokenize
@@ -21,11 +23,15 @@ def init_data(functions, names, datasets, geom_paths, meta, lengths, properties,
     features = {}
     groups = get_name_groups(names, datasets)
 
+    print "Sizes of Feature Matrices"
     for function, kwargs in functions:
+        start = time.time()
         key = true_strip(function.__name__, "get_", "_feature") + " " + repr(kwargs)
         temp = function(names, geom_paths, **kwargs)
         # Add the associtated file/data/opt meta data to each of the feature vectors
         features[key] = numpy.concatenate((temp, meta), 1)
+        print "\t%s %s (%.4f secs)" % (key, features[key].shape, time.time() - start)
+    print
     properties = [(x, numpy.matrix(y).T) for x, y in zip(prop_set, properties)]
     return features, properties, groups
 
@@ -36,7 +42,9 @@ def init_data_multi(functions, names, datasets, geom_paths, meta, lengths, prope
     temp_groups = get_name_groups(names, datasets)
     groups = numpy.concatenate([temp_groups for x in properties])
 
+    print "Sizes of Feature Matrices"
     for function, kwargs in functions:
+        start = time.time()
         key = true_strip(function.__name__, "get_", "_feature") + " " + repr(kwargs)
         temp = function(names, geom_paths, **kwargs)
         # Add the associtated file/data/opt meta data to each of the feature vectors
@@ -46,6 +54,8 @@ def init_data_multi(functions, names, datasets, geom_paths, meta, lengths, prope
             bla[:,i] = 1
             temps.append(numpy.concatenate((temp, meta, bla), 1))
         features[key] = numpy.concatenate(temps)
+        print "\t%s %s (%.4f secs)" % (key, features[key].shape, time.time() - start)
+    print
     temp_properties = numpy.concatenate([numpy.matrix(x).T for x in properties])
     properties = [("all", temp_properties)]
     return features, properties, groups
@@ -73,7 +83,9 @@ def init_data_length(functions, names, datasets, geom_paths, meta, lengths, prop
     # Construct (name, vector) pairs to auto label features when iterating over them
     features = {}
 
+    print "Sizes of Feature Matrices"
     for function, kwargs in functions:
+        start = time.time()
         key = true_strip(function.__name__, "get_", "_feature") + " " + repr(kwargs)
         temp = function(names, geom_paths, **kwargs)
 
@@ -98,7 +110,8 @@ def init_data_length(functions, names, datasets, geom_paths, meta, lengths, prop
             groups.append(i)
         # Add the associtated file/data/opt meta data to each of the feature vectors
         features[key] = numpy.concatenate((new_temp, other_props, new_meta), 1)
-
+        print "\t%s %s (%.4f secs)" % (key, features[key].shape, time.time() - start)
+    print
     groups = numpy.matrix(groups).T
     properties = [(x, numpy.matrix(y).T) for x, y in zip(prop_set, properties)]
     return features, properties, groups

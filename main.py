@@ -203,14 +203,7 @@ if __name__ == '__main__':
                                             properties,
                                             prop_set,
                                         )
-
-    print "Took %.4f secs to load %d data points in %d groups." % ((time.time() - start), properties[0][1].shape[0], groups.max() + 1)
-    print "Sizes of Feature Matrices"
-    for name, feat in features.items():
-        print "\t" + name, feat.shape
-    print
     sys.stdout.flush()
-
     dummy_results = print_property_statistics(properties, groups, cross_clf_kfold)
     results = main(features, properties, groups, CLFS, cross_clf_kfold)
     print_best_methods(results)
