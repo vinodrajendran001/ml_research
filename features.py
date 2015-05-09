@@ -338,7 +338,7 @@ def get_bin_eigen_coulomb_feature(names, paths, step=1, **kwargs):
         elements, numbers, coords = read_file_data(path)
         mat = get_distance_matrix(coords, -1)
         eigvals = get_eigenvalues(mat)
-        cache[path] = expand(eigvals, step=step)
+        cache[path] = get_thermometer_encoding(eigvals, step=step)
 
     vectors = [cache[path] for path in paths]
     return homogenize_lengths(vectors)
