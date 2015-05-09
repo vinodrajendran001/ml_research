@@ -145,7 +145,7 @@ if __name__ == '__main__':
     # Select the data set to use
     calc_set = ("b3lyp", )#"cam", "m06hf")
     opt_set = tuple("opt/" + x for x in calc_set)
-    struct_set = ('O', )# 'N', '4']
+    struct_set = ('O', 'N', '4')
     prop_set = ("homo", "lumo", "gap")
 
 
