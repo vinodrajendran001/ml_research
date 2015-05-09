@@ -50,6 +50,29 @@ def main(features, properties, groups, clfs, cross_validate,
     return results
 
 
+def print_property_statistics(properties, groups, cross_validate, test_folds=5, cross_folds=2):
+    results = {}
+    print "Property Statistics"
+    for prop_name, prop in properties:
+        feat = numpy.zeros(groups.shape)
+        _, (test_mean, test_std) = cross_validate(
+                                                feat,
+                                                prop,
+                                                groups,
+                                                dummy.DummyRegressor,
+                                                {},
+                                                test_folds=test_folds,
+                                                cross_folds=cross_folds,
+                                            )
+        print "\t%s" % prop_name
+        print "\t\tValue range: [%.4f, %.4f] eV" % (prop.min(), prop.max())
+        print "\t\tExpected value: %.4f +- %.4f eV" % (prop.mean(), prop.std())
+        print "\t\tExpected error: %.4f +/- %.4f eV" % (test_mean, test_std)
+        results[prop_name] = (test_mean, test_std)
+    print
+    return results
+
+
 def load_data(calc_set, opt_set, struct_set, prop_set=None):
     '''
     Load data from data sets and return lists of structure names, full paths
@@ -144,11 +167,6 @@ if __name__ == '__main__':
 
     CLFS = (
         (
-            "Mean",
-            dummy.DummyRegressor,
-            {}
-        ),
-        (
             "LinearRidge",
             linear_model.Ridge,
             {
@@ -193,6 +211,7 @@ if __name__ == '__main__':
     print
     sys.stdout.flush()
 
+    dummy_results = print_property_statistics(properties, groups, cross_clf_kfold)
     results = main(features, properties, groups, CLFS, cross_clf_kfold)
     print_best_methods(results)
     # pprint.pprint(results)
