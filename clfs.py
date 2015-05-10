@@ -31,11 +31,9 @@ def laplace_kernel_gen(sigma):
 
 class SVMLaplace(svm.SVR):
     def __init__(self, kernel='rbf', degree=3, gamma=0.0, coef0=0.0, tol=1e-3,
-                 C=1.0, epsilon=0.1, shrinking=True, probability=False,
-                 cache_size=200, verbose=False, max_iter=-1,
-                 random_state=None):
+                 C=1.0, epsilon=0.1, shrinking=True, cache_size=200,
+                 verbose=False, max_iter=-1):
         super(SVMLaplace, self).__init__(kernel=kernel, degree=degree, gamma=gamma, coef0=coef0, tol=tol,
-                 C=C, epsilon=epsilon, shrinking=shrinking, probability=probability,
-                 cache_size=cache_size, verbose=verbose, max_iter=max_iter,
-                 random_state=random_state)
+                 C=C, epsilon=epsilon, shrinking=shrinking, cache_size=cache_size, verbose=verbose,
+                 max_iter=max_iter)
         self.kernel = laplace_kernel_gen(gamma)
