@@ -82,33 +82,6 @@ def get_eigenvalues(X):
     return numpy.real(eigvals[::-1])
 
 
-class CLF(object):
-    def __init__(self, **kwargs):
-        '''
-        Self initialization code goes here.
-        '''
-        pass
-
-    def fit(self, X, y):
-        '''
-        X is a (N_samples, N_features) array.
-        y is a (N_samples, ) array.
-        NOTE: These are arrays and NOT matrices. To do matrix-like operations
-        on them you need to convert them to a matrix with
-        numpy.matrix(X) (or you can use numpy.dot(X, y), and etc).
-        Note: This method does not return anything, it only stores state
-        for later calls to self.predict()
-        '''
-        raise NotImplementedError
-
-    def predict(self, X):
-        '''
-        X is a (N_samples, N_features) array.
-        NOTE: This input is also an array and NOT a matrix.
-        '''
-        raise NotImplementedError
-
-
 ARYL = ['2', '3', '4', '6', '11', '12', '13']
 ARYL0 = ['2', '3', '11']
 RGROUPS = ['a', 'd', 'e', 'f', 'h', 'i', 'l']

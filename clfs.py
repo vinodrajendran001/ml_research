@@ -2,7 +2,32 @@ import numpy
 from scipy.spatial.distance import cdist
 from sklearn import svm
 
-from utils import CLF
+
+class CLF(object):
+    def __init__(self, **kwargs):
+        '''
+        Self initialization code goes here.
+        '''
+        pass
+
+    def fit(self, X, y):
+        '''
+        X is a (N_samples, N_features) array.
+        y is a (N_samples, ) array.
+        NOTE: These are arrays and NOT matrices. To do matrix-like operations
+        on them you need to convert them to a matrix with
+        numpy.matrix(X) (or you can use numpy.dot(X, y), and etc).
+        Note: This method does not return anything, it only stores state
+        for later calls to self.predict()
+        '''
+        raise NotImplementedError
+
+    def predict(self, X):
+        '''
+        X is a (N_samples, N_features) array.
+        NOTE: This input is also an array and NOT a matrix.
+        '''
+        raise NotImplementedError
 
 
 # Example Linear Regression
