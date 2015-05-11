@@ -282,7 +282,7 @@ def get_all_length_types(length=2):
         else:
             mid = tuple()
         temp = zip(*x)
-        types.append(temp[0] + mid + temp[1])
+        types.append(tuple(x for x in reversed(temp[0])) + mid + temp[1])
     return types
 
 
