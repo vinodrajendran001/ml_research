@@ -348,7 +348,7 @@ def get_angle_counts(elements, coords, bonds=None):
     for i, bond1 in enumerate(bonds):
         atoms1 = set(bond1[:2])
         for j, bond2 in enumerate(bonds[i + 1:]):
-            j += 1
+            j += i + 1
             atoms2 = set(bond2[:2])
             intersect = atoms1 & atoms2
             if intersect:
@@ -376,7 +376,7 @@ def get_dihedral_counts(elements, coords, angles=None, bonds=None):
     for i, angle1 in enumerate(angles):
         atoms1 = set(angle1)
         for j, angle2 in enumerate(angles[i + 1:]):
-            j += 1
+            j += i + 1
             atoms2 = set(angle2)
             intersect = atoms1 & atoms2
             if len(intersect) == 2:
