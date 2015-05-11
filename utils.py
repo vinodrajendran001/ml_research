@@ -332,9 +332,10 @@ def get_bond_counts(elements, coords):
                 if element1 > element2:
                     # Flip if they are not in alphabetical order
                     element1, element2 = element2, element1
-                    i, j = j, i
+                    bonds.append((j, i, bond_type))
+                else:
+                    bonds.append((i, j, bond_type))
                 counts[typemap[element1, element2, bond_type]] += 1
-                bonds.append((i, j, bond_type))
     return counts, bonds
 
 
