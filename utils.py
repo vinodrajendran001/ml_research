@@ -264,6 +264,37 @@ BOND_LENGTHS = {
 TYPE_ORDER = ['1', 'Ar', '2', '3']
 
 
+def get_all_length_types(length=2):
+    A = sorted(BOND_LENGTHS.keys())
+    AA = [tuple(x) for x in A]
+    B = sum([[(x, y) for y in A[i:]] for i, x in enumerate(A)], [])
+
+    groups = []
+    if length % 2:
+        groups.append(AA)
+    groups.extend([B for i in xrange(length / 2)])
+
+    types = []
+    for x in product(*groups):
+        if length % 2:
+            mid = x[0]
+            x = x[1:]
+        else:
+            mid = tuple()
+        temp = zip(*x)
+        types.append(temp[0] + mid + temp[1])
+    return types
+
+
+def get_all_bond_types():
+    types = []
+    for x, y in get_all_length_types():
+        for bond_type in TYPE_ORDER:
+            if bond_type in BOND_LENGTHS[x] and bond_type in BOND_LENGTHS[y]:
+                types.append((x, y, bond_type))
+    return types
+
+
 def get_type_data(types):
     typemap = dict(zip(types, xrange(len(types))))
     counts = [0 for x in types]
@@ -276,17 +307,6 @@ def get_atom_counts(elements, coords=None):
     for ele in elements:
         counts[typemap[ele]] += 1
     return counts
-
-
-def get_all_bond_types():
-    elements = sorted(BOND_LENGTHS.keys())
-    types = []
-    for i, ele1 in enumerate(elements):
-        for ele2 in elements[i:]:
-            for j, bond_type in enumerate(TYPE_ORDER):
-                if LENGTHS[ele1][j] > 0 and LENGTHS[ele2][j] > 0:
-                    types.append((ele1, ele2, bond_type))
-    return types
 
 
 def get_bond_type(element1, element2, dist):
@@ -318,20 +338,10 @@ def get_bond_counts(elements, coords):
     return counts, bonds
 
 
-def get_all_angle_types():
-    elements = sorted(BOND_LENGTHS.keys())
-    types = []
-    for middle in elements:
-        for i, left in enumerate(elements):
-            for right in elements[i:]:
-                types.append((left, middle, right))
-    return types
-
-
 def get_angle_counts(elements, coords, bonds=None):
     if bonds is None:
         _, bonds = get_bond_counts(elements, coords)
-    types = get_all_angle_types()
+    types = get_all_length_types(length=3)
     typemap, counts = get_type_data(types)
 
     angles = []
@@ -356,21 +366,10 @@ def get_angle_counts(elements, coords, bonds=None):
     return counts, angles
 
 
-def get_all_dihedral_types():
-    elements = sorted(BOND_LENGTHS.keys())
-    types = []
-    for i, left_middle in enumerate(elements):
-        for right_middle in elements[i:]:
-            for j, left in enumerate(elements):
-                for right in elements[j:]:
-                    types.append((left, left_middle, right_middle, right))
-    return types
-
-
 def get_dihedral_counts(elements, coords, angles=None, bonds=None):
     if angles is None:
         _, angles = get_angle_counts(elements, coords, bonds=bonds)
-    types = get_all_dihedral_types()
+    types = get_all_length_types(length=4)
     typemap, counts = get_type_data(types)
     dihedrals = []
     for i, angle1 in enumerate(angles):
