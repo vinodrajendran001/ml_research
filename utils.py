@@ -230,3 +230,170 @@ def cross_clf_kfold(X, y, groups, clf_base, params_sets, cross_folds=10, test_fo
     # before
     clf = clf_base(**params)
     return params, test_clf_kfold(X, y, groups, clf, folds=cross_folds)
+
+
+BOND_LENGTHS = {
+    "C": {
+        "3":   0.62,
+        "2":   0.69,
+        "Ar": 0.72,
+        "1":   0.815,
+    },
+    "S": {
+        "2":   0.905,
+        "Ar": 0.945,
+        "1":   1.07,
+    },
+    "O": {
+        "3":   0.53,
+        "2":   0.59,
+        "Ar": 0.62,
+        "1":   0.695,
+    },
+    "N": {
+        "3":   0.565,
+        "2":   0.63,
+        "Ar": 0.655,
+        "1":   0.74,
+    },
+    "H": {
+        "1":   0.6,
+    },
+}
+
+TYPE_ORDER = ['1', 'Ar', '2', '3']
+
+
+def get_type_data(types):
+    typemap = dict(zip(types, xrange(len(types))))
+    counts = [0 for x in types]
+    return typemap, counts
+
+
+def get_atom_counts(elements, coords=None):
+    types = sorted(BOND_LENGTHS.keys())
+    typemap, counts = get_type_data(types)
+    for ele in elements:
+        counts[typemap[ele]] += 1
+    return counts
+
+
+def get_all_bond_types():
+    elements = sorted(BOND_LENGTHS.keys())
+    types = []
+    for i, ele1 in enumerate(elements):
+        for ele2 in elements[i:]:
+            for j, bond_type in enumerate(TYPE_ORDER):
+                if LENGTHS[ele1][j] > 0 and LENGTHS[ele2][j] > 0:
+                    types.append((ele1, ele2, bond_type))
+    return types
+
+
+def get_bond_type(element1, element2, dist):
+    for key in ["3", "2", "Ar", "1"]:
+        try:
+            if dist < (BOND_LENGTHS[element1][key] + BOND_LENGTHS[element2][key]):
+                return key
+        except KeyError:
+            continue
+
+
+def get_bond_counts(elements, coords):
+    types = get_all_bond_types()
+    typemap, counts = get_type_data(types)
+
+    bonds = []
+    for i, (element1, xyz1) in enumerate(zip(elements, coords)):
+        for j, (element2, xyz2) in enumerate(zip(elements, coords)[i + 1:]):
+            j += i + 1
+            dist = sum((x - y) ** 2 for (x, y) in zip(xyz1, xyz2)) ** 0.5
+            bond_type = get_bond_type(element1, element2, dist)
+            if bond_type:
+                if element1 > element2:
+                    # Flip if they are not in alphabetical order
+                    element1, element2 = element2, element1
+                    i, j = j, i
+                counts[typemap[element1, element2, bond_type]] += 1
+                bonds.append((i, j, bond_type))
+    return counts, bonds
+
+
+def get_all_angle_types():
+    elements = sorted(BOND_LENGTHS.keys())
+    types = []
+    for middle in elements:
+        for i, left in enumerate(elements):
+            for right in elements[i:]:
+                types.append((left, middle, right))
+    return types
+
+
+def get_angle_counts(elements, coords, bonds=None):
+    if bonds is None:
+        _, bonds = get_bond_counts(elements, coords)
+    types = get_all_angle_types()
+    typemap, counts = get_type_data(types)
+
+    angles = []
+    for i, bond1 in enumerate(bonds):
+        atoms1 = set(bond1[:2])
+        for j, bond2 in enumerate(bonds[i + 1:]):
+            j += 1
+            atoms2 = set(bond2[:2])
+            intersect = atoms1 & atoms2
+            if intersect:
+                idx1 = list(atoms1 - intersect)[0]
+                idx2 = list(atoms2 - intersect)[0]
+                idx3 = list(intersect)[0]
+                element1 = elements[idx1]
+                element2 = elements[idx2]
+                element3 =  elements[idx3]
+                if element1 > element2:
+                    # Flip if they are not in alphabetical order
+                    element1, element2 = element2, element1
+                counts[typemap[element1, element3, element2]] += 1
+                angles.append((idx1, idx3, idx2))
+    return counts, angles
+
+
+def get_all_dihedral_types():
+    elements = sorted(BOND_LENGTHS.keys())
+    types = []
+    for i, left_middle in enumerate(elements):
+        for right_middle in elements[i:]:
+            for j, left in enumerate(elements):
+                for right in elements[j:]:
+                    types.append((left, left_middle, right_middle, right))
+    return types
+
+
+def get_dihedral_counts(elements, coords, angles=None, bonds=None):
+    if angles is None:
+        _, angles = get_angle_counts(elements, coords, bonds=bonds)
+    types = get_all_dihedral_types()
+    typemap, counts = get_type_data(types)
+    dihedrals = []
+    for i, angle1 in enumerate(angles):
+        atoms1 = set(angle1)
+        for j, angle2 in enumerate(angles[i + 1:]):
+            j += 1
+            atoms2 = set(angle2)
+            intersect = atoms1 & atoms2
+            if len(intersect) == 2:
+                idx1 = list(atoms1 - intersect)[0]
+                idx2 = list(atoms2 - intersect)[0]
+                idx3, idx4 = list(intersect)
+                element1 = elements[idx1]
+                element2 = elements[idx2]
+                element3 =  elements[idx3]
+                element4 = elements[idx4]
+                if element1 > element2:
+                    # Flip if they are not in alphabetical order
+                    element1, element2 = element2, element1
+                if element3 > element4:
+                    # Flip if they are not in alphabetical order
+                    element3, element4 = element4, element3
+                counts[typemap[element1, element3, element4, element2]] += 1
+                dihedrals.append((idx1, idx3, idx4, idx2))
+    return counts, dihedrals
+
