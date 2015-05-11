@@ -7,7 +7,8 @@ from sklearn import decomposition
 from utils import tokenize, ARYL, RGROUPS, \
         decay_function, gauss_decay_function, read_file_data, \
         get_coulomb_matrix, homogenize_lengths, get_distance_matrix, \
-        get_thermometer_encoding, get_eigenvalues
+        get_thermometer_encoding, get_eigenvalues, get_atom_counts, \
+        get_bond_counts, get_angle_counts, get_dihedral_counts
 
 
 # Example Feature function
@@ -31,13 +32,65 @@ def get_atom_feature(names, paths, **kwargs):
     '''
     vectors = []
     for path in paths:
-        # This will need replacing when doing more elements
-        counts = [0, 0, 0, 0]
-        types = {'C': 0, 'H': 1, 'O': 2, 'N': 3}
+        elements = []
         with open(path, 'r') as f:
             for line in f:
                 ele, x, y, z = line.strip().split()
-                counts[types[ele]] += 1
+                elements.append(ele)
+        vectors.append(get_atom_counts(elements))
+    return numpy.matrix(vectors)
+
+
+def get_bond_feature(names, paths, **kwargs):
+    '''
+    A feature vector based entirely off the number of bonds in the structure.
+    '''
+    vectors = []
+    for path in paths:
+        elements = []
+        coords = []
+        with open(path, 'r') as f:
+            for line in f:
+                ele, x, y, z = line.strip().split()
+                elements.append(ele)
+                coords.append((float(x), float(y), float(z)))
+            counts, _ = get_bond_counts(elements, coords)
+            vectors.append(counts)
+    return numpy.matrix(vectors)
+
+
+def get_angle_feature(names, paths, **kwargs):
+    '''
+    A feature vector based entirely off the number of angles in the structure.
+    '''
+    vectors = []
+    for path in paths:
+        elements = []
+        coords = []
+        with open(path, 'r') as f:
+            for line in f:
+                ele, x, y, z = line.strip().split()
+                elements.append(ele)
+                coords.append((float(x), float(y), float(z)))
+            counts, _ = get_angle_counts(elements, coords)
+            vectors.append(counts)
+    return numpy.matrix(vectors)
+
+
+def get_dihedral_feature(names, paths, **kwargs):
+    '''
+    A feature vector based entirely off the number of dihedrals in the structure.
+    '''
+    vectors = []
+    for path in paths:
+        elements = []
+        coords = []
+        with open(path, 'r') as f:
+            for line in f:
+                ele, x, y, z = line.strip().split()
+                elements.append(ele)
+                coords.append((float(x), float(y), float(z)))
+            counts, _ = get_dihedral_counts(elements, coords)
             vectors.append(counts)
     return numpy.matrix(vectors)
 
