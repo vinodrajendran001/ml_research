@@ -23,7 +23,7 @@ def read_file_data(path):
     elements = []
     numbers = []
     coords = []
-    types = {'C': 6, 'H': 1, 'O': 8, 'N': 7}
+    types = {'C': 6, 'H': 1, 'O': 8, 'N': 7, 'S': 18}
     with open(path, 'r') as f:
         for line in f:
             ele, x, y, z = line.strip().split()
