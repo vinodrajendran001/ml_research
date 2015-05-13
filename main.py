@@ -250,6 +250,14 @@ if __name__ == '__main__':
                 "gamma": [10. ** x for x in xrange(-4, 0)],
             }
         ),
+        (
+            "SVMLaplace",
+            clfs.SVMLaplace,
+            {
+                'C': [10. ** x for x in xrange(-1, 4)],
+                "gamma": [10. ** x for x in xrange(-4, 0)],
+            }
+        ),
     )
 
 
