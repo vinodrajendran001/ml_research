@@ -617,7 +617,8 @@ def get_eigen_custom_distance_feature(names, paths, f=None, **kwargs):
             continue
         elements, numbers, coords = read_file_data(path)
         mat = get_distance_matrix(coords, 1)
-        cache[path] = get_eigenvalues(mat)
+        temp = f(mat)
+        cache[path] = get_eigenvalues(temp)
 
     vectors = [cache[path] for path in paths]
     return homogenize_lengths(vectors)
