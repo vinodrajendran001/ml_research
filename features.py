@@ -94,6 +94,56 @@ def get_dihedral_feature(names, paths, **kwargs):
             vectors.append(counts)
     return numpy.matrix(vectors)
 
+def get_atom_and_bond_feature(names, paths, **kwargs):
+    vectors = []
+    for path in paths:
+        elements = []
+        coords = []
+        with open(path, 'r') as f:
+            for line in f:
+                ele, x, y, z = line.strip().split()
+                elements.append(ele)
+                coords.append((float(x), float(y), float(z)))
+            a_counts = get_atom_counts(elements, coords)
+            b_counts, bonds = get_bond_counts(elements, coords)
+            vectors.append(a_counts + b_counts)
+    return numpy.matrix(vectors)
+
+
+def get_atom_bond_and_angle_feature(names, paths, **kwargs):
+    vectors = []
+    for path in paths:
+        elements = []
+        coords = []
+        with open(path, 'r') as f:
+            for line in f:
+                ele, x, y, z = line.strip().split()
+                elements.append(ele)
+                coords.append((float(x), float(y), float(z)))
+            a_counts = get_atom_counts(elements, coords)
+            b_counts, bonds = get_bond_counts(elements, coords)
+            an_counts, angles = get_angle_counts(elements, coords, bonds=bonds)
+            vectors.append(a_counts + b_counts + an_counts)
+    return numpy.matrix(vectors)
+
+
+def get_atom_bond_angle_and_dihedral_feature(names, paths, **kwargs):
+    vectors = []
+    for path in paths:
+        elements = []
+        coords = []
+        with open(path, 'r') as f:
+            for line in f:
+                ele, x, y, z = line.strip().split()
+                elements.append(ele)
+                coords.append((float(x), float(y), float(z)))
+            a_counts = get_atom_counts(elements, coords)
+            b_counts, bonds = get_bond_counts(elements, coords)
+            an_counts, angles = get_angle_counts(elements, coords, bonds=bonds)
+            d_counts, _ = get_dihedral_counts(elements, coords, angles=angles)
+            vectors.append(a_counts + b_counts + an_counts + d_counts)
+    return numpy.matrix(vectors)
+
 
 def get_binary_feature(names, paths, limit=4, **kwargs):
     '''
