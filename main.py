@@ -198,7 +198,7 @@ if __name__ == '__main__':
 
 
     feature_sets = (
-        (features.get_null_feature, {}),
+        # (features.get_null_feature, {}),
         (features.get_atom_feature, {}),
         # (features.get_bond_feature, {}),
         # (features.get_angle_feature, {}),
