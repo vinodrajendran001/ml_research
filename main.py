@@ -7,6 +7,7 @@ from itertools import product
 from sklearn import linear_model
 from sklearn import svm
 from sklearn import dummy
+from sklearn import kernel_ridge
 import numpy
 
 import features
@@ -171,6 +172,15 @@ if __name__ == '__main__':
             linear_model.Ridge,
             {
                 "alpha": [10. ** x for x in xrange(-3, 4)]
+            }
+        ),
+        (
+            "KernelRidge",
+            kernel_ridge.KernelRidge,
+            {
+                "alpha": [10. ** x for x in xrange(-7, 1, 2)],
+                "kernel": ["rbf"],
+                "gamma": [10. ** x for x in xrange(-7, 7, 2)],
             }
         ),
         (
