@@ -1,4 +1,5 @@
 import time
+import sys
 from collections import OrderedDict
 
 import numpy
@@ -25,6 +26,7 @@ def init_data(functions, names, datasets, geom_paths, meta, lengths, properties,
     groups = get_name_groups(names, datasets)
 
     print "Sizes of Feature Matrices"
+    sys.stdout.flush()
     for function, kwargs in functions:
         start = time.time()
         key = true_strip(function.__name__, "get_", "_feature") + " " + repr(kwargs)
@@ -32,6 +34,8 @@ def init_data(functions, names, datasets, geom_paths, meta, lengths, properties,
         # Add the associtated file/data/opt meta data to each of the feature vectors
         features[key] = numpy.concatenate((temp, meta), 1)
         print "\t%s %s (%.4f secs)" % (key, features[key].shape, time.time() - start)
+        sys.stdout.flush()
+
     print
     properties = [(x, numpy.matrix(y).T) for x, y in zip(prop_set, properties)]
     return features, properties, groups
@@ -44,6 +48,7 @@ def init_data_multi(functions, names, datasets, geom_paths, meta, lengths, prope
     groups = numpy.concatenate([temp_groups for x in properties])
 
     print "Sizes of Feature Matrices"
+    sys.stdout.flush()
     for function, kwargs in functions:
         start = time.time()
         key = true_strip(function.__name__, "get_", "_feature") + " " + repr(kwargs)
@@ -56,6 +61,8 @@ def init_data_multi(functions, names, datasets, geom_paths, meta, lengths, prope
             temps.append(numpy.concatenate((temp, meta, bla), 1))
         features[key] = numpy.concatenate(temps)
         print "\t%s %s (%.4f secs)" % (key, features[key].shape, time.time() - start)
+        sys.stdout.flush()
+
     print
     temp_properties = numpy.concatenate([numpy.matrix(x).T for x in properties])
     properties = [("all", temp_properties)]
@@ -85,6 +92,7 @@ def init_data_length(functions, names, datasets, geom_paths, meta, lengths, prop
     features = OrderedDict()
 
     print "Sizes of Feature Matrices"
+    sys.stdout.flush()
     for function, kwargs in functions:
         start = time.time()
         key = true_strip(function.__name__, "get_", "_feature") + " " + repr(kwargs)
@@ -112,6 +120,8 @@ def init_data_length(functions, names, datasets, geom_paths, meta, lengths, prop
         # Add the associtated file/data/opt meta data to each of the feature vectors
         features[key] = numpy.concatenate((new_temp, other_props, new_meta), 1)
         print "\t%s %s (%.4f secs)" % (key, features[key].shape, time.time() - start)
+        sys.stdout.flush()
+
     print
     groups = numpy.matrix(groups).T
     properties = [(x, numpy.matrix(y).T) for x, y in zip(prop_set, properties)]
