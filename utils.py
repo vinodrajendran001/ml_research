@@ -3,6 +3,7 @@ from itertools import product
 from multiprocessing import Pool, cpu_count
 
 from scipy.spatial.distance import cdist
+from scipy.special import erf
 import numpy
 from numpy.linalg import norm
 
@@ -135,6 +136,28 @@ def decay_function(distance, power=1, H=1, factor=1):
 
 def gauss_decay_function(x, sigma=6):
     return numpy.exp(-(x / float(sigma)) ** 2)
+
+
+def erf_over_r(r):
+    mat = erf(r) / r
+    mat[mat == numpy.Infinity] = 1
+    mat[numpy.isnan(mat)] = 1
+    return mat
+
+
+def one_over_sqrt(r):
+    mat = 1. / numpy.sqrt(1 + numpy.square(r))
+    mat[mat == numpy.Infinity] = 1
+    mat[numpy.isnan(mat)] = 1
+    return mat
+
+
+def lennard_jones(r):
+    six = r ** -6
+    mat = six ** 2 - six
+    mat[mat == numpy.Infinity] = 1
+    mat[numpy.isnan(mat)] = 1
+    return mat
 
 
 def get_cross_validation_iter(X, y, groups, folds):

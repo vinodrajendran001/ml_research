@@ -13,8 +13,9 @@ import numpy
 
 import features
 import clfs
-from init_data import init_data
-from utils import cross_clf_kfold, tokenize, ARYL, true_strip
+from init_data import init_data, init_data_multi, init_data_length
+from utils import cross_clf_kfold, tokenize, ARYL, true_strip, erf_over_r, \
+        one_over_sqrt, lennard_jones
 
 
 def main(features, properties, groups, clfs, cross_validate,
