@@ -1,4 +1,5 @@
 import time
+from collections import OrderedDict
 
 import numpy
 
@@ -20,7 +21,7 @@ def get_name_groups(names, datasets):
 
 def init_data(functions, names, datasets, geom_paths, meta, lengths, properties, prop_set):
     # Construct (name, vector) pairs to auto label features when iterating over them
-    features = {}
+    features = OrderedDict()
     groups = get_name_groups(names, datasets)
 
     print "Sizes of Feature Matrices"
@@ -38,7 +39,7 @@ def init_data(functions, names, datasets, geom_paths, meta, lengths, properties,
 
 def init_data_multi(functions, names, datasets, geom_paths, meta, lengths, properties, prop_set):
     # Construct (name, vector) pairs to auto label features when iterating over them
-    features = {}
+    features = OrderedDict()
     temp_groups = get_name_groups(names, datasets)
     groups = numpy.concatenate([temp_groups for x in properties])
 
@@ -81,7 +82,7 @@ def get_length_splits(names, datasets, lengths, split_length=2):
 
 def init_data_length(functions, names, datasets, geom_paths, meta, lengths, properties, prop_set):
     # Construct (name, vector) pairs to auto label features when iterating over them
-    features = {}
+    features = OrderedDict()
 
     print "Sizes of Feature Matrices"
     for function, kwargs in functions:
