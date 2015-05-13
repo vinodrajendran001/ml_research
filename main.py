@@ -3,6 +3,7 @@ import time
 import pprint
 import os
 from itertools import product
+import cPickle
 
 from sklearn import linear_model
 from sklearn import svm
@@ -130,6 +131,51 @@ def load_data(calc_set, opt_set, struct_set, prop_set=None):
     return names, datasets, geom_paths, zip(*properties), meta, lengths
 
 
+def load_data2():
+    '''
+    '''
+    names = []
+    datasets = []
+    geom_paths = []
+    properties = []
+    meta = []
+    lengths = []
+
+    atoms = {1: 'H', 6: "C", 7: "N", 8: "O", 16: "S"}
+    with open("qm7.pkl", "r") as f:
+        temp = cPickle.load(f)
+        X = temp['X'].reshape(7165, 23*23)
+        Z = temp['Z']
+        R = temp['R']
+        T = temp['T']
+        P = temp['P']
+
+    for i, (zs, coords, t) in enumerate(zip(Z, R, T)):
+        # if 16 in zs.astype(int):
+        #     continue
+
+        name = "qm-%04d" % i
+        path = "qm/" + name + ".out"
+        # with open(path, "w") as f:
+        #     for z, coord in zip(zs, coords):
+        #         z = int(z)
+        #         if z:
+        #             f.write("%s %.8f %.8f %.8f\n" % (atoms[z], coord[0] * 0.529177249, coord[1] * 0.529177249, coord[2] * 0.529177249))
+        names.append(name)
+        datasets.append((1, ))
+        geom_paths.append(path)
+        properties.append([t])
+        meta.append([])
+        lengths.append(1)
+
+    print "Loaded data"
+    print "\t%d datapoints" % len(names)
+    print "\t%d unique molecules" % len(set(names))
+    print "\t%d unique geometries" % len(set(geom_paths))
+    print
+    return names, datasets, geom_paths, zip(*properties), meta, lengths
+
+
 def print_best_methods(results):
     for prop, prop_data in results.items():
         best = None
@@ -195,15 +241,7 @@ if __name__ == '__main__':
 
 
 
-    start = time.time()
-    names, datasets, geom_paths, properties, meta, lengths = load_data(
-                                                        calc_set,
-                                                        opt_set,
-                                                        struct_set,
-                                                        prop_set,
-                                                    )
-
-    features, properties, groups = init_data(
+    names, datasets, geom_paths, properties, meta, lengths = load_data2()
                                             FEATURE_FUNCTIONS,
                                             names,
                                             datasets,
@@ -213,8 +251,8 @@ if __name__ == '__main__':
                                             properties,
                                             prop_set,
                                         )
-    sys.stdout.flush()
+    properties = [("all", numpy.concatenate([x for _, x in properties], axis=1))]
     dummy_results = print_property_statistics(properties, groups, cross_clf_kfold)
-    results = main(features, properties, groups, CLFS, cross_clf_kfold)
+    sys.stdout.flush()
     print_best_methods(results)
     # pprint.pprint(results)
