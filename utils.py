@@ -423,3 +423,37 @@ def get_dihedral_counts(elements, coords, angles=None, bonds=None):
                 dihedrals.append((idx1, idx3, idx4, idx2))
     return counts, dihedrals
 
+
+def get_trihedral_counts(elements, coords, dihedrals=None, angles=None, bonds=None):
+    if dihedrals is None:
+        _, dihedrals = get_dihedral_counts(elements, coords, bonds=bonds)
+    types = get_all_length_types(length=5)
+    typemap, counts = get_type_data(types)
+    trihedrals = []
+    for i, dihedral1 in enumerate(dihedrals):
+        atoms1 = set(dihedral1)
+        for j, dihedral2 in enumerate(dihedrals[i + 1:]):
+            j += i + 1
+            atoms2 = set(dihedral2)
+            intersect = atoms1 & atoms2
+            if len(intersect) == 3:
+                idx1 = list(atoms1 - intersect)[0]
+                idx2 = list(atoms2 - intersect)[0]
+                temp_sorted = sorted([(dihedral1.index(x), x) for x in intersect])
+                (_, idx3), (_, idx5), (_, idx4) = temp_sorted
+                element1 = elements[idx1]
+                element2 = elements[idx2]
+                element3 =  elements[idx3]
+                element4 = elements[idx4]
+                element5 = elements[idx5]
+                if element1 > element2:
+                    # Flip if they are not in alphabetical order
+                    element1, element2 = element2, element1
+                    idx1, idx2 = idx2, idx1
+                if element3 > element4:
+                    # Flip if they are not in alphabetical order
+                    element3, element4 = element4, element3
+                    idx3, idx4 = idx4, idx3
+                counts[typemap[element1, element3, element5, element4, element2]] += 1
+                trihedrals.append((idx1, idx3, idx5, idx4, idx2))
+    return counts, trihedrals

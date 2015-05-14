@@ -8,7 +8,7 @@ from utils import tokenize, ARYL, RGROUPS, \
         decay_function, gauss_decay_function, read_file_data, \
         get_coulomb_matrix, homogenize_lengths, get_distance_matrix, \
         get_thermometer_encoding, get_eigenvalues, get_atom_counts, \
-        get_bond_counts, get_angle_counts, get_dihedral_counts
+        get_bond_counts, get_angle_counts, get_dihedral_counts, get_trihedral_counts
 
 
 # Example Feature function
@@ -76,6 +76,19 @@ def get_dihedral_feature(names, paths, **kwargs):
         vectors.append(counts)
     return numpy.matrix(vectors)
 
+
+def get_trihedral_feature(names, paths, **kwargs):
+    '''
+    A feature vector based entirely off the number of dihedrals in the structure.
+    '''
+    vectors = []
+    for path in paths:
+        elements, numbers, coords = read_file_data(path)
+        counts, _ = get_trihedral_counts(elements, coords.tolist())
+        vectors.append(counts)
+    return numpy.matrix(vectors)
+
+
 def get_atom_and_bond_feature(names, paths, **kwargs):
     vectors = []
     for path in paths:
@@ -107,6 +120,20 @@ def get_atom_bond_angle_and_dihedral_feature(names, paths, **kwargs):
         d_counts, _ = get_dihedral_counts(elements, coords.tolist(), angles=angles)
         vectors.append(a_counts + b_counts + an_counts + d_counts)
     return numpy.matrix(vectors)
+
+
+def get_atom_bond_angle_dihedral_and_trihedral_feature(names, paths, **kwargs):
+    vectors = []
+    for path in paths:
+        elements, numbers, coords = read_file_data(path)
+        a_counts = get_atom_counts(elements, coords.tolist())
+        b_counts, bonds = get_bond_counts(elements, coords.tolist())
+        an_counts, angles = get_angle_counts(elements, coords.tolist(), bonds=bonds)
+        d_counts, dihedrals = get_dihedral_counts(elements, coords.tolist(), angles=angles)
+        t_counts, _ = get_trihedral_counts(elements, coords.tolist(), dihedrals=dihedrals)
+        vectors.append(a_counts + b_counts + an_counts + d_counts + t_counts)
+    return numpy.matrix(vectors)
+
 
 
 def get_binary_feature(names, paths, limit=4, **kwargs):
