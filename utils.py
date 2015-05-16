@@ -290,8 +290,8 @@ BOND_LENGTHS = {
 TYPE_ORDER = ['1', 'Ar', '2', '3']
 
 
-def get_all_length_types(length=2):
-    A = sorted(BOND_LENGTHS.keys())
+def get_all_length_types(base_types=BOND_LENGTHS.keys(), length=2):
+    A = sorted(base_types)
     AA = [tuple(x) for x in A]
     B = sum([[(x, y) for y in A[i:]] for i, x in enumerate(A)], [])
 
@@ -393,6 +393,30 @@ def get_angle_counts(elements, coords, bonds=None):
                 angles.append((idx1, idx3, idx2))
     return counts, angles
 
+
+def get_angle_bond_counts(elements, coords, bonds=None):
+    if bonds is None:
+        _, bonds = get_bond_counts(elements, coords)
+    types = get_all_length_types(base_types=get_all_bond_types(), length=2)
+    typemap, counts = get_type_data(types)
+    angles = []
+    for i, bond1 in enumerate(bonds):
+        atoms1 = set(bond1[:2])
+        for j, bond2 in enumerate(bonds[i + 1:]):
+            j += i + 1
+            atoms2 = set(bond2[:2])
+            intersect = atoms1 & atoms2
+            if intersect:
+                ele_bond1 = tuple([elements[x] for x in bond1[:2]] + [bond1[2]])
+                ele_bond2 = tuple([elements[x] for x in bond2[:2]] + [bond2[2]])
+                if ele_bond1 > ele_bond2:
+                    # Flip if they are not in alphabetical order
+                    counts[typemap[ele_bond2, ele_bond1]] += 1
+                    angles.append((bond2, bond1))
+                else:
+                    counts[typemap[ele_bond1, ele_bond2]] += 1
+                    angles.append((bond1, bond2))
+    return counts, angles
 
 def get_dihedral_counts(elements, coords, angles=None, bonds=None):
     if angles is None:
