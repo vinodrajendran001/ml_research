@@ -123,12 +123,6 @@ def load_data(calc_set, opt_set, struct_set, prop_set=None):
                         tokens = tokenize(name, explicit_flips=True)
                         aryl_count = sum([1 for x in tokens if x in ARYL])
                         lengths.append(aryl_count)
-
-    print "Loaded data"
-    print "\t%d datapoints" % len(names)
-    print "\t%d unique molecules" % len(set(names))
-    print "\t%d unique geometries" % len(set(geom_paths))
-    print
     return names, datasets, geom_paths, zip(*properties), meta, lengths
 
 
@@ -169,11 +163,6 @@ def load_data2():
         meta.append([])
         lengths.append(1)
 
-    print "Loaded data"
-    print "\t%d datapoints" % len(names)
-    print "\t%d unique molecules" % len(set(names))
-    print "\t%d unique geometries" % len(set(geom_paths))
-    print
     return names, datasets, geom_paths, zip(*properties), meta, lengths
 
 
@@ -187,6 +176,14 @@ def print_best_methods(results):
         print prop
         print best
         print
+
+
+def print_load_stats(names, paths):
+    print "Loaded data"
+    print "\t%d datapoints" % len(names)
+    print "\t%d unique molecules" % len(set(names))
+    print "\t%d unique geometries" % len(set(geom_paths))
+    print
 
 
 if __name__ == '__main__':
@@ -266,6 +263,8 @@ if __name__ == '__main__':
 
 
     names, datasets, geom_paths, properties, meta, lengths = load_data2()
+    print_load_stats(names, geom_paths)
+    sys.stdout.flush()
     features, properties, groups = init_data(
                                             FEATURE_FUNCTIONS,
                                             names,
