@@ -32,11 +32,7 @@ def get_atom_feature(names, paths, **kwargs):
     '''
     vectors = []
     for path in paths:
-        elements = []
-        with open(path, 'r') as f:
-            for line in f:
-                ele, x, y, z = line.strip().split()
-                elements.append(ele)
+        elements, numbers, coords = read_file_data(path)
         vectors.append(get_atom_counts(elements))
     return numpy.matrix(vectors)
 
