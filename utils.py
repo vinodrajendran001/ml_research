@@ -292,25 +292,7 @@ TYPE_ORDER = ['1', 'Ar', '2', '3']
 
 
 def get_all_length_types(base_types=BOND_LENGTHS.keys(), length=2):
-    A = sorted(base_types)
-    AA = [tuple(x) for x in A]
-    B = sum([[(x, y) for y in A[i:]] for i, x in enumerate(A)], [])
-
-    groups = []
-    if length % 2:
-        groups.append(AA)
-    groups.extend([B for i in xrange(length / 2)])
-
-    types = []
-    for x in product(*groups):
-        if length % 2:
-            mid = x[0]
-            x = x[1:]
-        else:
-            mid = tuple()
-        temp = zip(*x)
-        types.append(tuple(x for x in reversed(temp[0])) + mid + temp[1])
-    return types
+    return list(product(base_types, repeat=length))
 
 
 def get_all_bond_types():
