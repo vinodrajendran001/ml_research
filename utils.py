@@ -402,6 +402,10 @@ def get_angle_bond_counts(elements, coords, bonds=None):
     return counts, angles
 
 def get_dihedral_counts(elements, coords, angles=None, bonds=None):
+    # TODO: Add switch to add back improper dihedrals
+    if bonds is None:
+        _, bonds = get_bond_counts(elements, coords)
+        bonds_set = set([(x, y) if x < y else (y, x) for x,y,z in bonds])
     if angles is None:
         _, angles = get_angle_counts(elements, coords, bonds=bonds)
     types = get_all_length_types(length=4)
@@ -417,6 +421,12 @@ def get_dihedral_counts(elements, coords, angles=None, bonds=None):
                 idx1 = list(atoms1 - intersect)[0]
                 idx2 = list(atoms2 - intersect)[0]
                 idx3, idx4 = list(intersect)
+
+                if tuple(sorted((idx2, idx4))) not in bonds_set:
+                    continue
+                if tuple(sorted((idx1, idx3))) not in bonds_set:
+                    continue
+
                 element1 = elements[idx1]
                 element2 = elements[idx2]
                 element3 =  elements[idx3]
