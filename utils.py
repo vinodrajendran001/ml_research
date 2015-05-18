@@ -180,7 +180,8 @@ def get_cross_validation_iter(X, y, groups, folds):
         y_test = y[test_mask].T.tolist()[0]
         groups_train = groups[train_mask].T.tolist()[0]
         groups_test = groups[test_mask].T.tolist()[0]
-
+        if not len(y_test):
+            raise ValueError("something is wrong with your grouping")
         yield X_train, X_test, y_train, y_test, groups_train, groups_test
 
 
