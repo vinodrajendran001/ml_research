@@ -291,6 +291,10 @@ BOND_LENGTHS = {
 TYPE_ORDER = ['1', 'Ar', '2', '3']
 
 
+def map_atom(element):
+    return [int(x == element) for x in BOND_LENGTHS]
+
+
 def get_all_length_types(base_types=BOND_LENGTHS.keys(), length=2):
     return list(product(base_types, repeat=length))
 
@@ -478,3 +482,37 @@ def get_trihedral_counts(elements, coords, dihedrals=None, angles=None, bonds=No
                 counts[typemap[element1, element3, element5, element4, element2]] += 1
                 trihedrals.append((idx1, idx3, idx5, idx4, idx2))
     return counts, trihedrals
+
+
+def get_angle_between(vector1, vector2):
+    unit_v1 = vector1 / norm(vector1)
+    unit_v2 = vector2 / norm(vector2)
+    angle = numpy.arccos(numpy.dot(unit_v1, unit_v2.T))
+    if numpy.isnan(angle):
+        if (unit_v1 == unit_v2).all():
+            return 0.0
+        else:
+            return numpy.pi
+    return angle[0,0]
+
+
+def get_dihedral_angle(idxs, coords):
+    first_idxs = idxs[:2]
+    second_idxs = idxs[2:]
+    first = coords[first_idxs[0]] - coords[first_idxs[1]]
+    second = coords[second_idxs[0]] - coords[second_idxs[1]]
+    space = coords[first_idxs[1]] - coords[second_idxs[0]]
+    first -= space
+    return get_angle_between(first, second)
+
+
+def get_angle_angle(idxs, coords):
+    first_idxs = idxs[:2]
+    second_idxs = idxs[1:]
+    first = coords[first_idxs[0]] - coords[first_idxs[1]]
+    second = coords[second_idxs[0]] - coords[second_idxs[1]]
+    return get_angle_between(first, second)
+
+
+def get_bond_length(idxs, coords):
+    return norm(coords[idxs[0], :] - coords[idxs[1]])
