@@ -438,14 +438,15 @@ def get_dihedral_counts(elements, coords, angles=None, bonds=None):
                 element2 = elements[idx2]
                 element3 =  elements[idx3]
                 element4 = elements[idx4]
-                if element1 > element2:
-                    # Flip if they are not in alphabetical order
-                    element1, element2 = element2, element1
-                    idx1, idx2 = idx2, idx1
+
                 if element3 > element4:
                     # Flip if they are not in alphabetical order
                     element3, element4 = element4, element3
                     idx3, idx4 = idx4, idx3
+
+                    element1, element2 = element2, element1
+                    idx1, idx2 = idx2, idx1
+
                 counts[typemap[element1, element3, element4, element2]] += 1
                 dihedrals.append((idx1, idx3, idx4, idx2))
     return counts, dihedrals
