@@ -8,7 +8,10 @@ from utils import tokenize, ARYL, RGROUPS, \
         decay_function, gauss_decay_function, read_file_data, \
         get_coulomb_matrix, homogenize_lengths, get_distance_matrix, \
         get_thermometer_encoding, get_eigenvalues, get_atom_counts, \
-        get_bond_counts, get_angle_counts, get_dihedral_counts, get_trihedral_counts
+        get_bond_counts, get_angle_counts, get_dihedral_counts, get_trihedral_counts, \
+        get_angle_bond_counts, get_dihedral_angle, get_angle_angle, get_bond_length, \
+        map_atom
+
 
 
 # Example Feature function
@@ -24,6 +27,144 @@ def get_null_feature(names, paths, **kwargs):
     loaded.
     '''
     return numpy.matrix(numpy.zeros((len(names), 0)))
+
+
+def get_local_zmatrix(names, paths, **kwargs):
+    vectors = []
+    for name, path in zip(names, paths):
+        start = [int(x) for x in name.split(',')][:2]
+        elements, numbers, coords = read_file_data(path)
+        vector = []
+
+        _, bonds = get_bond_counts(elements, coords.tolist())
+        # length must be 2x3
+        single_bonds = []
+        single_bond_lengths = []
+        # length must be 1
+        double_bonds = []
+        double_bond_lengths = []
+        for bond in bonds:
+            bond = bond[:2]
+            value = get_bond_length(bond, coords)
+            if start[0] == bond[1]:
+                bond = bond[1], bond[0]
+            elif start[1] == bond[1]:
+                if start[0] not in bond:
+                    bond = bond[1], bond[0]
+
+            if start[0] == bond[0] and start[1] == bond[1]:
+                double_bonds.append(bond)
+                double_bond_lengths.append(value)
+            elif start[0] == bond[0] or start[1] == bond[0]:
+                single_bonds.append(bond)
+                single_bond_lengths.append(value)
+
+
+        if len(single_bonds) < 2 * 3:
+            for i in xrange(2 * 3 - len(single_bonds)):
+                single_bonds.append(None)
+                single_bond_lengths.append(0.0)
+        assert len(single_bonds) == 2 * 3
+        if len(double_bonds) < 1:
+            double_bonds.append(None)
+            double_bond_lengths.append(0.0)
+        assert len(double_bonds) == 1
+
+
+        for length, bond in zip(double_bond_lengths, double_bonds):
+            if bond is not None:
+                vector += map_atom(elements[bond[0]]) + map_atom(elements[bond[1]]) + [length]
+            else:
+                vector += map_atom(None) + map_atom(None) + [length]
+
+        for length, bond in zip(single_bond_lengths, single_bonds):
+            if bond is not None:
+                vector += map_atom(elements[bond[1]]) + [length]
+            else:
+                vector += map_atom(None) + [length]
+
+
+
+        _, angles = get_angle_counts(elements, coords.tolist())
+        # length must be 2x3
+        single_angles = []
+        single_angle_thetas = []
+        # length must be 2x3
+        double_angles = []
+        double_angle_thetas = []
+        for angle in angles:
+            value = get_angle_angle(angle, coords)
+            middle = angle[1]
+            if start[0] == middle:
+                if start[1] in angle:
+                    double_angles.append(angle)
+                    double_angle_thetas.append(value)
+                else:
+                    single_angles.append(angle)
+                    single_angle_thetas.append(value)
+            elif start[1] == middle:
+                if start[0] in angle:
+                    double_angles.append(angle[::-1])
+                    double_angle_thetas.append(value)
+                else:
+                    single_angles.append(angle)
+                    single_angle_thetas.append(value)
+
+        if len(single_angles) < 2 * 3:
+            for i in xrange(2 * 3 - len(single_angles)):
+                single_angles.append(None)
+                single_angle_thetas.append(0.0)
+        assert len(single_angles) == 2 * 3
+        if len(double_angles) < 2 * 3:
+            for i in xrange(2 * 3 - len(double_angles)):
+                double_angles.append(None)
+                double_angle_thetas.append(0.0)
+        assert len(double_angles) == 2 * 3
+        vector += single_angle_thetas + double_angle_thetas
+
+
+        for theta, angle in zip(double_angle_thetas, double_angles):
+            if angle is not None:
+                vector += map_atom(elements[angle[2]]) + [theta]
+            else:
+                vector += map_atom(None) + [theta]
+
+        for theta, angle in zip(single_angle_thetas, single_angles):
+            if angle is not None:
+                vector += map_atom(elements[angle[0]]) + map_atom(elements[angle[2]]) + [theta]
+            else:
+                vector += map_atom(None) + map_atom(None) + [theta]
+
+
+        _, dihedrals = get_dihedral_counts(elements, coords.tolist(), angles=angles)
+        # length must be 3x3
+        new_dihedrals = []
+        new_dihedral_phis = []
+        for dihedral in dihedrals:
+            middle = dihedral[1:3]
+            value = get_dihedral_angle(dihedral, coords)
+            if start[0] == middle[0] and start[1] == middle[1]:
+                new_dihedrals.append(dihedral)
+                new_dihedral_phis.append(value)
+            elif start[1] == middle[0] and start[0] == middle[1]:
+                new_dihedrals.append(dihedral[::-1])
+                new_dihedral_phis.append(value)
+
+        if len(new_dihedrals) < 3 * 3:
+            for i in xrange(3 * 3 - len(new_dihedrals)):
+                new_dihedrals.append(None)
+                new_dihedral_phis.append(0.0)
+        assert len(new_dihedrals) == 3 * 3
+
+
+        for phi, dihedral in zip(new_dihedral_phis, new_dihedrals):
+            if dihedral is not None:
+                vector += map_atom(elements[dihedral[0]]) + map_atom(elements[dihedral[3]]) + [phi]
+            else:
+                vector += map_atom(None) + map_atom(None) + [phi]
+
+        vectors.append(vector)
+    return vectors
 
 
 def get_atom_feature(names, paths, **kwargs):
