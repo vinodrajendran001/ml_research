@@ -17,8 +17,8 @@ from utils import tokenize, ARYL, RGROUPS, \
 # Example Feature function
 def get_null_feature(names, paths, **kwargs):
     '''
-    names is a list of strings with the name of the structure (['4aa'])
-    paths is a list of locations of the geometry files for that structures
+    `names`: a list of strings with the name of the structure (['4aa'])
+    `paths`: a list of locations of the geometry files for that structures
         (['data/noopt/geoms/4aa'])
     This function returns a matrix of feature vectors (N_names, N_features).
 
@@ -30,6 +30,20 @@ def get_null_feature(names, paths, **kwargs):
 
 
 def get_local_zmatrix(names, paths, **kwargs):
+    '''
+    A feature vector that uses the idea of a local zmatrix.
+
+    This feature vector is initialized from a pair of atoms. The exact
+    pair is based off the name. The name should be made of two ints that
+    are comma separated indicating the index of the atoms to use.
+
+    From there, all of the atoms that are bonded to these two atoms are
+    collected and added to the feature vector based on their distance.
+    Then the all of the angles with either 1) one of the starting two
+    atoms as the center of angle are included, or 2) both of the atoms
+    are in the angle. Then all of the dihedrals where both of the starts
+    are included AND are the middle two points in the dihedral.
+    '''
     vectors = []
     for name, path in zip(names, paths):
         start = [int(x) for x in name.split(',')][:2]
@@ -216,7 +230,7 @@ def get_dihedral_feature(names, paths, **kwargs):
 
 def get_trihedral_feature(names, paths, **kwargs):
     '''
-    A feature vector based entirely off the number of dihedrals in the structure.
+    A feature vector based entirely off the number of trihedrals in the structure.
     '''
     vectors = []
     for path in paths:
@@ -227,6 +241,11 @@ def get_trihedral_feature(names, paths, **kwargs):
 
 
 def get_atom_and_bond_feature(names, paths, **kwargs):
+    '''
+    A feature vector based of the number of angles in a structure, segmented by the
+    kinds of bonds that are in the angle. So instead of just (C, C, C), this might
+    be ((C, C, 1), (C, C, 2)), or any combination of atoms and bond types.
+    '''
     vectors = []
     for path in paths:
         elements, numbers, coords = read_file_data(path)
