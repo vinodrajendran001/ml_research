@@ -216,6 +216,21 @@ def get_angle_feature(names, paths, **kwargs):
     return numpy.matrix(vectors)
 
 
+def get_angle_bond_feature(names, paths, **kwargs):
+    '''
+    This feature vector is the same as the angle feature with the addition
+    that it includes the type of bond that is added to the so instead of
+    just (C, C, C), this feature can take into account things like
+    ((C, C, 2), (C, C, 1)) as being separate from ((C, C, 2), (C, C, 2)).
+    '''
+    vectors = []
+    for path in paths:
+        elements, numbers, coords = read_file_data(path)
+        counts, _ = get_angle_bond_counts(elements, coords.tolist())
+        vectors.append(counts)
+    return numpy.matrix(vectors)
+
+
 def get_dihedral_feature(names, paths, **kwargs):
     '''
     A feature vector based entirely off the number of dihedrals in the structure.
@@ -255,6 +270,17 @@ def get_atom_and_bond_feature(names, paths, **kwargs):
     return numpy.matrix(vectors)
 
 
+def get_atom_bond_and_angle_bond_feature(names, paths, **kwargs):
+    vectors = []
+    for path in paths:
+        elements, numbers, coords = read_file_data(path)
+        a_counts = get_atom_counts(elements, coords.tolist())
+        b_counts, bonds = get_bond_counts(elements, coords.tolist())
+        an_counts, angles = get_angle_bond_counts(elements, coords.tolist(), bonds=bonds)
+        vectors.append(a_counts + b_counts + an_counts)
+    return numpy.matrix(vectors)
+
+
 def get_atom_bond_and_angle_feature(names, paths, **kwargs):
     vectors = []
     for path in paths:
@@ -273,6 +299,18 @@ def get_atom_bond_angle_and_dihedral_feature(names, paths, **kwargs):
         a_counts = get_atom_counts(elements, coords.tolist())
         b_counts, bonds = get_bond_counts(elements, coords.tolist())
         an_counts, angles = get_angle_counts(elements, coords.tolist(), bonds=bonds)
+        d_counts, _ = get_dihedral_counts(elements, coords.tolist(), angles=angles)
+        vectors.append(a_counts + b_counts + an_counts + d_counts)
+    return numpy.matrix(vectors)
+
+
+def get_atom_bond_angle_bond_and_dihedral_feature(names, paths, **kwargs):
+    vectors = []
+    for path in paths:
+        elements, numbers, coords = read_file_data(path)
+        a_counts = get_atom_counts(elements, coords.tolist())
+        b_counts, bonds = get_bond_counts(elements, coords.tolist())
+        an_counts, angles = get_angle_bond_counts(elements, coords.tolist(), bonds=bonds)
         d_counts, _ = get_dihedral_counts(elements, coords.tolist(), angles=angles)
         vectors.append(a_counts + b_counts + an_counts + d_counts)
     return numpy.matrix(vectors)
