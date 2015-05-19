@@ -5,7 +5,7 @@ from utils import tokenize, ARYL, true_strip, erf_over_r, read_file_data, \
          map_atom
 
 
-def load_data(calc_set, opt_set, struct_set, prop_set=None):
+def load_mol_data(calc_set, opt_set, struct_set, prop_set=None):
     '''
     Load data from data sets and return lists of structure names, full paths
     to the geometry data, the properties, and the meta data.
@@ -55,7 +55,7 @@ def load_data(calc_set, opt_set, struct_set, prop_set=None):
     return names, datasets, geom_paths, zip(*properties), meta, lengths
 
 
-def load_data2():
+def load_gdb7_data():
     names = []
     datasets = []
     geom_paths = []
@@ -92,7 +92,7 @@ def load_data2():
     return names, datasets, geom_paths, zip(*properties), meta, lengths
 
 
-def load_data3():
+def load_dave_data():
     names = []
     datasets = []
     geom_paths = []
