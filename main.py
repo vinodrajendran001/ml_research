@@ -15,7 +15,7 @@ import features
 import clfs
 from init_data import init_data, init_data_multi, init_data_length
 from utils import cross_clf_kfold, tokenize, ARYL, true_strip, erf_over_r, \
-        one_over_sqrt, lennard_jones
+        one_over_sqrt, lennard_jones, read_file_data, map_atom
 
 
 def main(features, properties, groups, clfs, cross_validate,
@@ -162,6 +162,62 @@ def load_data2():
         properties.append([t])
         meta.append([])
         lengths.append(1)
+    return names, datasets, geom_paths, zip(*properties), meta, lengths
+
+
+def load_data3():
+    names = []
+    datasets = []
+    geom_paths = []
+    properties = []
+    meta = []
+    lengths = []
+
+    atoms = {"1": 'H', "6": "C", "7": "N", "8": "O", "9": "F"}
+
+    # with open("geom.txt", 'r') as f:
+    #     elements = []
+    #     for line in f:
+    #         numbers = line.strip().split()
+    #         if len(numbers) == 2:
+    #             try:
+    #                 f2.close()
+    #             except UnboundLocalError:
+    #                 pass
+    #             name = "dave-%04d" % (int(numbers[0]) - 1)
+    #             path = "dave/" + name + ".out"
+    #             f2  = open(path, "w")
+    #         elif len(numbers) == 3:
+    #             f2.write(" ".join([elements.pop()] + numbers) + "\n")
+    #         else:
+    #             elements = [atoms[x] for x in numbers][::-1]
+
+
+    with open("data/data.txt", "r") as f:
+        for i, line in enumerate(f):
+            if not i:
+                continue
+            # igeom,atom1,atom2,r,KELL,S,bo,q1,q2,KEHL
+            igeom,atom1,atom2,r,KELL,S,bo,q1,q2,KEHL = line.strip().split(",")
+
+            name = "dave-%04d" % (int(igeom) - 1)
+            path = "data/dave/" + name + ".out"
+
+            elements, numbers, coords = read_file_data(path)
+
+            atom1 = int(atom1) - 1
+            atom2 = int(atom2) - 1
+            atom1_base = map_atom(elements[atom1])
+            atom2_base = map_atom(elements[atom2])
+
+            names.append('%d,%d,%d' % (atom1, atom2, i))
+            datasets.append((1, ))
+            geom_paths.append(path)
+            properties.append((float(KEHL), ))
+
+            # meta.append([float(r),float(KELL),float(S)])
+            meta.append(atom1_base + atom2_base + [float(r),float(KELL),float(S),float(bo),float(q1),float(q2)])
+            lengths.append(1)
 
     return names, datasets, geom_paths, zip(*properties), meta, lengths
 
