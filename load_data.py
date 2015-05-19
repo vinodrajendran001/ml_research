@@ -55,14 +55,7 @@ def load_mol_data(calc_set, opt_set, struct_set, prop_set=None):
     return names, datasets, geom_paths, zip(*properties), meta, lengths
 
 
-def load_gdb7_data():
-    names = []
-    datasets = []
-    geom_paths = []
-    properties = []
-    meta = []
-    lengths = []
-
+def build_gdb7_data():
     atoms = {1: 'H', 6: "C", 7: "N", 8: "O", 16: "S"}
     with open("qm7.pkl", "r") as f:
         temp = cPickle.load(f)
@@ -73,16 +66,40 @@ def load_gdb7_data():
         P = temp['P']
 
     for i, (zs, coords, t) in enumerate(zip(Z, R, T)):
-        # if 16 in zs.astype(int):
-        #     continue
+        if 16 in zs.astype(int):
+            continue
 
         name = "qm-%04d" % i
         path = "qm/" + name + ".out"
-        # with open(path, "w") as f:
-        #     for z, coord in zip(zs, coords):
-        #         z = int(z)
-        #         if z:
-        #             f.write("%s %.8f %.8f %.8f\n" % (atoms[z], coord[0] * 0.529177249, coord[1] * 0.529177249, coord[2] * 0.529177249))
+        with open(path, "w") as f:
+            for z, coord in zip(zs, coords):
+                z = int(z)
+                if z:
+                    f.write("%s %.8f %.8f %.8f\n" % (atoms[z], coord[0] * 0.529177249, coord[1] * 0.529177249, coord[2] * 0.529177249))
+
+
+def load_gb7_data():
+    if not os.path.isdir("data/gdb7") or not os.listdir("data/gdb7"):
+        build_gdb7()
+
+    names = []
+    datasets = []
+    geom_paths = []
+    properties = []
+    meta = []
+    lengths = []
+
+    with open("data/qm7.pkl", "r") as f:
+        temp = cPickle.load(f)
+        X = temp['X'].reshape(7165, 23*23)
+        Z = temp['Z']
+        R = temp['R']
+        T = temp['T']
+        P = temp['P']
+
+    for i, (zs, coords, t) in enumerate(zip(Z, R, T)):
+        name = "qm-%04d" % i
+        path = "data/qm/" + name + ".out"
         names.append(name)
         datasets.append((1, ))
         geom_paths.append(path)
@@ -92,7 +109,30 @@ def load_gdb7_data():
     return names, datasets, geom_paths, zip(*properties), meta, lengths
 
 
+def build_dave_data():
+    atoms = {"1": 'H', "6": "C", "7": "N", "8": "O", "9": "F"}
+    with open("data/geom.txt", 'r') as f:
+        elements = []
+        for line in f:
+            numbers = line.strip().split()
+            if len(numbers) == 2:
+                try:
+                    f2.close()
+                except UnboundLocalError:
+                    pass
+                name = "dave-%04d" % (int(numbers[0]) - 1)
+                path = "dave/" + name + ".out"
+                f2  = open(path, "w")
+            elif len(numbers) == 3:
+                f2.write(" ".join([elements.pop()] + numbers) + "\n")
+            else:
+                elements = [atoms[x] for x in numbers][::-1]
+
+
 def load_dave_data():
+    if not os.path.isdir("data/dave") or not os.listdir("data/dave"):
+        build_dave()
+
     names = []
     datasets = []
     geom_paths = []
@@ -100,31 +140,10 @@ def load_dave_data():
     meta = []
     lengths = []
 
-    atoms = {"1": 'H', "6": "C", "7": "N", "8": "O", "9": "F"}
-
-    # with open("geom.txt", 'r') as f:
-    #     elements = []
-    #     for line in f:
-    #         numbers = line.strip().split()
-    #         if len(numbers) == 2:
-    #             try:
-    #                 f2.close()
-    #             except UnboundLocalError:
-    #                 pass
-    #             name = "dave-%04d" % (int(numbers[0]) - 1)
-    #             path = "dave/" + name + ".out"
-    #             f2  = open(path, "w")
-    #         elif len(numbers) == 3:
-    #             f2.write(" ".join([elements.pop()] + numbers) + "\n")
-    #         else:
-    #             elements = [atoms[x] for x in numbers][::-1]
-
-
     with open("data/data.txt", "r") as f:
         for i, line in enumerate(f):
             if not i:
                 continue
-            # igeom,atom1,atom2,r,KELL,S,bo,q1,q2,KEHL
             igeom,atom1,atom2,r,KELL,S,bo,q1,q2,KEHL = line.strip().split(",")
 
             name = "dave-%04d" % (int(igeom) - 1)
