@@ -56,6 +56,7 @@ def load_mol_data(calc_set, opt_set, struct_set, prop_set=None):
 
 
 def build_gdb7_data():
+    BHOR_TO_ANGSTROM = 0.529177249
     atoms = {1: 'H', 6: "C", 7: "N", 8: "O", 16: "S"}
     with open("qm7.pkl", "r") as f:
         temp = cPickle.load(f)
@@ -75,8 +76,8 @@ def build_gdb7_data():
             for z, coord in zip(zs, coords):
                 z = int(z)
                 if z:
-                    f.write("%s %.8f %.8f %.8f\n" % (atoms[z], coord[0] * 0.529177249, coord[1] * 0.529177249, coord[2] * 0.529177249))
-
+                    coord = [x * BHOR_TO_ANGSTROM for x in coord]
+                    f.write("%s %.8f %.8f %.8f\n" % (atoms[z], coord[0], coord[1], coord[2]))
 
 def load_gb7_data():
     if not os.path.isdir("data/gdb7") or not os.listdir("data/gdb7"):
