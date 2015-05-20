@@ -166,8 +166,8 @@ def load_dave_data():
             geom_paths.append(path)
             properties.append((float(KEHL), ))
 
-            # meta.append([float(r),float(KELL),float(S)])
-            meta.append(atom1_base + atom2_base + [float(r),float(KELL),float(S),float(bo),float(q1),float(q2), 1])
+            # meta.append(atom1_base + atom2_base + [float(x) for x in [r , KELL, S, 1]])
+            meta.append(atom1_base + atom2_base + [float(x) for x in [r , KELL, S, bo, q1, q2, 1]])
             lengths.append(1)
 
     return names, datasets, geom_paths, zip(*properties), meta, lengths
