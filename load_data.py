@@ -109,7 +109,7 @@ def load_gdb7_data():
         datasets.append((1, ))
         geom_paths.append(path)
         properties.append([t])
-        meta.append([])
+        meta.append([1])
         lengths.append(1)
     return names, datasets, geom_paths, zip(*properties), meta, lengths
 
@@ -167,7 +167,7 @@ def load_dave_data():
             properties.append((float(KEHL), ))
 
             # meta.append([float(r),float(KELL),float(S)])
-            meta.append(atom1_base + atom2_base + [float(r),float(KELL),float(S),float(bo),float(q1),float(q2)])
+            meta.append(atom1_base + atom2_base + [float(r),float(KELL),float(S),float(bo),float(q1),float(q2), 1])
             lengths.append(1)
 
     return names, datasets, geom_paths, zip(*properties), meta, lengths
