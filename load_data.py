@@ -134,7 +134,7 @@ def build_dave_data():
                 elements = [atoms[x] for x in numbers][::-1]
 
 
-def load_dave_data():
+def load_dave_data(add_extra=True):
     if not os.path.isdir(os.path.join(DATA_BASE_DIR, "dave")) or not os.listdir(os.path.join(DATA_BASE_DIR, "dave")):
         build_dave_data()
 
@@ -166,8 +166,11 @@ def load_dave_data():
             geom_paths.append(path)
             properties.append((float(KEHL), ))
 
-            # meta.append(atom1_base + atom2_base + [float(x) for x in [r , KELL, S, 1]])
-            meta.append(atom1_base + atom2_base + [float(x) for x in [r , KELL, S, bo, q1, q2, 1]])
+            if add_extra:
+                meta.append(atom1_base + atom2_base + [float(x) for x in [r , KELL, S, bo, q1, q2, 1]])
+            else:
+                meta.append(atom1_base + atom2_base + [float(x) for x in [r , KELL, S, 1]])
+
             lengths.append(1)
 
     return names, datasets, geom_paths, zip(*properties), meta, lengths
