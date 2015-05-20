@@ -83,7 +83,7 @@ def build_gdb7_data():
                     f.write("%s %.8f %.8f %.8f\n" % (atoms[z], coord[0], coord[1], coord[2]))
 
 
-def load_gb7_data():
+def load_gdb7_data():
     if not os.path.isdir(os.path.join(DATA_BASE_DIR, "gdb7")) or not os.listdir(os.path.join(DATA_BASE_DIR, "gdb7")):
         build_gdb7_data()
 
