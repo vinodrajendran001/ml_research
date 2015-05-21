@@ -187,7 +187,6 @@ if __name__ == '__main__':
                                             properties,
                                             prop_set,
                                         )
-    properties = [("all", numpy.concatenate([x for _, x in properties], axis=1))]
     dummy_results = print_property_statistics(properties, groups, cross_clf_kfold)
     sys.stdout.flush()
     results = main(features, properties, groups, CLFS, cross_clf_kfold)
