@@ -166,11 +166,17 @@ def get_cross_validation_iter(X, y, groups, folds):
     groups.
 
     '''
+    unique_groups = list(set([x[0,0] for x in groups]))
     for train_idx, test_idx in cross_validation.KFold(
-                                                        groups.max(),
+                                                        len(unique_groups),
                                                         n_folds=folds,
                                                         shuffle=True,
                                                         random_state=1):
+        # This is to fix cases when some of the groups may not exist
+        # when running cross validation.
+        train_idx = [unique_groups[x] for x in train_idx]
+        test_idx  = [unique_groups[x] for x in test_idx]
+
         train_mask = numpy.in1d(groups, train_idx)
         test_mask = numpy.in1d(groups, test_idx)
 
@@ -180,8 +186,6 @@ def get_cross_validation_iter(X, y, groups, folds):
         y_test = y[test_mask].T.tolist()[0]
         groups_train = groups[train_mask].T.tolist()[0]
         groups_test = groups[test_mask].T.tolist()[0]
-        if not len(y_test):
-            raise ValueError("something is wrong with your grouping")
         yield X_train, X_test, y_train, y_test, groups_train, groups_test
 
 
@@ -404,6 +408,7 @@ def get_angle_bond_counts(elements, coords, bonds=None):
                     counts[typemap[ele_bond1, ele_bond2]] += 1
                     angles.append((bond1, bond2))
     return counts, angles
+
 
 def get_dihedral_counts(elements, coords, angles=None, bonds=None):
     # TODO: Add switch to add back improper dihedrals
