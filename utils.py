@@ -36,6 +36,8 @@ def get_coulomb_matrix(numbers, coords):
     with numpy.errstate(divide='ignore', invalid='ignore'):
         numpy.divide(top, r, top)
     numpy.fill_diagonal(top, 0.5 * numpy.array(numbers) ** 2.4)
+    top[top == numpy.Infinity] = 0
+    top[numpy.isnan(top)] = 0
     return top
 
 
