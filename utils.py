@@ -31,7 +31,7 @@ def read_file_data(path):
 
 
 def get_coulomb_matrix(numbers, coords):
-    top = numpy.outer(numbers, numbers)
+    top = numpy.outer(numbers, numbers).astype(numpy.float64)
     r = get_distance_matrix(coords, power=1)
     with numpy.errstate(divide='ignore', invalid='ignore'):
         numpy.divide(top, r, top)
