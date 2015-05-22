@@ -156,6 +156,29 @@ def lennard_jones(r):
     return mat
 
 
+def calculate_forces(clf, numbers, coords, meta=None, h=1e-6):
+    if meta is None:
+        meta = [1]
+
+    vectors = []
+    for i, coord in enumerate(coords):
+        for j in xrange(3):
+            for sign in [-1, 1]:
+                new_coords = coords.copy()
+                new_coords[i, j] += sign * h / 2
+                mat = get_coulomb_matrix(numbers, new_coords)
+                mat[mat < 0] = 0
+                vectors.append(mat[numpy.tril_indices(mat.shape[0])].tolist() + meta)
+
+    results = clf.predict(numpy.matrix(vectors))
+
+    forces = numpy.zeros(coords.shape)
+    for i, coord in enumerate(coords):
+        for j in xrange(3):
+            forces[i, j] = (results[i * len(coord) * 2 + j * 2 + 1] - results[i * len(coord) * 2 + j * 2]) / h
+    return forces
+
+
 BOND_LENGTHS = {
     "C": {
         "3":   0.62,
