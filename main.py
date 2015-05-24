@@ -105,21 +105,25 @@ if __name__ == '__main__':
     # Select the data set to use
     calc_set = ("b3lyp", )#"cam", "m06hf")
     opt_set = tuple("opt/" + x for x in calc_set)
-    struct_set = ('O', 'N', '4')
+    struct_set = ('O', 'N', '4', '8')
     prop_set = ("homo", "lumo", "gap")
 
 
     feature_sets = (
         # (features.get_null_feature, {}),
-        (features.get_atom_feature, {}),
+        # (features.get_atom_feature, {}),
         # (features.get_bond_feature, {}),
         # (features.get_angle_feature, {}),
+        # (features.get_angle_bond_feature, {}),
         # (features.get_dihedral_feature, {}),
         # (features.get_trihedral_feature, {}),
         # (features.get_atom_and_bond_feature, {}),
         # (features.get_atom_bond_and_angle_feature, {}),
+        # (features.get_atom_bond_and_angle_bond_feature, {}),
         # (features.get_atom_bond_angle_and_dihedral_feature, {}),
+        # (features.get_atom_bond_angle_bond_and_dihedral_feature, {}),
         # (features.get_atom_bond_angle_dihedral_and_trihedral_feature, {}),
+        # (features.get_local_zmatrix, {}),
         # (features.get_bin_coulomb_feature, {}),
         # (features.get_bin_eigen_coulomb_feature, {}),
         # (features.get_flip_binary_feature, {}),
