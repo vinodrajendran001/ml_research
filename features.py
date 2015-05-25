@@ -192,6 +192,23 @@ def get_atom_feature(names, paths, **kwargs):
     return numpy.matrix(vectors)
 
 
+def get_atom_thermo_feature(names, paths, **kwargs):
+    '''
+    A feature vector based entirely off the number of atoms in the structure.
+    '''
+
+    temp = get_atom_feature(names, paths, **kwargs)
+    lengths = temp.max(0).tolist()[0]
+
+    vectors = []
+    for row in temp:
+        temp_vec = []
+        for ele_count, max_count in zip(row.tolist()[0], lengths):
+            temp_vec += ele_count * [1] + (max_count - ele_count) * [0]
+        vectors.append(temp_vec)
+    return numpy.matrix(vectors)
+
+
 def get_bond_feature(names, paths, **kwargs):
     '''
     A feature vector based entirely off the number of bonds in the structure.
