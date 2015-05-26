@@ -248,7 +248,7 @@ def get_atom_counts(elements, coords=None):
 
 
 def get_bond_type(element1, element2, dist):
-    for key in ["3", "2", "Ar", "1"]:
+    for key in TYPE_ORDER[::-1]:
         try:
             if dist < (BOND_LENGTHS[element1][key] + BOND_LENGTHS[element2][key]):
                 return key
