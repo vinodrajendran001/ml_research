@@ -10,7 +10,7 @@ from utils import tokenize, ARYL, RGROUPS, \
         get_thermometer_encoding, get_eigenvalues, get_atom_counts, \
         get_bond_counts, get_angle_counts, get_dihedral_counts, get_trihedral_counts, \
         get_angle_bond_counts, get_dihedral_angle, get_angle_angle, get_bond_length, \
-        map_atom
+        map_atom, get_connectivity_matrix
 
 
 
@@ -180,6 +180,20 @@ def get_local_zmatrix(names, paths, **kwargs):
         vectors.append(vector)
     return vectors
 
+def get_connective_feature(names, paths, **kwargs):
+    cache = {}
+    for path in paths:
+        if path in cache:
+            continue
+        elements, numbers, coords = read_file_data(path)
+        mat = get_connectivity_matrix(elements, coords)
+        mat[mat==''] = 0
+        mat[mat=='A'] = 1.5
+        mat = mat.astype(int)
+        cache[path] = mat[numpy.tril_indices(mat.shape[0])]
+
+    vectors = [cache[path] for path in paths]
+    return homogenize_lengths(vectors)
 
 def get_atom_feature(names, paths, **kwargs):
     '''
