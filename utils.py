@@ -216,6 +216,16 @@ BOND_LENGTHS = {
 TYPE_ORDER = ['1', 'Ar', '2', '3']
 
 
+def get_connectivity_matrix(elements, coords):
+    r = get_distance_matrix(coords, power=1)
+    results = numpy.empty(r.shape, dtype=str)
+    for bond_type in TYPE_ORDER:
+        a = [BOND_LENGTHS[ele].get(bond_type, -1000) for ele in elements]
+        limits = numpy.add.outer(a, a)
+        results[r < limits] = bond_type
+    return results
+
+
 def map_atom(element):
     return [int(x == element) for x in BOND_LENGTHS]
 
