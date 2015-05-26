@@ -74,7 +74,7 @@ def build_gdb7_data():
             continue
 
         name = "qm-%04d" % i
-        path = os.path.join(DATA_BASE_DIR, "qm" + name + ".out")
+        path = os.path.join(DATA_BASE_DIR, "qm", name + ".out")
         with open(path, "w") as f:
             for z, coord in zip(zs, coords):
                 z = int(z)
