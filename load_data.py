@@ -70,9 +70,6 @@ def build_gdb7_data():
         P = temp['P']
 
     for i, (zs, coords, t) in enumerate(zip(Z, R, T)):
-        if 16 in zs.astype(int):
-            continue
-
         name = "qm-%04d" % i
         path = os.path.join(DATA_BASE_DIR, "qm", name + ".out")
         with open(path, "w") as f:
@@ -84,7 +81,7 @@ def build_gdb7_data():
 
 
 def load_gdb7_data():
-    if not os.path.isdir(os.path.join(DATA_BASE_DIR, "gdb7")) or not os.listdir(os.path.join(DATA_BASE_DIR, "gdb7")):
+    if not os.path.isdir(os.path.join(DATA_BASE_DIR, "qm")) or not os.listdir(os.path.join(DATA_BASE_DIR, "qm")):
         build_gdb7_data()
 
     names = []
