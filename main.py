@@ -112,6 +112,8 @@ if __name__ == '__main__':
     feature_sets = (
         # (features.get_null_feature, {}),
         # (features.get_atom_feature, {}),
+        # (features.get_atom_thermo_feature, {}),
+        # (features.get_connective_feature, {}),
         # (features.get_bond_feature, {}),
         # (features.get_angle_feature, {}),
         # (features.get_angle_bond_feature, {}),
@@ -161,25 +163,32 @@ if __name__ == '__main__':
                 "gamma": [10. ** x for x in xrange(-7, 7, 2)],
             }
         ),
-        (
-            "SVM",
-            svm.SVR,
-            {
-                'C': [10. ** x for x in xrange(-1, 4)],
-                "gamma": [10. ** x for x in xrange(-4, 0)],
-            }
-        ),
-        (
-            "SVMLaplace",
-            clfs.SVMLaplace,
-            {
-                'C': [10. ** x for x in xrange(-1, 4)],
-                "gamma": [10. ** x for x in xrange(-4, 0)],
-            }
-        ),
+        # (
+        #     "SVM",
+        #     svm.SVR,
+        #     {
+        #         'C': [10. ** x for x in xrange(-1, 4)],
+        #         "gamma": [10. ** x for x in xrange(-4, 0)],
+        #     }
+        # ),
+        # (
+        #     "SVMLaplace",
+        #     clfs.SVMLaplace,
+        #     {
+        #         'C': [10. ** x for x in xrange(-1, 4)],
+        #         "gamma": [10. ** x for x in xrange(-4, 0)],
+        #     }
+        # ),
     )
 
-    names, datasets, geom_paths, properties, meta, lengths = load_dave_data()
+    # names, datasets, geom_paths, properties, meta, lengths = load_dave_data()
+    names, datasets, geom_paths, properties, meta, lengths = load_gdb7_data()
+    # names, datasets, geom_paths, properties, meta, lengths = load_mol_data(
+    #                                                     calc_set,
+    #                                                     opt_set,
+    #                                                     struct_set,
+    #                                                     prop_set,
+    #                                                 )
     print_load_stats(names, geom_paths)
     sys.stdout.flush()
     features, properties, groups = init_data(
