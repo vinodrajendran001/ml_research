@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 
 import features
 import clfs
-from load_data import load_mol_data, load_gdb7_data, load_dave_data
+from load_data import load_mol_data, load_qm7_data, load_dave_data
 from init_data import init_data, init_data_multi, init_data_length
 from utils import erf_over_r, one_over_sqrt, lennard_jones
 from cross_validate import cross_clf_kfold
@@ -182,7 +182,7 @@ if __name__ == '__main__':
     )
 
     # names, datasets, geom_paths, properties, meta, lengths = load_dave_data()
-    names, datasets, geom_paths, properties, meta, lengths = load_gdb7_data()
+    names, datasets, geom_paths, properties, meta, lengths = load_qm7_data()
     # names, datasets, geom_paths, properties, meta, lengths = load_mol_data(
     #                                                     calc_set,
     #                                                     opt_set,

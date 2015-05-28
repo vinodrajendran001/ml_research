@@ -58,7 +58,7 @@ def load_mol_data(calc_set, opt_set, struct_set, prop_set=None):
     return names, datasets, geom_paths, zip(*properties), meta, lengths
 
 
-def build_gdb7_data():
+def build_qm7_data():
     BHOR_TO_ANGSTROM = 0.529177249
     atoms = {1: 'H', 6: "C", 7: "N", 8: "O", 16: "S"}
     with open(os.path.join(DATA_BASE_DIR, "qm7.pkl"), "r") as f:
@@ -80,9 +80,9 @@ def build_gdb7_data():
                     f.write("%s %.8f %.8f %.8f\n" % (atoms[z], coord[0], coord[1], coord[2]))
 
 
-def load_gdb7_data():
+def load_qm7_data():
     if not os.path.isdir(os.path.join(DATA_BASE_DIR, "qm")) or not os.listdir(os.path.join(DATA_BASE_DIR, "qm")):
-        build_gdb7_data()
+        build_qm7_data()
 
     names = []
     datasets = []
