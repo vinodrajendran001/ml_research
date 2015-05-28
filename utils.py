@@ -181,6 +181,27 @@ def calculate_forces(clf, numbers, coords, meta=None, h=1e-6):
     return forces
 
 
+def calculate_surface(clf, numbers, coords, atom_idx, max_displacement=.5, steps=25, meta=None):
+    if meta is None:
+        meta = [1]
+
+    values = numpy.linspace(-max_displacement, max_displacement, steps)
+
+    results = numpy.zeros((steps, steps))
+    for i, x in enumerate(values):
+        for j, y in enumerate(values):
+            new_coords = coords.copy()
+            new_coords[atom_idx, 0] += x
+            new_coords[atom_idx, 1] += y
+            mat = get_coulomb_matrix(numbers, new_coords)
+            mat[mat < 0] = 0
+            vector = mat[numpy.tril_indices(mat.shape[0])].tolist() + meta
+            results[i, j] = clf.predict(numpy.matrix(vector))[0]
+
+    return results
+
+
+
 BOND_LENGTHS = {
     "C": {
         "3":   0.62,
