@@ -198,8 +198,14 @@ def calculate_surface(clf, numbers, coords, atom_idx, max_displacement=.5, steps
             vector = mat[numpy.tril_indices(mat.shape[0])].tolist() + meta
             results[i, j] = clf.predict(numpy.matrix(vector))[0]
 
+    import matplotlib.pyplot as plt
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    m = ax.matshow(results, extent=[-max_displacement,max_displacement,-max_displacement,max_displacement])
+    fig.colorbar(m)
+    plt.show()
+    print results.max(), results.min(), results.std()
     return results
-
 
 
 BOND_LENGTHS = {
