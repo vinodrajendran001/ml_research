@@ -72,30 +72,13 @@ def get_local_zmatrix(names, paths, **kwargs):
                 single_bonds.append(bond)
                 single_bond_lengths.append(value)
 
+        single_bonds = set_vector_length(single_bonds, 2 * 3, fill=None)
+        single_bond_lengths = set_vector_length(single_bond_lengths, 2 * 3)
+        double_bonds = set_vector_length(double_bonds, 1, fill=None)
+        double_bond_lengths = set_vector_length(double_bond_lengths, 1)
 
-        if len(single_bonds) < 2 * 3:
-            for i in xrange(2 * 3 - len(single_bonds)):
-                single_bonds.append(None)
-                single_bond_lengths.append(0.0)
-        assert len(single_bonds) == 2 * 3
-        if len(double_bonds) < 1:
-            double_bonds.append(None)
-            double_bond_lengths.append(0.0)
-        assert len(double_bonds) == 1
-
-
-        for length, bond in zip(double_bond_lengths, double_bonds):
-            if bond is not None:
-                vector += map_atom(elements[bond[0]]) + map_atom(elements[bond[1]]) + [length]
-            else:
-                vector += map_atom(None) + map_atom(None) + [length]
-
-        for length, bond in zip(single_bond_lengths, single_bonds):
-            if bond is not None:
-                vector += map_atom(elements[bond[1]]) + [length]
-            else:
-                vector += map_atom(None) + [length]
-
+        vector += construct_zmatrix_addition(elements, double_bonds, double_bond_lengths, [0, 1])
+        vector += construct_zmatrix_addition(elements, single_bonds, single_bond_lengths, [1])
 
 
         _, angles = get_angle_counts(elements, coords.tolist())
@@ -123,30 +106,13 @@ def get_local_zmatrix(names, paths, **kwargs):
                     single_angles.append(angle)
                     single_angle_thetas.append(value)
 
-        if len(single_angles) < 2 * 3:
-            for i in xrange(2 * 3 - len(single_angles)):
-                single_angles.append(None)
-                single_angle_thetas.append(0.0)
-        assert len(single_angles) == 2 * 3
-        if len(double_angles) < 2 * 3:
-            for i in xrange(2 * 3 - len(double_angles)):
-                double_angles.append(None)
-                double_angle_thetas.append(0.0)
-        assert len(double_angles) == 2 * 3
-        vector += single_angle_thetas + double_angle_thetas
+        single_angles = set_vector_length(single_angles, 2 * 3, fill=None)
+        single_angle_thetas = set_vector_length(single_angle_thetas, 2 * 3)
+        double_angles = set_vector_length(double_angles, 2 * 3, fill=None)
+        double_angle_thetas = set_vector_length(double_angle_thetas, 2 * 3)
 
-
-        for theta, angle in zip(double_angle_thetas, double_angles):
-            if angle is not None:
-                vector += map_atom(elements[angle[2]]) + [theta]
-            else:
-                vector += map_atom(None) + [theta]
-
-        for theta, angle in zip(single_angle_thetas, single_angles):
-            if angle is not None:
-                vector += map_atom(elements[angle[0]]) + map_atom(elements[angle[2]]) + [theta]
-            else:
-                vector += map_atom(None) + map_atom(None) + [theta]
+        vector += construct_zmatrix_addition(elements, double_angles, double_angle_thetas, idxs=[2])
+        vector += construct_zmatrix_addition(elements, single_angles, single_angle_thetas, idxs=[0, 2])
 
 
         _, dihedrals = get_dihedral_counts(elements, coords.tolist(), angles=angles)
@@ -163,19 +129,10 @@ def get_local_zmatrix(names, paths, **kwargs):
                 new_dihedrals.append(dihedral[::-1])
                 new_dihedral_phis.append(value)
 
-        if len(new_dihedrals) < 3 * 3:
-            for i in xrange(3 * 3 - len(new_dihedrals)):
-                new_dihedrals.append(None)
-                new_dihedral_phis.append(0.0)
-        assert len(new_dihedrals) == 3 * 3
+        new_dihedrals = set_vector_length(new_dihedrals, 3 * 3, fill=None)
+        new_dihedral_phis = set_vector_length(new_dihedral_phis, 3 * 3)
 
-
-        for phi, dihedral in zip(new_dihedral_phis, new_dihedrals):
-            if dihedral is not None:
-                vector += map_atom(elements[dihedral[0]]) + map_atom(elements[dihedral[3]]) + [phi]
-            else:
-                vector += map_atom(None) + map_atom(None) + [phi]
-
+        vector += construct_zmatrix_addition(elements, new_dihedrals, new_dihedral_phis, idxs=[0, 3])
         vectors.append(vector)
     return vectors
 
@@ -300,6 +257,7 @@ def get_connective_feature(names, paths, **kwargs):
 
     vectors = [cache[path] for path in paths]
     return homogenize_lengths(vectors)
+
 
 def get_atom_feature(names, paths, **kwargs):
     '''
