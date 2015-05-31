@@ -67,9 +67,25 @@ def get_thermometer_encoding(X, step=1):
     and the recommendation from:
     Gregoire Montavon. On Layer-Wise Representations in Deep Neural Networks.
     '''
-    b = numpy.arange(0, X.max() + step, step)
-    temp = numpy.tanh(numpy.subtract.outer(X,b) / step)
-    return temp.reshape(-1)
+    X = numpy.array(X)
+    max_vals = X.max(0).flatten()
+    if X.shape[1] > X.shape[0]:
+        b = numpy.arange(0, max_vals.max() + step, step)
+        c = max_vals + step
+        Xexp = numpy.subtract.outer(X, b)[:, numpy.greater.outer(c, b)]
+        numpy.divide(Xexp, step, Xexp)
+        numpy.tanh(Xexp, Xexp)
+        return Xexp
+    else:
+        Xexp = []
+        for i in xrange(X.shape[1]):
+            b = numpy.arange(0, max_vals[i] + step, step)
+            temp = numpy.subtract.outer(X[:,i], b)
+            Xexp.append(temp)
+        Xexp = numpy.concatenate(Xexp, 1)
+        numpy.divide(Xexp, step, Xexp)
+        numpy.tanh(Xexp, Xexp)
+        return Xexp
 
 
 def get_eigenvalues(X):
