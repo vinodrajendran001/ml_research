@@ -126,6 +126,7 @@ if __name__ == '__main__':
         # (features.get_atom_bond_angle_bond_and_dihedral_feature, {}),
         # (features.get_atom_bond_angle_dihedral_and_trihedral_feature, {}),
         # (features.get_local_zmatrix, {}),
+        # (features.get_full_local_zmatrix, {}),
         # (features.get_bin_coulomb_feature, {}),
         # (features.get_bin_eigen_coulomb_feature, {}),
         # (features.get_flip_binary_feature, {}),

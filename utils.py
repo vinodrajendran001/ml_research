@@ -495,3 +495,17 @@ def get_angle_angle(idxs, coords):
 
 def get_bond_length(idxs, coords):
     return norm(coords[idxs[0], :] - coords[idxs[1]])
+
+
+def set_vector_length(vector, length, fill=0.0):
+    return vector + [fill] * (length - len(vector))
+
+
+def construct_zmatrix_addition(elements, connections, values, idxs):
+    vector = []
+    for connection, value in zip(connections, values):
+        if connection is not None:
+            vector += sum([map_atom(elements[connection[i]]) for i in idxs], []) + [value]
+        else:
+            vector += sum([map_atom(None) for i in idxs], []) + [value]
+    return vector

@@ -10,8 +10,7 @@ from utils import tokenize, ARYL, RGROUPS, \
         get_thermometer_encoding, get_eigenvalues, get_atom_counts, \
         get_bond_counts, get_angle_counts, get_dihedral_counts, get_trihedral_counts, \
         get_angle_bond_counts, get_dihedral_angle, get_angle_angle, get_bond_length, \
-        map_atom, get_connectivity_matrix
-
+        map_atom, get_connectivity_matrix, set_vector_length, construct_zmatrix_addition
 
 
 # Example Feature function
@@ -179,6 +178,113 @@ def get_local_zmatrix(names, paths, **kwargs):
 
         vectors.append(vector)
     return vectors
+
+
+def get_full_local_zmatrix(names, paths, **kwargs):
+    '''
+    A feature vector that uses the idea of a local zmatrix. This expands
+    the standard local zmatrix by being applied to every bond within the
+    structure. Because of this, this feature vector can be used for any
+    molecule unlike the local zmatrix which can only be used for the bond
+    based dataset.
+
+    NOTE: This feature vector scales VERY poorly, both in build time and in
+    size. Both of these things need to be optimized.
+    '''
+    vectors = []
+    for name, path in zip(names, paths):
+
+        elements, numbers, coords = read_file_data(path)
+        _, bonds = get_bond_counts(elements, coords.tolist())
+        _, angles = get_angle_counts(elements, coords.tolist(), bonds=bonds)
+        _, dihedrals = get_dihedral_counts(elements, coords.tolist(), angles=angles)
+        vector = []
+        for start in bonds:
+
+            # length must be 2x3
+            single_bonds = []
+            single_bond_lengths = []
+            # length must be 1
+            double_bonds = []
+            double_bond_lengths = []
+            for bond in bonds:
+                bond = bond[:2]
+                value = get_bond_length(bond, coords)
+                if start[0] == bond[1]:
+                    bond = bond[1], bond[0]
+                elif start[1] == bond[1]:
+                    if start[0] not in bond:
+                        bond = bond[1], bond[0]
+
+                if start[0] == bond[0] and start[1] == bond[1]:
+                    double_bonds.append(bond)
+                    double_bond_lengths.append(value)
+                elif start[0] == bond[0] or start[1] == bond[0]:
+                    single_bonds.append(bond)
+                    single_bond_lengths.append(value)
+
+            single_bonds = set_vector_length(single_bonds, 2 * 3, fill=None)
+            single_bond_lengths = set_vector_length(single_bond_lengths, 2 * 3)
+            double_bonds = set_vector_length(double_bonds, 1, fill=None)
+            double_bond_lengths = set_vector_length(double_bond_lengths, 1)
+
+            vector += construct_zmatrix_addition(elements, double_bonds, double_bond_lengths, [0, 1])
+            vector += construct_zmatrix_addition(elements, single_bonds, single_bond_lengths, [1])
+
+
+            # length must be 2x3
+            single_angles = []
+            single_angle_thetas = []
+            # length must be 2x3
+            double_angles = []
+            double_angle_thetas = []
+            for angle in angles:
+                value = get_angle_angle(angle, coords)
+                middle = angle[1]
+                if start[0] == middle:
+                    if start[1] in angle:
+                        double_angles.append(angle)
+                        double_angle_thetas.append(value)
+                    else:
+                        single_angles.append(angle)
+                        single_angle_thetas.append(value)
+                elif start[1] == middle:
+                    if start[0] in angle:
+                        double_angles.append(angle[::-1])
+                        double_angle_thetas.append(value)
+                    else:
+                        single_angles.append(angle)
+                        single_angle_thetas.append(value)
+
+            single_angles = set_vector_length(single_angles, 2 * 3, fill=None)
+            single_angle_thetas = set_vector_length(single_angle_thetas, 2 * 3)
+            double_angles = set_vector_length(double_angles, 2 * 3, fill=None)
+            double_angle_thetas = set_vector_length(double_angle_thetas, 2 * 3)
+
+            vector += construct_zmatrix_addition(elements, double_angles, double_angle_thetas, idxs=[2])
+            vector += construct_zmatrix_addition(elements, single_angles, single_angle_thetas, idxs=[0, 2])
+
+
+            # length must be 3x3
+            new_dihedrals = []
+            new_dihedral_phis = []
+            for dihedral in dihedrals:
+                middle = dihedral[1:3]
+                value = get_dihedral_angle(dihedral, coords)
+                if start[0] == middle[0] and start[1] == middle[1]:
+                    new_dihedrals.append(dihedral)
+                    new_dihedral_phis.append(value)
+                elif start[1] == middle[0] and start[0] == middle[1]:
+                    new_dihedrals.append(dihedral[::-1])
+                    new_dihedral_phis.append(value)
+
+            new_dihedrals = set_vector_length(new_dihedrals, 3 * 3, fill=None)
+            new_dihedral_phis = set_vector_length(new_dihedral_phis, 3 * 3)
+
+            vector += construct_zmatrix_addition(elements, new_dihedrals, new_dihedral_phis, idxs=[0, 3])
+        vectors.append(vector)
+    return homogenize_lengths(vectors)
+
 
 def get_connective_feature(names, paths, **kwargs):
     cache = {}
