@@ -641,12 +641,11 @@ def get_bin_coulomb_feature(names, paths, step=1, **kwargs):
         if path in cache:
             continue
         elements, numbers, coords = read_file_data(path)
-        mat = get_distance_matrix(coords, -1)
-        temp = mat[numpy.tril_indices(mat.shape[0])]
-        cache[path] = get_thermometer_encoding(temp, step=step)
+        mat = get_coulomb_matrix(numbers, coords)
+        cache[path] = mat[numpy.tril_indices(mat.shape[0])]
 
     vectors = [cache[path] for path in paths]
-    return homogenize_lengths(vectors)
+    return get_thermometer_encoding(homogenize_lengths(vectors), step=step)
 
 
 def get_bin_eigen_coulomb_feature(names, paths, step=1, **kwargs):
@@ -655,12 +654,11 @@ def get_bin_eigen_coulomb_feature(names, paths, step=1, **kwargs):
         if path in cache:
             continue
         elements, numbers, coords = read_file_data(path)
-        mat = get_distance_matrix(coords, -1)
-        eigvals = get_eigenvalues(mat)
-        cache[path] = get_thermometer_encoding(eigvals, step=step)
+        mat = get_coulomb_matrix(numbers, coords)
+        cache[path] = get_eigenvalues(mat)
 
     vectors = [cache[path] for path in paths]
-    return homogenize_lengths(vectors)
+    return get_thermometer_encoding(homogenize_lengths(vectors), step=step)
 
 
 
