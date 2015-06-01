@@ -244,6 +244,10 @@ def get_full_local_zmatrix(names, paths, **kwargs):
 
 
 def get_connective_feature(names, paths, **kwargs):
+    '''
+    A simple feature vector based on the connectivity matrix of a molecule.
+    This also takes into account the type of the bond between atoms.
+    '''
     cache = {}
     for path in paths:
         if path in cache:
@@ -700,6 +704,17 @@ def get_coulomb_feature(names, paths, **kwargs):
 
 
 def get_bin_coulomb_feature(names, paths, step=1, **kwargs):
+    '''
+    This is a feature vector based on the coulomb matrix. It adds more data
+    by expanding the size of the vector encoding the floating point values as
+    a larger set of data. This has the potential to be an infinitely large
+    feature vector as step->0.
+
+    This is based off the work in:
+    Yunho Jeon and Chong-Ho Choi. IJCNN, (3) 1685-1690, 1999.
+    and the recommendation from:
+    Gregoire Montavon. On Layer-Wise Representations in Deep Neural Networks.
+    '''
     cache = {}
     for path in paths:
         if path in cache:
@@ -713,6 +728,17 @@ def get_bin_coulomb_feature(names, paths, step=1, **kwargs):
 
 
 def get_bin_eigen_coulomb_feature(names, paths, step=1, **kwargs):
+    '''
+    This is a feature vector based on the eigenvalues coulomb matrix. It adds
+    more data by expanding the size of the vector encoding the floating point
+    values as a larger set of data. This has the potential to be an infinitely
+    large feature vector as step->0.
+
+    This is based off the work in:
+    Yunho Jeon and Chong-Ho Choi. IJCNN, (3) 1685-1690, 1999.
+    and the recommendation from:
+    Gregoire Montavon. On Layer-Wise Representations in Deep Neural Networks.
+    '''
     cache = {}
     for path in paths:
         if path in cache:
