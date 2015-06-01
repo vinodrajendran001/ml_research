@@ -85,7 +85,8 @@ def build_qm7_data():
 
 
 def load_qm7_data():
-    if not os.path.isdir(os.path.join(DATA_BASE_DIR, "qm")) or not os.listdir(os.path.join(DATA_BASE_DIR, "qm")):
+    base_path = os.path.join(DATA_BASE_DIR, "qm")
+    if not os.path.isdir(base_path) or not os.listdir(base_path):
         build_qm7_data()
 
     names = []
@@ -105,7 +106,7 @@ def load_qm7_data():
 
     for i, (zs, coords, t) in enumerate(zip(Z, R, T)):
         name = "qm-%04d" % i
-        path = os.path.join(DATA_BASE_DIR, "qm", name + ".out")
+        path = os.path.join(base_path, name + ".out")
         names.append(name)
         datasets.append((1, ))
         geom_paths.append(path)
@@ -130,7 +131,7 @@ def build_dave_data():
                     pass
                 name = "dave-%04d" % (int(numbers[0]) - 1)
                 path = os.path.join(DATA_BASE_DIR, "dave", name + ".out")
-                f2  = open(path, "w")
+                f2 = open(path, "w")
             elif len(numbers) == 3:
                 f2.write(" ".join([elements.pop()] + numbers) + "\n")
             else:
