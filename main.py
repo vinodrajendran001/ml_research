@@ -103,13 +103,6 @@ def print_load_stats(names, paths):
 
 
 if __name__ == '__main__':
-    # Select the data set to use
-    calc_set = ("b3lyp", )#"cam", "m06hf")
-    opt_set = tuple("opt/" + x for x in calc_set)
-    struct_set = ('O', 'N', '4', '8')
-    prop_set = ("homo", "lumo", "gap")
-
-
     feature_sets = (
         # (features.get_null_feature, {}),
         # (features.get_atom_feature, {}),
@@ -185,6 +178,11 @@ if __name__ == '__main__':
 
     # names, datasets, geom_paths, properties, meta, lengths = load_dave_data()
     names, datasets, geom_paths, properties, meta, lengths = load_qm7_data()
+    # # Select the data set to use
+    # calc_set = ("b3lyp", )#"cam", "m06hf")
+    # opt_set = tuple("opt/" + x for x in calc_set)
+    # struct_set = ('O', 'N', '4', '8')
+    # prop_set = ("homo", "lumo", "gap")
     # names, datasets, geom_paths, properties, meta, lengths = load_mol_data(
     #                                                     calc_set,
     #                                                     opt_set,
@@ -203,6 +201,7 @@ if __name__ == '__main__':
                                             properties,
                                         )
     dummy_results = print_property_statistics(properties, groups, cross_clf_kfold)
+
     sys.stdout.flush()
     results = main(features, properties, groups, CLFS, cross_clf_kfold)
     print_best_methods(results)
