@@ -138,7 +138,8 @@ def build_dave_data():
 
 
 def load_dave_data(add_extra=True):
-    if not os.path.isdir(os.path.join(DATA_BASE_DIR, "dave")) or not os.listdir(os.path.join(DATA_BASE_DIR, "dave")):
+    base_path = os.path.join(DATA_BASE_DIR, "dave")
+    if not os.path.isdir(base_path) or not os.listdir(base_path):
         build_dave_data()
 
     names = []
@@ -150,12 +151,13 @@ def load_dave_data(add_extra=True):
 
     with open(os.path.join(DATA_BASE_DIR, "data.txt"), "r") as f:
         for i, line in enumerate(f):
+            # Skip header line
             if not i:
                 continue
             igeom,atom1,atom2,r,KELL,S,bo,q1,q2,KEHL = line.strip().split(",")
 
             name = "dave-%04d" % (int(igeom) - 1)
-            path = os.path.join(DATA_BASE_DIR, "dave", name + ".out")
+            path = os.path.join(base_path, name + ".out")
 
             elements, numbers, coords = read_file_data(path)
 
