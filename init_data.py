@@ -20,7 +20,7 @@ def get_name_groups(names, datasets):
     return numpy.matrix(groups).T
 
 
-def init_data(functions, names, datasets, geom_paths, meta, lengths, properties, prop_set):
+def init_data(functions, names, datasets, geom_paths, meta, lengths, properties):
     # Construct (name, vector) pairs to auto label features when iterating over them
     features = OrderedDict()
     groups = get_name_groups(names, datasets)
@@ -37,11 +37,11 @@ def init_data(functions, names, datasets, geom_paths, meta, lengths, properties,
         sys.stdout.flush()
 
     print
-    properties = [(x, numpy.matrix(y).T) for x, y in zip(prop_set, properties)]
+    properties = [(name, units, numpy.matrix(y).T) for name, units, y in properties]
     return features, properties, groups
 
 
-def init_data_multi(functions, names, datasets, geom_paths, meta, lengths, properties, prop_set):
+def init_data_multi(functions, names, datasets, geom_paths, meta, lengths, properties):
     # Construct (name, vector) pairs to auto label features when iterating over them
     features = OrderedDict()
     temp_groups = get_name_groups(names, datasets)
@@ -65,7 +65,7 @@ def init_data_multi(functions, names, datasets, geom_paths, meta, lengths, prope
 
     print
     temp_properties = numpy.concatenate([numpy.matrix(x).T for x in properties])
-    properties = [("all", temp_properties)]
+    properties = [("all", "units", temp_properties)]
     return features, properties, groups
 
 
@@ -87,7 +87,7 @@ def get_length_splits(names, datasets, lengths, split_length=2):
             continue
 
 
-def init_data_length(functions, names, datasets, geom_paths, meta, lengths, properties, prop_set):
+def init_data_length(functions, names, datasets, geom_paths, meta, lengths, properties):
     # Construct (name, vector) pairs to auto label features when iterating over them
     features = OrderedDict()
 

@@ -55,7 +55,11 @@ def load_mol_data(calc_set, opt_set, struct_set, prop_set=None):
                         tokens = tokenize(name, explicit_flips=True)
                         aryl_count = sum([1 for x in tokens if x in ARYL])
                         lengths.append(aryl_count)
-    return names, datasets, geom_paths, zip(*properties), meta, lengths
+
+    prop_desc = (("HOMO", "eV"), ("LUMO", "eV"), ("Excitation", "eV"))
+    prop_vals = zip(*properties)
+    prop_out = [(x, y, z) for ((x, y), z) in zip(prop_desc, prop_vals)]
+    return names, datasets, geom_paths, prop_out, meta, lengths
 
 
 def build_qm7_data():
@@ -108,7 +112,9 @@ def load_qm7_data():
         properties.append([t])
         meta.append([1])
         lengths.append(1)
-    return names, datasets, geom_paths, zip(*properties), meta, lengths
+
+    prop_out = (("Atomization Energy", "kcal", zip(*properties)), )
+    return names, datasets, geom_paths, prop_out, meta, lengths
 
 
 def build_dave_data():
@@ -170,4 +176,7 @@ def load_dave_data(add_extra=True):
 
             lengths.append(1)
 
-    return names, datasets, geom_paths, zip(*properties), meta, lengths
+    prop_desc = (("Kinetic Energy", "kcal"), )
+    prop_vals = zip(*properties)
+    prop_out = [(x, y, z) for ((x, y), z) in zip(prop_desc, prop_vals)]
+    return names, datasets, geom_paths, prop_out, meta, lengths

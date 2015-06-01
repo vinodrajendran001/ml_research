@@ -21,7 +21,7 @@ from cross_validate import cross_clf_kfold
 def main(features, properties, groups, clfs, cross_validate,
                         test_folds=5, cross_folds=2):
     results = {}
-    for prop_name, prop in properties:
+    for prop_name, units, prop in properties:
         print prop_name
         results[prop_name] = {}
         for feat_name, feat in features.items():
@@ -39,11 +39,12 @@ def main(features, properties, groups, clfs, cross_validate,
                                                     cross_folds=cross_folds,
                                                 )
                 time_taken = time.time() - start
-                string = "\t\t%s: %.4f +/- %.4f eV (%.4f secs)" % (
+                string = "\t\t%s: %.4f +/- %.4f %s (%.4f secs)" % (
                                                         clf_name,
                                                         test_mean,
                                                         test_std,
-                                                        time_taken
+                                                        units,
+                                                        time_taken,
                                                     )
                 print string, opt_params
                 results[prop_name][feat_name][clf_name] = (test_mean, test_std, opt_params)
@@ -56,7 +57,7 @@ def main(features, properties, groups, clfs, cross_validate,
 def print_property_statistics(properties, groups, cross_validate, test_folds=5, cross_folds=2):
     results = {}
     print "Property Statistics"
-    for prop_name, prop in properties:
+    for prop_name, units, prop, in properties:
         feat = numpy.zeros(groups.shape)
         _, (test_mean, test_std) = cross_validate(
                                                 feat,
@@ -68,9 +69,9 @@ def print_property_statistics(properties, groups, cross_validate, test_folds=5, 
                                                 cross_folds=cross_folds,
                                             )
         print "\t%s" % prop_name
-        print "\t\tValue range: [%.4f, %.4f] eV" % (prop.min(), prop.max())
-        print "\t\tExpected value: %.4f +- %.4f eV" % (prop.mean(), prop.std())
-        print "\t\tExpected error: %.4f +/- %.4f eV" % (test_mean, test_std)
+        print "\t\tValue range: [%.4f, %.4f] %s" % (prop.min(), prop.max(), units)
+        print "\t\tExpected value: %.4f +- %.4f %s" % (prop.mean(), prop.std(), units)
+        print "\t\tExpected error: %.4f +/- %.4f %s" % (test_mean, test_std, units)
         results[prop_name] = (test_mean, test_std)
 
         n, bins, patches = plt.hist(prop, 50, normed=1, histtype='stepfilled')
@@ -200,7 +201,6 @@ if __name__ == '__main__':
                                             meta,
                                             lengths,
                                             properties,
-                                            prop_set,
                                         )
     dummy_results = print_property_statistics(properties, groups, cross_clf_kfold)
     sys.stdout.flush()
