@@ -703,6 +703,25 @@ def get_coulomb_feature(names, paths, **kwargs):
     return homogenize_lengths(vectors)
 
 
+def get_sum_coulomb_feature(names, paths, **kwargs):
+    '''
+    This feature vector is based off the idea that the cols/rows of the
+    coulomb matrix can be summed together to use as features.
+
+    NOTE: This feature vector scales O(N) where N is the number of atoms in
+    largest structure.
+    '''
+    cache = {}
+    for path in paths:
+        if path in cache:
+            continue
+        elements, numbers, coords = read_file_data(path)
+        cache[path] = get_coulomb_matrix(numbers, coords).sum(0)
+
+    vectors = [cache[path] for path in paths]
+    return homogenize_lengths(vectors)
+
+
 def get_bin_coulomb_feature(names, paths, step=1, **kwargs):
     '''
     This is a feature vector based on the coulomb matrix. It adds more data
