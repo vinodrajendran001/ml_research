@@ -808,7 +808,7 @@ def get_custom_distance_feature(names, paths, f=None, **kwargs):
     largest structure.
     '''
     if f is None:
-        f = lambda mat: 1/(numpy.exp(-r) + r)
+        f = lambda r: 1/(numpy.exp(-r) + r)
 
     cache = {}
     for path in paths:
@@ -933,7 +933,7 @@ def get_eigen_custom_distance_feature(names, paths, f=None, **kwargs):
     largest structure.
     '''
     if f is None:
-        f = lambda mat: 1/(numpy.exp(-r) + r)
+        f = lambda r: 1/(numpy.exp(-r) + r)
     cache = {}
     for path in paths:
         if path in cache:
