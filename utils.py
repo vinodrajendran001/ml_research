@@ -70,6 +70,9 @@ def get_thermometer_encoding(X, step=1):
     '''
     X = numpy.array(X)
     max_vals = X.max(0).flatten()
+    # This splitting based on the size is to optimize the speed/space
+    # trade off. The actual splitting amount just comes from some trial and
+    # error for what worked the best.
     if X.shape[1] > X.shape[0]:
         b = numpy.arange(0, max_vals.max() + step, step)
         c = max_vals + step
@@ -141,10 +144,16 @@ def tokenize(string, explicit_flips=False):
 
 
 def decay_function(distance, power=1, H=1, factor=1):
+    '''
+    A simple power based decay function.
+    '''
     return (factor * (distance ** -H)) ** power
 
 
 def gauss_decay_function(x, sigma=6):
+    '''
+    A gaussian based decay function.
+    '''
     return numpy.exp(-(x / float(sigma)) ** 2)
 
 
@@ -171,6 +180,11 @@ def lennard_jones(r):
 
 
 def calculate_forces(clf, numbers, coords, meta=None, h=1e-6):
+    '''
+    A function that uses finite differences to calculate forces of a molecule
+    using the given clf. The default feature vector for this to use is the
+    coulomb matrix.
+    '''
     if meta is None:
         meta = [1]
 
@@ -194,6 +208,10 @@ def calculate_forces(clf, numbers, coords, meta=None, h=1e-6):
 
 
 def calculate_surface(clf, numbers, coords, atom_idx, max_displacement=.5, steps=25, meta=None):
+    '''
+    A function that uses plots the value of the clf as a function of `atom_ix`
+    displacement.
+    '''
     if meta is None:
         meta = [1]
 
@@ -425,6 +443,9 @@ def get_trihedral_counts(elements, coords, dihedrals=None, angles=None, bonds=No
 
 
 def get_angle_between(vector1, vector2):
+    '''
+    Calculate the angle between two vectors.
+    '''
     unit_v1 = vector1 / norm(vector1)
     unit_v2 = vector2 / norm(vector2)
     angle = numpy.arccos(numpy.dot(unit_v1, unit_v2.T))
@@ -437,6 +458,9 @@ def get_angle_between(vector1, vector2):
 
 
 def get_dihedral_angle(idxs, coords):
+    '''
+    Get the dihedral angle between the 4 atoms given in `idxs`.
+    '''
     first_idxs = idxs[:2]
     second_idxs = idxs[2:]
     first = coords[first_idxs[0]] - coords[first_idxs[1]]
@@ -447,6 +471,9 @@ def get_dihedral_angle(idxs, coords):
 
 
 def get_angle_angle(idxs, coords):
+    '''
+    Get the angle between the 3 atoms given in `idxs`.
+    '''
     first_idxs = idxs[:2]
     second_idxs = idxs[1:]
     first = coords[first_idxs[0]] - coords[first_idxs[1]]
@@ -455,10 +482,17 @@ def get_angle_angle(idxs, coords):
 
 
 def get_bond_length(idxs, coords):
+    '''
+    Get the bond length between 2 atoms given in `idxs`.
+    '''
     return norm(coords[idxs[0], :] - coords[idxs[1]])
 
 
 def set_vector_length(vector, length, fill=0.0):
+    '''
+    Given the input `vector`, return that vector extended to length `length`
+    and filled with `fill`.
+    '''
     return vector + [fill] * (length - len(vector))
 
 

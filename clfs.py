@@ -49,6 +49,10 @@ class LinearRegression(CLF):
 
 
 def laplace_kernel_gen(sigma):
+    '''
+    This is a hack to be able to pass aribitry sigma values to SVMLaplace in
+    the same way that can be done with the normal RBF kernel.
+    '''
     def func(X, Y):
         return numpy.exp(sigma*-cdist(X,Y))
     return func

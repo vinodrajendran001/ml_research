@@ -22,7 +22,6 @@ At this point, it is a matter of collecting the data into the `data/` directory.
 Todo
 ----
 
-
     [ ] Run multiouput with all structures
     [ ] Get back working with neural nets (Caffe?)
     [ ] Improve cross validation
