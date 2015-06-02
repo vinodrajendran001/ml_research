@@ -104,42 +104,63 @@ def print_load_stats(names, paths):
 
 if __name__ == '__main__':
     feature_sets = (
-        # (features.get_null_feature, {}),
-        # (features.get_atom_feature, {}),
-        # (features.get_atom_thermo_feature, {}),
-        # (features.get_connective_feature, {}),
-        # (features.get_bond_feature, {}),
-        # (features.get_angle_feature, {}),
-        # (features.get_angle_bond_feature, {}),
-        # (features.get_dihedral_feature, {}),
-        # (features.get_trihedral_feature, {}),
-        # (features.get_atom_and_bond_feature, {}),
-        # (features.get_atom_bond_and_angle_feature, {}),
-        # (features.get_atom_bond_and_angle_bond_feature, {}),
-        # (features.get_atom_bond_angle_and_dihedral_feature, {}),
-        # (features.get_atom_bond_angle_bond_and_dihedral_feature, {}),
-        # (features.get_atom_bond_angle_dihedral_and_trihedral_feature, {}),
-        # (features.get_local_zmatrix, {}),
-        # (features.get_full_local_zmatrix, {}),
-        # (features.get_bin_coulomb_feature, {}),
-        # (features.get_bin_eigen_coulomb_feature, {}),
-        # (features.get_flip_binary_feature, {}),
-        # (features.get_coulomb_feature, {}),
-        # (features.get_sum_coulomb_feature, {}),
-        # (features.get_eigen_coulomb_feature, {}),
-        # (features.get_sorted_coulomb_feature, {}),
-        # (features.get_distance_feature, {"power": [-2, -1]}),
-        # (features.get_eigen_distance_feature, {"power": [-2, -1]}),#[-2, -1, -0.5, 0.5, 1, 2]}),
-        # (features.get_custom_distance_feature, {"f": [lennard_jones, erf_over_r, one_over_sqrt]}),
-        # (features.get_eigen_custom_distance_feature, {"f": [lennard_jones, erf_over_r, one_over_sqrt]}),
-        # (features.get_fingerprint_feature, {"size": [128, 1024, 2048]}),
+        # ((features.get_null_feature, {}), ),
+        # ((features.get_atom_feature, {}), ),
+        # ((features.get_atom_thermo_feature, {}), ),
+        # ((features.get_connective_feature, {}), ),
+        # ((features.get_bond_feature, {}), ),
+        # ((features.get_angle_feature, {}), ),
+        # ((features.get_angle_bond_feature, {}), ),
+        # ((features.get_dihedral_feature, {}), ),
+        # ((features.get_trihedral_feature, {}), ),
+        # (
+        #     (features.get_atom_feature, {}),
+        #     (features.get_bond_feature, {})
+        # ),
+        # (
+        #     (features.get_atom_feature, {}),
+        #     (features.get_bond_feature, {}),
+        #     (features.get_angle_feature, {})
+        # ),
+        # (
+        #     (features.get_atom_feature, {}),
+        #     (features.get_bond_feature, {}),
+        #     (features.get_angle_feature, {}),
+        #     (features.get_dihedral_feature, {})
+        # ),
+        # (
+        #     (features.get_atom_feature, {}),
+        #     (features.get_bond_feature, {}),
+        #     (features.get_angle_feature, {}),
+        #     (features.get_dihedral_feature, {}),
+        #     (features.get_trihedral_feature, {})
+        # ),
+        # ((features.get_local_zmatrix, {}), )
+        # ((features.get_full_local_zmatrix, {}), )
+        # ((features.get_bin_coulomb_feature, {}), )
+        # ((features.get_bin_eigen_coulomb_feature, {}), )
+        # ((features.get_flip_binary_feature, {}), )
+        # ((features.get_coulomb_feature, {}), )
+        # ((features.get_sum_coulomb_feature, {}), )
+        # ((features.get_eigen_coulomb_feature, {}), )
+        # ((features.get_sorted_coulomb_feature, {}), )
+        # ((features.get_distance_feature, {"power": [-2, -1]}), )
+        # ((features.get_eigen_distance_feature, {"power": [-2, -1]}),#[-2, -1, -0.5, 0.5, 1, 2]}), )
+        # ((features.get_custom_distance_feature, {"f": [lennard_jones, erf_over_r, one_over_sqrt]}), )
+        # ((features.get_eigen_custom_distance_feature, {"f": [lennard_jones, erf_over_r, one_over_sqrt]}), )
+        # ((features.get_fingerprint_feature, {"size": [128, 1024, 2048]}), )
     )
 
     FEATURE_FUNCTIONS = []
-    for function, kwargs_sets in feature_sets:
-        for x in product(*kwargs_sets.values()):
-            temp = (function, dict(zip(kwargs_sets.keys(), x)))
-            FEATURE_FUNCTIONS.append(temp)
+    for feature_group in feature_sets:
+        multi_feature_sets = []
+        for function, kwargs_sets in feature_group:
+            single_feature_set = []
+            for x in product(*kwargs_sets.values()):
+                temp = (function, dict(zip(kwargs_sets.keys(), x)))
+                single_feature_set.append(temp)
+            multi_feature_sets.append(single_feature_set)
+        FEATURE_FUNCTIONS.extend(product(*multi_feature_sets))
 
     CLFS = (
         (

@@ -20,23 +20,39 @@ def get_name_groups(names, datasets):
     return numpy.matrix(groups).T
 
 
+def get_base_features(function_sets, names, geom_paths):
+    components = {}
+    final_features = OrderedDict()
+
+    print "Sizes of Feature Matrices"
+    sys.stdout.flush()
+    for function_set in function_sets:
+        start = time.time()
+        keys = []
+        for function, kwargs in function_set:
+            key = true_strip(function.__name__, "get_", "_feature") + " " + repr(kwargs)
+            if key not in components:
+                components[key] = function(names, geom_paths, **kwargs)
+            keys.append(key)
+
+        final_key = " | ".join(keys)
+        final_features[final_key] = numpy.concatenate([components[key] for key in keys], 1)
+        print "\t%s %s (%.4f secs)" % (final_key, final_features[final_key].shape, time.time() - start)
+        sys.stdout.flush()
+    return final_features
+
+
 def init_data(functions, names, datasets, geom_paths, meta, lengths, properties):
     # Construct (name, vector) pairs to auto label features when iterating over them
     features = OrderedDict()
     groups = get_name_groups(names, datasets)
+    base_features = get_base_features(functions, names, geom_paths)
 
-    print "Sizes of Feature Matrices"
-    sys.stdout.flush()
-    for function, kwargs in functions:
-        start = time.time()
-        key = true_strip(function.__name__, "get_", "_feature") + " " + repr(kwargs)
-        temp = function(names, geom_paths, **kwargs)
-        # Add the associtated file/data/opt meta data to each of the feature vectors
-        features[key] = numpy.concatenate((temp, meta), 1)
-        print "\t%s %s (%.4f secs)" % (key, features[key].shape, time.time() - start)
-        sys.stdout.flush()
+    for key, feature in base_features.items():
+        features[key] = numpy.concatenate((feature, meta), 1)
 
     print
+    sys.stdout.flush()
     properties = [(name, units, numpy.matrix(y).T) for name, units, y in properties]
     return features, properties, groups
 
