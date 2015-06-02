@@ -1,9 +1,9 @@
 import os
 import cPickle
 
-from utils import tokenize, ARYL, true_strip, erf_over_r, read_file_data, \
+from utils import tokenize, true_strip, erf_over_r, read_file_data, \
          map_atom
-
+from constants import BHOR_TO_ANGSTROM, ARYL, NUM_TO_ELE
 
 DATA_BASE_DIR = "data"
 
@@ -63,8 +63,6 @@ def load_mol_data(calc_set, opt_set, struct_set, prop_set=None):
 
 
 def build_qm7_data():
-    BHOR_TO_ANGSTROM = 0.529177249
-    atoms = {1: 'H', 6: "C", 7: "N", 8: "O", 16: "S"}
     with open(os.path.join(DATA_BASE_DIR, "qm7.pkl"), "r") as f:
         temp = cPickle.load(f)
         X = temp['X'].reshape(7165, 23*23)
@@ -81,7 +79,7 @@ def build_qm7_data():
                 z = int(z)
                 if z:
                     coord = [x * BHOR_TO_ANGSTROM for x in coord]
-                    f.write("%s %.8f %.8f %.8f\n" % (atoms[z], coord[0], coord[1], coord[2]))
+                    f.write("%s %.8f %.8f %.8f\n" % (NUM_TO_ELE[z], coord[0], coord[1], coord[2]))
 
 
 def load_qm7_data():
@@ -119,11 +117,10 @@ def load_qm7_data():
 
 
 def build_dave_data():
-    atoms = {"1": 'H', "6": "C", "7": "N", "8": "O", "9": "F"}
     with open(os.path.join(DATA_BASE_DIR, "geom.txt"), 'r') as f:
         elements = []
         for line in f:
-            numbers = line.strip().split()
+            numbers = [int(x) for x in line.strip().split()]
             if len(numbers) == 2:
                 try:
                     f2.close()
@@ -135,7 +132,7 @@ def build_dave_data():
             elif len(numbers) == 3:
                 f2.write(" ".join([elements.pop()] + numbers) + "\n")
             else:
-                elements = [atoms[x] for x in numbers][::-1]
+                elements = [NUM_TO_ELE[x] for x in numbers][::-1]
 
 
 def load_dave_data(add_extra=True):

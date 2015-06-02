@@ -4,13 +4,14 @@ import numpy
 
 from sklearn import decomposition
 
-from utils import tokenize, ARYL, RGROUPS, \
+from utils import tokenize, \
         decay_function, gauss_decay_function, read_file_data, \
         get_coulomb_matrix, homogenize_lengths, get_distance_matrix, \
         get_thermometer_encoding, get_eigenvalues, get_atom_counts, \
         get_bond_counts, get_angle_counts, get_dihedral_counts, get_trihedral_counts, \
         get_angle_bond_counts, get_dihedral_angle, get_angle_angle, get_bond_length, \
         map_atom, get_connectivity_matrix, set_vector_length, construct_zmatrix_addition
+from constants import ARYL, RGROUPS
 
 
 # Example Feature function

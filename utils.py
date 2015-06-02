@@ -6,6 +6,8 @@ from scipy.special import erf
 import numpy
 from numpy.linalg import norm
 
+from constants import ELE_TO_NUM, BOND_LENGTHS, TYPE_ORDER, ARYL, ARYL0, RGROUPS
+
 
 def true_strip(string, left, right):
     if string.startswith(left):
@@ -19,13 +21,12 @@ def read_file_data(path):
     elements = []
     numbers = []
     coords = []
-    types = {'C': 6, 'H': 1, 'O': 8, 'N': 7, 'F': 9, 'S': 18}
     with open(path, 'r') as f:
         for line in f:
             ele, x, y, z = line.strip().split()
             point = (float(x), float(y), float(z))
             elements.append(ele)
-            numbers.append(types[ele])
+            numbers.append(ELE_TO_NUM[ele])
             coords.append(point)
     return elements, numbers, numpy.matrix(coords)
 
@@ -95,11 +96,6 @@ def get_eigenvalues(X):
     eigvals = numpy.linalg.eigvals(X)
     eigvals.sort()
     return numpy.real(eigvals[::-1])
-
-
-ARYL = ['2', '3', '4', '6', '11', '12', '13']
-ARYL0 = ['2', '3', '11']
-RGROUPS = ['a', 'd', 'e', 'f', 'h', 'i', 'l']
 
 
 def tokenize(string, explicit_flips=False):
@@ -222,41 +218,6 @@ def calculate_surface(clf, numbers, coords, atom_idx, max_displacement=.5, steps
     plt.show()
     print results.max(), results.min(), results.std()
     return results
-
-
-BOND_LENGTHS = {
-    "C": {
-        "3":   0.62,
-        "2":   0.69,
-        "Ar": 0.72,
-        "1":   0.85,
-    },
-    "S": {
-        "2":   0.905,
-        "Ar": 0.945,
-        "1":   1.07,
-    },
-    "O": {
-        "3":   0.53,
-        "2":   0.59,
-        "Ar": 0.62,
-        "1":   0.695,
-    },
-    "N": {
-        "3":   0.565,
-        "2":   0.63,
-        "Ar": 0.655,
-        "1":   0.74,
-    },
-    "H": {
-        "1":   0.6,
-    },
-    "F": {
-        "1":   1.23,
-    },
-}
-
-TYPE_ORDER = ['1', 'Ar', '2', '3']
 
 
 def get_connectivity_matrix(elements, coords):
