@@ -197,19 +197,24 @@ if __name__ == '__main__':
         # ),
     )
 
-    # names, datasets, geom_paths, properties, meta, lengths = load_dave_data()
-    names, datasets, geom_paths, properties, meta, lengths = load_qm7_data()
-    # # Select the data set to use
-    # calc_set = ("b3lyp", )#"cam", "m06hf")
-    # opt_set = tuple("opt/" + x for x in calc_set)
-    # struct_set = ('O', 'N', '4', '8')
-    # prop_set = ("homo", "lumo", "gap")
-    # names, datasets, geom_paths, properties, meta, lengths = load_mol_data(
-    #                                                     calc_set,
-    #                                                     opt_set,
-    #                                                     struct_set,
-    #                                                     prop_set,
-    #                                                 )
+
+    if sys.argv[1] == "dave":
+        names, datasets, geom_paths, properties, meta, lengths = load_dave_data()
+    elif sys.argv[1] == "qm7":
+        names, datasets, geom_paths, properties, meta, lengths = load_qm7_data()
+    elif sys.argv[1] == "mol":
+        # Select the data set to use
+        calc_set = ("b3lyp", "cam", "m06hf")
+        opt_set = tuple("opt/" + x for x in calc_set)
+        struct_set = ('O', 'N', '4', '8')
+        prop_set = ("homo", "lumo", "gap")
+        names, datasets, geom_paths, properties, meta, lengths = load_mol_data(
+                                                            calc_set,
+                                                            opt_set,
+                                                            struct_set,
+                                                            prop_set,
+                                                        )
+
     print_load_stats(names, geom_paths)
     sys.stdout.flush()
     features, properties, groups = init_data(
