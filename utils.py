@@ -201,6 +201,12 @@ def lennard_jones(r):
     return mat
 
 
+def cosine_distance(r, cutoff=6.):
+    temp = 0.5 * (numpy.cos(numpy.pi * r / cutoff) + 1)
+    temp[dist > 6] = 0
+    return temp
+
+
 def calculate_forces(clf, numbers, coords, meta=None, h=1e-6):
     '''
     A function that uses finite differences to calculate forces of a molecule
