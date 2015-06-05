@@ -10,6 +10,17 @@ from constants import ELE_TO_NUM, BOND_LENGTHS, TYPE_ORDER, ARYL, ARYL0, RGROUPS
 
 
 def true_strip(string, left, right):
+    '''
+    A function the properly does left and right strip of strings.
+    The default python methods will remove any characters from end 
+    strings that appear at the end of a string.
+    EX: 
+    >>> "test_td".rstrip("_td")
+    "tes"
+    This fixes the issue and returns does the following
+    >>> true_strip("test_td", "", "_td")
+    "test"
+    '''
     if string.startswith(left):
         string = string[len(left):]
     if string.endswith(right):
@@ -18,6 +29,14 @@ def true_strip(string, left, right):
 
 
 def read_file_data(path):
+    """
+    Reads a file and extracts the molecules geometry
+
+    The file should be in the format
+    ele0 x0 y0 z0
+    ele1 x1 y1 z1
+    ...
+    """
     elements = []
     numbers = []
     coords = []
@@ -32,6 +51,9 @@ def read_file_data(path):
 
 
 def get_coulomb_matrix(numbers, coords):
+    """
+    Return the coulomb matrix for the given `coords` and `numbers`
+    """
     top = numpy.outer(numbers, numbers).astype(numpy.float64)
     r = get_distance_matrix(coords, power=1)
     with numpy.errstate(divide='ignore', invalid='ignore'):
