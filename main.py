@@ -14,7 +14,7 @@ import features
 import clfs
 from load_data import load_mol_data, load_qm7_data, load_dave_data
 from init_data import init_data, init_data_multi, init_data_length
-from utils import erf_over_r, one_over_sqrt, lennard_jones
+from utils import erf_over_r, one_over_sqrt, lennard_jones, cosine_distance
 from cross_validate import cross_clf_kfold
 
 
@@ -146,7 +146,7 @@ if __name__ == '__main__':
         # ((features.get_sorted_coulomb_feature, {}), )
         # ((features.get_distance_feature, {"power": [-2, -1]}), )
         # ((features.get_eigen_distance_feature, {"power": [-2, -1]}),#[-2, -1, -0.5, 0.5, 1, 2]}), )
-        # ((features.get_custom_distance_feature, {"f": [lennard_jones, erf_over_r, one_over_sqrt]}), )
+        # ((features.get_custom_distance_feature, {"f": [cosine_distance, lennard_jones, erf_over_r, one_over_sqrt]}), )
         # ((features.get_eigen_custom_distance_feature, {"f": [lennard_jones, erf_over_r, one_over_sqrt]}), )
         # ((features.get_fingerprint_feature, {"size": [128, 1024, 2048]}), )
     )
