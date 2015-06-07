@@ -26,9 +26,12 @@ Todo
     [ ] Get back working with neural nets (Caffe?)
     [ ] Improve cross validation
         [ ] Speed (optimize grid search)
+            [ ] Random search
+            [ ] Gradient Descent type search
         [ ] Remove "bottoming out" of parameters
     [ ] Add bond types to angles/dihedrals/trihedrals
     [ ] forces
     [ ] Restructure code
         [ ] Main running code
         [ ] Split up feature vectors
+    [ ] NN with summation for atoms
