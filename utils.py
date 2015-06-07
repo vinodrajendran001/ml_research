@@ -202,6 +202,11 @@ def lennard_jones(r):
 
 
 def cosine_distance(r, cutoff=6.):
+    '''
+    This is based off the distance function from:
+    Jorg Behler and Michele Parrinello 
+    Phys. Rev. Lett. 98, 146401 Published 2 April 2007
+    '''
     temp = 0.5 * (numpy.cos(numpy.pi * r / cutoff) + 1)
     temp[dist > 6] = 0
     return temp
