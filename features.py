@@ -803,6 +803,23 @@ def get_sorted_coulomb_feature(names, paths, **kwargs):
     return homogenize_lengths(vectors)
 
 
+def get_sorted_coulomb_vector_feature(names, paths, **kwargs):
+    '''
+    This feature vector is based on a distance matrix between all of the atoms
+    in the structure with each element multiplied by the number of protons in
+    each of atom in the pair. The diagonal is 0.5 * protons ^ 2.4. The
+    exponent comes from a fit.
+    This is based off the following work:
+    M. Rupp, et al. Physical Review Letters, 108(5):058301, 2012.
+
+    NOTE: This feature vector scales O(N^2) where N is the number of atoms in
+    largest structure.
+    '''
+    feat = get_coulomb_feature(names, paths)
+    feat.sort()
+    return feat[:,::-1]
+
+
 def get_eigen_coulomb_feature(names, paths, **kwargs):
     '''
     This feature vector is from the eigenvalues of the coulomb matrix.
