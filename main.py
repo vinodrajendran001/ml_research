@@ -105,7 +105,7 @@ def print_load_stats(names, paths):
 if __name__ == '__main__':
     feature_sets = (
         # ((features.get_null_feature, {}), ),
-        # ((features.get_atom_feature, {}), ),
+        ((features.get_atom_feature, {}), ),
         # ((features.get_atom_thermo_feature, {}), ),
         # ((features.get_connective_feature, {}), ),
         # ((features.get_bond_feature, {}), ),
@@ -115,40 +115,41 @@ if __name__ == '__main__':
         # ((features.get_trihedral_feature, {}), ),
         # (
         #     (features.get_atom_feature, {}),
-        #     (features.get_bond_feature, {})
-        # ),
-        # (
-        #     (features.get_atom_feature, {}),
         #     (features.get_bond_feature, {}),
-        #     (features.get_angle_feature, {})
         # ),
         # (
         #     (features.get_atom_feature, {}),
         #     (features.get_bond_feature, {}),
         #     (features.get_angle_feature, {}),
-        #     (features.get_dihedral_feature, {})
         # ),
         # (
         #     (features.get_atom_feature, {}),
         #     (features.get_bond_feature, {}),
         #     (features.get_angle_feature, {}),
         #     (features.get_dihedral_feature, {}),
-        #     (features.get_trihedral_feature, {})
         # ),
-        # ((features.get_local_zmatrix, {}), )
-        # ((features.get_full_local_zmatrix, {}), )
-        # ((features.get_bin_coulomb_feature, {}), )
-        # ((features.get_bin_eigen_coulomb_feature, {}), )
-        # ((features.get_flip_binary_feature, {}), )
-        # ((features.get_coulomb_feature, {}), )
-        # ((features.get_sum_coulomb_feature, {}), )
-        # ((features.get_eigen_coulomb_feature, {}), )
-        # ((features.get_sorted_coulomb_feature, {}), )
-        # ((features.get_distance_feature, {"power": [-2, -1]}), )
-        # ((features.get_eigen_distance_feature, {"power": [-2, -1]}),#[-2, -1, -0.5, 0.5, 1, 2]}), )
-        # ((features.get_custom_distance_feature, {"f": [cosine_distance, lennard_jones, erf_over_r, one_over_sqrt]}), )
-        # ((features.get_eigen_custom_distance_feature, {"f": [lennard_jones, erf_over_r, one_over_sqrt]}), )
-        # ((features.get_fingerprint_feature, {"size": [128, 1024, 2048]}), )
+        # (
+        #     (features.get_atom_feature, {}),
+        #     (features.get_bond_feature, {}),
+        #     (features.get_angle_feature, {}),
+        #     (features.get_dihedral_feature, {}),
+        #     (features.get_trihedral_feature, {}),
+        # ),
+        # ((features.get_local_zmatrix, {}), ),
+        # ((features.get_full_local_zmatrix, {}), ),
+        # ((features.get_bin_coulomb_feature, {}), ),
+        # ((features.get_bin_eigen_coulomb_feature, {}), ),
+        # ((features.get_flip_binary_feature, {}), ),
+        # ((features.get_coulomb_feature, {}), ),
+        # ((features.get_sum_coulomb_feature, {}), ),
+        # ((features.get_eigen_coulomb_feature, {}), ),
+        # ((features.get_sorted_coulomb_feature, {}), ),
+        # ((features.get_sorted_coulomb_vector_feature, {}), ),
+        # ((features.get_distance_feature, {"power": [-2, -1]}), ),
+        # ((features.get_eigen_distance_feature, {"power": [-2, -1]}),#[-2, -1, -0.5, 0.5, 1, 2]}), ),
+        # ((features.get_custom_distance_feature, {"f": [cosine_distance, lennard_jones, erf_over_r, one_over_sqrt]}), ),
+        # ((features.get_eigen_custom_distance_feature, {"f": [lennard_jones, erf_over_r, one_over_sqrt]}), ),
+        # ((features.get_fingerprint_feature, {"size": [128, 1024, 2048]}), ),
     )
 
     FEATURE_FUNCTIONS = []
