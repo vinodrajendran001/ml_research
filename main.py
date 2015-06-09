@@ -57,7 +57,7 @@ def main(features, properties, groups, clfs, cross_validate,
 def print_property_statistics(properties, groups, cross_validate, test_folds=5, cross_folds=2):
     results = {}
     print "Property Statistics"
-    for prop_name, units, prop, in properties:
+    for prop_name, units, prop in properties:
         feat = numpy.zeros(groups.shape)
         _, (test_mean, test_std) = cross_validate(
                                                 feat,
