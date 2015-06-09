@@ -1,6 +1,8 @@
 import numpy
+from numpy.linalg import norm
 from scipy.spatial.distance import cdist
 from sklearn import svm
+from sklearn import kernel_ridge
 
 
 class CLF(object):
@@ -58,6 +60,20 @@ def laplace_kernel_gen(sigma):
     return func
 
 
+def laplace_kernel_gen2(sigma):
+    '''
+    This is a hack to be able to pass aribitry sigma values to SVMLaplace in
+    the same way that can be done with the normal RBF kernel.
+
+    This second function is for the KRR. For some reason, in the KRR code it
+    does it per vector, so it is much faster to do it this way (minutes vs
+    hours).
+    '''
+    def func(X, Y):
+        return numpy.exp(sigma*-norm(X-Y))
+    return func
+
+
 class SVMLaplace(svm.SVR):
     def __init__(self, kernel='rbf', degree=3, gamma=0.0, coef0=0.0, tol=1e-3,
                  C=1.0, epsilon=0.1, shrinking=True, cache_size=200,
@@ -66,3 +82,12 @@ class SVMLaplace(svm.SVR):
                  C=C, epsilon=epsilon, shrinking=shrinking, cache_size=cache_size, verbose=verbose,
                  max_iter=max_iter)
         self.kernel = laplace_kernel_gen(gamma)
+
+
+class KRRLaplace(kernel_ridge.KernelRidge):
+    def __init__(self, alpha=1, kernel='linear', gamma=None, degree=3, coef0=1, kernel_params=None):
+        super(KRRLaplace, self).__init__(alpha=alpha, kernel=kernel, gamma=gamma, degree=degree,
+            coef0=coef0, kernel_params=kernel_params)
+        self.kernel = laplace_kernel_gen2(gamma)
+
+
