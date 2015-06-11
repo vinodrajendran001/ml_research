@@ -12,9 +12,9 @@ from constants import ELE_TO_NUM, BOND_LENGTHS, TYPE_ORDER, ARYL, ARYL0, RGROUPS
 def true_strip(string, left, right):
     '''
     A function the properly does left and right strip of strings.
-    The default python methods will remove any characters from end 
+    The default python methods will remove any characters from end
     strings that appear at the end of a string.
-    EX: 
+    EX:
     >>> "test_td".rstrip("_td")
     "tes"
     This fixes the issue and returns does the following
@@ -204,7 +204,7 @@ def lennard_jones(r):
 def cosine_distance(r, cutoff=6.):
     '''
     This is based off the distance function from:
-    Jorg Behler and Michele Parrinello 
+    Jorg Behler and Michele Parrinello
     Phys. Rev. Lett. 98, 146401 Published 2 April 2007
     '''
     temp = 0.5 * (numpy.cos(numpy.pi * r / cutoff) + 1)
