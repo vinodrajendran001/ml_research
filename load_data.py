@@ -97,16 +97,14 @@ def build_gdb13_data():
                 elif i == 1:
                     energy = float(line.split()[-3])
                 elif i - 2 < natoms:
+                    line = line.replace("*^", "e")
                     ele, x, y, z, _ = line.split()
-                    x = x.replace("*^", "e")
-                    y = y.replace("*^", "e")
-                    z = z.replace("*^", "e")
                     counts[atom_idxs[ele]] += 1
                     out_f.write("%s %.8f %.8f %.8f\n" % (ele, float(x), float(y), float(z)))
         energies.append(energy)
         atom_counts.append(counts)
     atomization = calculate_atomization_energies(numpy.matrix(atom_counts), numpy.matrix(energies).T)
-    atomization *= 630
+    atomization *= 627.509
     numpy.savetxt(os.path.join(base_path, "energies.txt"), atomization)
 
 
