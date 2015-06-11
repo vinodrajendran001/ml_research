@@ -1,6 +1,8 @@
 import os
 import cPickle
 
+import numpy
+
 from utils import tokenize, true_strip, erf_over_r, read_file_data, \
          map_atom
 from constants import BHOR_TO_ANGSTROM, ARYL, NUM_TO_ELE
@@ -60,6 +62,80 @@ def load_mol_data(calc_set, opt_set, struct_set, prop_set=None):
     prop_vals = zip(*properties)
     prop_out = [(x, y, z) for ((x, y), z) in zip(prop_desc, prop_vals)]
     return names, datasets, geom_paths, prop_out, meta, lengths
+
+
+def calculate_atomization_energies(atom_counts, energies):
+    # H C N O F
+    atom_energies = numpy.matrix([
+        [-0.497912],
+        [-37.844411],
+        [-54.581501],
+        [-75.062219],
+        [-99.716370]
+    ])
+    return energies - atom_counts * atom_energies
+
+
+def build_gdb13_data():
+    atom_idxs = {'H': 0, 'C': 1, 'N': 2, 'O': 3, 'F': 4}
+    base_path = os.path.join(DATA_BASE_DIR, "gdb13")
+
+    energies = []
+    atom_counts = []
+    for name in sorted(os.listdir(os.path.join(base_path, "xyz"))):
+        xyz_path = os.path.join(base_path, "xyz", name)
+        out_path = xyz_path.replace("xyz", "out")
+
+        natoms = 0
+        energy = None
+        counts = [0 for _ in atom_idxs]
+        with open(xyz_path, 'r') as xyz_f, open(out_path, 'w') as out_f:
+            for i, line in enumerate(xyz_f):
+                line = line.strip()
+                if not i:
+                    natoms = int(line)
+                elif i == 1:
+                    energy = float(line.split()[-3])
+                elif i - 2 < natoms:
+                    ele, x, y, z, _ = line.split()
+                    x = x.replace("*^", "e")
+                    y = y.replace("*^", "e")
+                    z = z.replace("*^", "e")
+                    counts[atom_idxs[ele]] += 1
+                    out_f.write("%s %.8f %.8f %.8f\n" % (ele, float(x), float(y), float(z)))
+        energies.append(energy)
+        atom_counts.append(counts)
+    atomization = calculate_atomization_energies(numpy.matrix(atom_counts), numpy.matrix(energies).T)
+    atomization *= 630
+    numpy.savetxt(os.path.join(base_path, "energies.txt"), atomization)
+
+
+def load_gdb13_data():
+    base_path = os.path.join(DATA_BASE_DIR, "gdb13")
+    if not os.path.isdir(base_path) or not os.listdir(base_path):
+        build_gdb13_data()
+
+    names = []
+    datasets = []
+    geom_paths = []
+    meta = []
+    lengths = []
+
+    out_path = os.path.join(base_path, "out")
+    for name in sorted(os.listdir(out_path))[10000:]:
+        path = os.path.join(out_path, name)
+        geom_paths.append(path)
+
+        # [:-4] is to strip the file extension
+        names.append(name[:-4])
+        datasets.append((1, ))
+        meta.append([1])
+        lengths.append(1)
+
+    props = numpy.loadtxt(os.path.join(base_path, "energies.txt"))[10000:]
+    prop_out = (("Atomization Energy", "kcal", [props.tolist()]), )
+    return names, datasets, geom_paths, prop_out, meta, lengths
+
 
 
 def build_qm7_data():

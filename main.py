@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 
 import features
 import clfs
-from load_data import load_mol_data, load_qm7_data, load_dave_data
+from load_data import load_mol_data, load_qm7_data, load_dave_data, load_gdb13_data
 from init_data import init_data, init_data_multi, init_data_length
 from utils import erf_over_r, one_over_sqrt, lennard_jones, cosine_distance
 from cross_validate import cross_clf_kfold
@@ -203,6 +203,8 @@ if __name__ == '__main__':
         names, datasets, geom_paths, properties, meta, lengths = load_dave_data()
     elif sys.argv[1] == "qm7":
         names, datasets, geom_paths, properties, meta, lengths = load_qm7_data()
+    elif sys.argv[1] == "gdb13":
+        names, datasets, geom_paths, properties, meta, lengths = load_gdb13_data()
     elif sys.argv[1] == "mol":
         # Select the data set to use
         calc_set = ("b3lyp", "cam", "m06hf")
