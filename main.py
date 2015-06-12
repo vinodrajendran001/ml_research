@@ -198,7 +198,9 @@ if __name__ == '__main__':
         # ),
     )
 
-
+    if len(sys.argv) < 2:
+        print "Needs a dataset argument"
+        exit(0)
     if sys.argv[1] == "dave":
         names, datasets, geom_paths, properties, meta, lengths = load_dave_data()
     elif sys.argv[1] == "qm7":
