@@ -940,3 +940,17 @@ def get_fingerprint_feature(names, paths, size=2048, **kwargs):
                                         tgtDensity=0, minSize=size)
         vectors.append([x == '1' for x in f.ToBitString()])
     return numpy.matrix(vectors)
+
+
+def get_mul_feature(names, paths):
+    vectors = []
+    for path, name in zip(paths, names):
+        elements, numbers, coords = read_file_data(path)
+        charges = []
+        with open("mul/%s.mul" % name, "r") as f:
+            for i, line in enumerate(f):
+                ele, val = line.strip().split()
+                charges.append(numbers[i] + float(val))
+        mat = get_coulomb_matrix(numbers, coords)
+        vectors.append(mat[numpy.tril_indices(mat.shape[0])])
+    return homogenize_lengths(vectors)
