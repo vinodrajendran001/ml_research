@@ -5,7 +5,7 @@ import numpy
 
 from utils import tokenize, true_strip, erf_over_r, read_file_data, \
          map_atom
-from constants import BHOR_TO_ANGSTROM, ARYL, NUM_TO_ELE
+from constants import BHOR_TO_ANGSTROM, ARYL, NUM_TO_ELE, HARTREE_TO_KCAL
 
 DATA_BASE_DIR = "data"
 
@@ -104,7 +104,7 @@ def build_gdb13_data():
         energies.append(energy)
         atom_counts.append(counts)
     atomization = calculate_atomization_energies(numpy.matrix(atom_counts), numpy.matrix(energies).T)
-    atomization *= 627.509
+    atomization *= HARTREE_TO_KCAL
     numpy.savetxt(os.path.join(base_path, "energies.txt"), atomization)
 
 
