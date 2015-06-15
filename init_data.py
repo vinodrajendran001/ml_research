@@ -7,7 +7,7 @@ import numpy
 from utils import true_strip, tokenize
 
 
-def get_name_groups(names, datasets):
+def get_name_groups(names):
     groups = []
     seen = {}
     count = 0
@@ -45,7 +45,7 @@ def get_base_features(function_sets, names, geom_paths):
 def init_data(functions, names, datasets, geom_paths, meta, lengths, properties):
     # Construct (name, vector) pairs to auto label features when iterating over them
     features = OrderedDict()
-    groups = get_name_groups(names, datasets)
+    groups = get_name_groups(names)
     base_features = get_base_features(functions, names, geom_paths)
 
     for key, feature in base_features.items():
@@ -60,7 +60,7 @@ def init_data(functions, names, datasets, geom_paths, meta, lengths, properties)
 def init_data_multi(functions, names, datasets, geom_paths, meta, lengths, properties):
     # Construct (name, vector) pairs to auto label features when iterating over them
     features = OrderedDict()
-    temp_groups = get_name_groups(names, datasets)
+    temp_groups = get_name_groups(names)
     groups = numpy.concatenate([temp_groups for x in properties])
     base_features = get_base_features(functions, names, geom_paths)
 
