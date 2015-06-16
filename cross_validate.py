@@ -11,14 +11,13 @@ def get_cross_validation_iter(X, y, groups, folds):
     '''
     Generate an iterator that returns the train/test splits for X, y, and
     groups.
-
     '''
     unique_groups = list(set([x[0,0] for x in groups]))
     for train_idx, test_idx in cross_validation.KFold(
-                                                        len(unique_groups),
-                                                        n_folds=folds,
-                                                        shuffle=True,
-                                                        random_state=1):
+                                        len(unique_groups),
+                                        n_folds=folds,
+                                        shuffle=True,
+                                        random_state=1):
         # This is to fix cases when some of the groups may not exist
         # when running cross validation.
         train_idx = [unique_groups[x] for x in train_idx]
@@ -34,6 +33,19 @@ def get_cross_validation_iter(X, y, groups, folds):
         groups_train = groups[train_mask].T.tolist()[0]
         groups_test = groups[test_mask].T.tolist()[0]
         yield X_train, X_test, y_train, y_test, groups_train, groups_test
+
+
+def get_cross_validation_iter2(X, y, groups):
+    train_idx = numpy.where(groups == 0)[0].tolist()[0]
+    test_idx = numpy.where(groups == 1)[0].tolist()[0]
+
+    X_train = X[train_idx]
+    X_test = X[test_idx]
+    y_train = y[train_idx].T.tolist()[0]
+    y_test = y[test_idx].T.tolist()[0]
+    groups_train = numpy.arange(len(train_idx))
+    groups_test = numpy.arange(len(test_idx))
+    yield X_train, X_test, y_train, y_test, groups_train, groups_test
 
 
 def _parallel_params(params):
@@ -56,9 +68,13 @@ def _parallel_params(params):
 
 
 def test_clf_kfold(X, y, groups, clf, folds=10):
-    results = numpy.zeros(folds)
+    if len(set(groups.T.tolist()[0])) == 2:
+        loop = get_cross_validation_iter2(X, y, groups)
+        results = numpy.zeros(1)
+    else:
+        loop = get_cross_validation_iter(X, y, groups, folds)
+        results = numpy.zeros(folds)
 
-    loop = get_cross_validation_iter(X, y, groups, folds)
     for i, (X_train, X_test, y_train, y_test, _, _) in enumerate(loop):
         clf.fit(X_train, y_train)
         results[i] = mean_absolute_error(clf.predict(X_test), y_test)
@@ -78,8 +94,13 @@ def cross_clf_kfold(X, y, groups, clf_base, params_sets, cross_folds=10, test_fo
     n_sets = len(list(product(*params_sets.values())))
     cross = numpy.zeros((cross_folds, n_sets))
 
+    single_split = len(set(groups.T.tolist()[0])) == 2
+    if single_split:
+        loop = get_cross_validation_iter2(X, y, groups)
+    else:
+        loop = get_cross_validation_iter(X, y, groups, cross_folds)
+
     # Calculate the cross validation errors for all of the parameter sets.
-    loop = get_cross_validation_iter(X, y, groups, cross_folds)
     for i, (X_train, X_test, y_train, y_test, groups_train, groups_test) in enumerate(loop):
         data = []
         # This parallelization could probably be more efficient with an
@@ -107,3 +128,4 @@ def cross_clf_kfold(X, y, groups, clf_base, params_sets, cross_folds=10, test_fo
     # before
     clf = clf_base(**params)
     return params, test_clf_kfold(X, y, groups, clf, folds=cross_folds)
+
