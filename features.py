@@ -10,7 +10,8 @@ from utils import tokenize, \
         get_thermometer_encoding, get_eigenvalues, get_atom_counts, \
         get_bond_counts, get_angle_counts, get_dihedral_counts, get_trihedral_counts, \
         get_angle_bond_counts, get_dihedral_angle, get_angle_angle, get_bond_length, \
-        map_atom, get_connectivity_matrix, set_vector_length, construct_zmatrix_addition
+        map_atom, get_connectivity_matrix, set_vector_length, construct_zmatrix_addition, \
+        get_all_bond_types, get_type_data
 from constants import ARYL, RGROUPS
 
 
@@ -27,6 +28,35 @@ def get_null_feature(names, paths, **kwargs):
     loaded.
     '''
     return numpy.matrix(numpy.zeros((len(names), 0)))
+
+
+def get_local_atom_zmatrix(names, paths, **kwargs):
+    '''
+    pass
+    '''
+    # [atom_map, bond_map_sum, molecule_idx]
+    vectors = []
+
+    types = get_all_bond_types()
+    typemap, counts_base = get_type_data(types)
+
+    for i, (name, path) in enumerate(zip(names, paths)):
+        molecule = []
+        elements, numbers, coords = read_file_data(path)
+
+        for element in elements:
+            molecule.append((map_atom(element), counts_base[:], [i]))
+
+        _, bonds = get_bond_counts(elements, coords.tolist())
+        for bond in bonds:
+            bond_key = elements[bond[0]], elements[bond[1]], bond[2]
+            type_idx = typemap[bond_key]
+            for idx in bond[:2]:
+                molecule[idx][1][type_idx] += 1
+
+        for row in molecule:
+            vectors.append(sum(row, []))
+    return numpy.matrix(vectors)
 
 
 def get_local_zmatrix(names, paths, **kwargs):
