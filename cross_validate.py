@@ -35,7 +35,7 @@ def get_cross_validation_iter(X, y, groups, folds):
         yield X_train, X_test, y_train, y_test, groups_train, groups_test
 
 
-def get_cross_validation_iter2(X, y, groups):
+def get_cross_validation_pair_iter(X, y, groups):
     train_idx = numpy.where(groups == 0)[0].tolist()[0]
     test_idx = numpy.where(groups == 1)[0].tolist()[0]
 
@@ -70,7 +70,7 @@ def _parallel_params(params):
 def test_clf_kfold(X, y, groups, clf, folds=10):
     single_split = len(set(groups.T.tolist()[0])) == 2
     if single_split:
-        loop = get_cross_validation_iter2(X, y, groups)
+        loop = get_cross_validation_pair_iter(X, y, groups)
         results = numpy.zeros(1)
     else:
         loop = get_cross_validation_iter(X, y, groups, folds)
@@ -102,7 +102,7 @@ def cross_clf_kfold(X, y, groups, clf_base, params_sets, cross_folds=10, test_fo
 
     single_split = len(set(groups.T.tolist()[0])) == 2
     if single_split:
-        loop = get_cross_validation_iter2(X, y, groups)
+        loop = get_cross_validation_pair_iter(X, y, groups)
     else:
         loop = get_cross_validation_iter(X, y, groups, cross_folds)
 
