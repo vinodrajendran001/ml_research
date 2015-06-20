@@ -4,7 +4,7 @@ import cPickle
 import numpy
 
 from utils import tokenize, true_strip, erf_over_r, read_file_data, \
-         map_atom
+         map_atom, mkdir_p
 from constants import BHOR_TO_ANGSTROM, ARYL, NUM_TO_ELE, HARTREE_TO_KCAL
 
 DATA_BASE_DIR = "data"
@@ -79,6 +79,7 @@ def calculate_atomization_energies(atom_counts, energies):
 def build_gdb13_data():
     atom_idxs = {'H': 0, 'C': 1, 'N': 2, 'O': 3, 'F': 4}
     base_path = os.path.join(DATA_BASE_DIR, "gdb13")
+    mkdir_p(base_path)
 
     energies = []
     atom_counts = []
@@ -137,6 +138,7 @@ def load_gdb13_data():
 
 
 def build_qm7_data():
+    mkdir_p(os.path.join(DATA_BASE_DIR, "qm"))
     with open(os.path.join(DATA_BASE_DIR, "qm7.pkl"), "r") as f:
         temp = cPickle.load(f)
         X = temp['X'].reshape(7165, 23*23)
