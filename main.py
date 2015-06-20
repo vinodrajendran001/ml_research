@@ -105,7 +105,8 @@ def print_load_stats(names, paths):
 if __name__ == '__main__':
     feature_sets = (
         # ((features.get_null_feature, {}), ),
-        ((features.get_atom_feature, {}), ),
+        # ((features.get_local_atom_zmatrix, {}), ),
+        # ((features.get_atom_feature, {}), ),
         # ((features.get_atom_thermo_feature, {}), ),
         # ((features.get_connective_feature, {}), ),
         # ((features.get_bond_feature, {}), ),
@@ -125,13 +126,31 @@ if __name__ == '__main__':
         # (
         #     (features.get_atom_feature, {}),
         #     (features.get_bond_feature, {}),
+        #     (features.get_angle_bond_feature, {}),
+        # ),
+        # (
+        #     (features.get_atom_feature, {}),
+        #     (features.get_bond_feature, {}),
         #     (features.get_angle_feature, {}),
         #     (features.get_dihedral_feature, {}),
         # ),
         # (
         #     (features.get_atom_feature, {}),
         #     (features.get_bond_feature, {}),
+        #     (features.get_angle_bond_feature, {}),
+        #     (features.get_dihedral_feature, {}),
+        # ),
+        # (
+        #     (features.get_atom_feature, {}),
+        #     (features.get_bond_feature, {}),
         #     (features.get_angle_feature, {}),
+        #     (features.get_dihedral_feature, {}),
+        #     (features.get_trihedral_feature, {}),
+        # ),
+        # (
+        #     (features.get_atom_feature, {}),
+        #     (features.get_bond_feature, {}),
+        #     (features.get_angle_bond_feature, {}),
         #     (features.get_dihedral_feature, {}),
         #     (features.get_trihedral_feature, {}),
         # ),
