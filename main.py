@@ -241,7 +241,7 @@ if __name__ == '__main__':
 
     print_load_stats(names, geom_paths)
     sys.stdout.flush()
-    features, properties, groups = init_data(
+    feats, properties, groups = init_data(
                                             FEATURE_FUNCTIONS,
                                             names,
                                             datasets,
@@ -251,8 +251,7 @@ if __name__ == '__main__':
                                             properties,
                                         )
     dummy_results = print_property_statistics(properties, groups, cross_clf_kfold)
-
     sys.stdout.flush()
-    results = main(features, properties, groups, CLFS, cross_clf_kfold)
+    results = main(feats, properties, groups, CLFS, cross_clf_kfold)
     print_best_methods(results)
     # pprint.pprint(results)
