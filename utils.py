@@ -1,4 +1,5 @@
 import re
+import os
 from itertools import product
 
 from scipy.spatial.distance import cdist
@@ -7,6 +8,16 @@ import numpy
 from numpy.linalg import norm
 
 from constants import ELE_TO_NUM, BOND_LENGTHS, TYPE_ORDER, ARYL, ARYL0, RGROUPS
+
+
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:
+        import errno
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else: raise
 
 
 def true_strip(string, left, right):
