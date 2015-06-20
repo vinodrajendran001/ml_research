@@ -8,7 +8,6 @@ from sklearn import svm
 from sklearn import dummy
 from sklearn import kernel_ridge
 import numpy
-import matplotlib.pyplot as plt
 
 import features
 import clfs
@@ -74,10 +73,13 @@ def print_property_statistics(properties, groups, cross_validate, test_folds=5, 
         print "\t\tExpected error: %.4f +/- %.4f %s" % (test_mean, test_std, units)
         results[prop_name] = (test_mean, test_std)
 
-        n, bins, patches = plt.hist(prop, 50, normed=1, histtype='stepfilled')
-        plt.setp(patches, 'facecolor', 'g', 'alpha', 0.75)
-        plt.show()
-
+        try:
+            import matplotlib.pyplot as plt
+            n, bins, patches = plt.hist(prop, 50, normed=1, histtype='stepfilled')
+            plt.setp(patches, 'facecolor', 'g', 'alpha', 0.75)
+            plt.show()
+        except:
+            pass
     print
     return results
 
