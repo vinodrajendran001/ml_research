@@ -105,6 +105,8 @@ def print_load_stats(names, paths):
 
 
 if __name__ == '__main__':
+    distance_functions = [cosine_distance, lennard_jones, erf_over_r, one_over_sqrt]
+    powers = [-2, -1, -0.5, 0.5, 1, 2]
     feature_sets = (
         # ((features.get_null_feature, {}), ),
         # ((features.get_local_atom_zmatrix, {}), ),
@@ -166,10 +168,10 @@ if __name__ == '__main__':
         # ((features.get_eigen_coulomb_feature, {}), ),
         # ((features.get_sorted_coulomb_feature, {}), ),
         # ((features.get_sorted_coulomb_vector_feature, {}), ),
-        # ((features.get_distance_feature, {"power": [-2, -1]}), ),
-        # ((features.get_eigen_distance_feature, {"power": [-2, -1]}),#[-2, -1, -0.5, 0.5, 1, 2]}), ),
-        # ((features.get_custom_distance_feature, {"f": [cosine_distance, lennard_jones, erf_over_r, one_over_sqrt]}), ),
-        # ((features.get_eigen_custom_distance_feature, {"f": [lennard_jones, erf_over_r, one_over_sqrt]}), ),
+        # ((features.get_distance_feature, {"power": powers}), ),
+        # ((features.get_eigen_distance_feature, {"power": powers}), ),
+        # ((features.get_custom_distance_feature, {"f": distance_functions}), ),
+        # ((features.get_eigen_custom_distance_feature, {"f": distance_functions}), ),
         # ((features.get_fingerprint_feature, {"size": [128, 1024, 2048]}), ),
     )
 
