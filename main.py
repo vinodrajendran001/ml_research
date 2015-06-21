@@ -108,6 +108,7 @@ if __name__ == '__main__':
     distance_functions = [cosine_distance, lennard_jones, erf_over_r, one_over_sqrt]
     powers = [-2, -1, -0.5, 0.5, 1, 2]
     feature_sets = (
+        ((features.get_dihedral_bond_feature, {}), ),
         # ((features.get_null_feature, {}), ),
         # ((features.get_local_atom_zmatrix, {}), ),
         # ((features.get_atom_feature, {}), ),

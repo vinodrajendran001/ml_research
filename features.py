@@ -11,7 +11,7 @@ from utils import tokenize, \
         get_bond_counts, get_angle_counts, get_dihedral_counts, get_trihedral_counts, \
         get_angle_bond_counts, get_dihedral_angle, get_angle_angle, get_bond_length, \
         map_atom, get_connectivity_matrix, set_vector_length, construct_zmatrix_addition, \
-        get_all_bond_types, get_type_data
+        get_all_bond_types, get_type_data, get_dihedral_bond_counts
 from constants import ARYL, RGROUPS
 
 
@@ -369,6 +369,17 @@ def get_dihedral_feature(names, paths, **kwargs):
     for path in paths:
         elements, numbers, coords = read_file_data(path)
         counts, _ = get_dihedral_counts(elements, coords.tolist())
+        vectors.append(counts)
+    return numpy.matrix(vectors)
+
+
+def get_dihedral_bond_feature(names, paths, **kwargs):
+    '''
+    '''
+    vectors = []
+    for path in paths:
+        elements, numbers, coords = read_file_data(path)
+        counts, _ = get_dihedral_bond_counts(elements, coords.tolist())
         vectors.append(counts)
     return numpy.matrix(vectors)
 

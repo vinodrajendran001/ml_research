@@ -451,6 +451,55 @@ def get_dihedral_counts(elements, coords, angles=None, bonds=None):
     return counts, dihedrals
 
 
+def get_dihedral_bond_counts(elements, coords, angles=None, bonds=None):
+    # TODO: Add switch to add back improper dihedrals
+    if bonds is None:
+        _, bonds = get_bond_counts(elements, coords)
+        bonds_dict = dict(((x, y), z) if x < y else ((y, x), z) for x, y, z in bonds)
+    if angles is None:
+        _, angles = get_angle_bond_counts(elements, coords, bonds=bonds)
+    types = get_all_length_types(base_types=get_all_bond_types(), length=3)
+    types = [(x,y,z) for (x,y,z) in types if x[1] == y[0] and y[1] == z[0]]
+    typemap, counts = get_type_data(types)
+    dihedrals = []
+    for i, angle1 in enumerate(angles):
+        atoms1 = set(angle1[0][:2] + angle1[1][:2])
+        for j, angle2 in enumerate(angles[i + 1:]):
+            atoms2 = set(angle1[0][:2] + angle1[1][:2])
+            intersect = atoms1 & atoms2
+            if len(intersect) == 2:
+                idxs = []
+                for group in (atoms1, atoms2):
+                    idxs.append(list(group - intersect)[0])
+                    idxs.append(list(intersect - group)[0])
+
+                for idx1, idx2 in zip(idxs, idxs[1:]):
+                    if tuple(sorted((idx1, idx2))) in bonds_dict:
+                        continue
+                else:
+                    continue
+
+                eles = [elements[x] for x in idxs]
+
+                if eles[2] > eles[3]:
+                    # Flip if they are not in alphabetical order
+                    eles[2], eles[3] = eles[3], eles[2]
+                    idxs[2], idxs[3] = idxs[3], idxs[2]
+
+                    eles[1], eles[4] = eles[4], eles[1]
+                    idxs[1], idxs[4] = idxs[4], idxs[1]
+
+                di_bonds = []
+                for e1, e2, i1, i2 in zip(eles, eles[1:], idxs, idxs[1:]):
+                    b_type = bonds_dict[i1, i2] if i1 < i2 else bonds_dict[i2, i1]
+                    bond = (e1, e2, b_type)
+                di_bonds = tuple(di_bonds)
+
+                counts[typemap[di_bonds]] += 1
+                dihedrals.append(di_bonds)
+    return counts, dihedrals
+
+
 def get_trihedral_counts(elements, coords, dihedrals=None, angles=None, bonds=None):
     if dihedrals is None:
         _, dihedrals = get_dihedral_counts(elements, coords, bonds=bonds)
