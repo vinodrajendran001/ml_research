@@ -455,7 +455,7 @@ def get_dihedral_bond_counts(elements, coords, angles=None, bonds=None):
     # TODO: Add switch to add back improper dihedrals
     if bonds is None:
         _, bonds = get_bond_counts(elements, coords)
-        bonds_dict = dict(((x, y), z) if x < y else ((y, x), z) for x, y, z in bonds)
+    bonds_dict = dict(((x, y), z) if x < y else ((y, x), z) for x, y, z in bonds)
     if angles is None:
         _, angles = get_angle_bond_counts(elements, coords, bonds=bonds)
     types = get_all_length_types(base_types=get_all_bond_types(), length=3)
@@ -465,38 +465,43 @@ def get_dihedral_bond_counts(elements, coords, angles=None, bonds=None):
     for i, angle1 in enumerate(angles):
         atoms1 = set(angle1[0][:2] + angle1[1][:2])
         for j, angle2 in enumerate(angles[i + 1:]):
-            atoms2 = set(angle1[0][:2] + angle1[1][:2])
+            atoms2 = set(angle2[0][:2] + angle2[1][:2])
             intersect = atoms1 & atoms2
             if len(intersect) == 2:
-                idxs = []
-                for group in (atoms1, atoms2):
-                    idxs.append(list(group - intersect)[0])
-                    idxs.append(list(intersect - group)[0])
+                idxs = [None, None, None, None]
 
-                for idx1, idx2 in zip(idxs, idxs[1:]):
-                    if tuple(sorted((idx1, idx2))) in bonds_dict:
-                        continue
-                else:
+                idxs[0] = list(atoms1 - intersect)[0]
+                idxs[3] = list(atoms2 - intersect)[0]
+                idxs[1] = [x for x in intersect if (idxs[0], x) in bonds_dict or (x, idxs[0]) in bonds_dict][0]
+                idxs[2] = [x for x in intersect if (idxs[3], x) in bonds_dict or (x, idxs[3]) in bonds_dict][0]
+
+                groups = [tuple(sorted((idx1, idx2))) for idx1, idx2 in zip(idxs, idxs[1:])]
+                if not all(x in bonds_dict for x in groups):
                     continue
 
                 eles = [elements[x] for x in idxs]
 
-                if eles[2] > eles[3]:
+                if eles[1] > eles[2]:
                     # Flip if they are not in alphabetical order
-                    eles[2], eles[3] = eles[3], eles[2]
-                    idxs[2], idxs[3] = idxs[3], idxs[2]
+                    eles[1], eles[2] = eles[2], eles[1]
+                    idxs[1], idxs[2] = idxs[2], idxs[1]
 
-                    eles[1], eles[4] = eles[4], eles[1]
-                    idxs[1], idxs[4] = idxs[4], idxs[1]
+                    eles[0], eles[3] = eles[3], eles[0]
+                    idxs[0], idxs[3] = idxs[3], idxs[0]
 
                 di_bonds = []
                 for e1, e2, i1, i2 in zip(eles, eles[1:], idxs, idxs[1:]):
                     b_type = bonds_dict[i1, i2] if i1 < i2 else bonds_dict[i2, i1]
                     bond = (e1, e2, b_type)
+                    di_bonds.append(bond)
                 di_bonds = tuple(di_bonds)
 
-                counts[typemap[di_bonds]] += 1
-                dihedrals.append(di_bonds)
+                try:
+                    counts[typemap[di_bonds]] += 1
+                    dihedrals.append(di_bonds)
+                except:
+                    print di_bonds
+
     return counts, dihedrals
 
 
