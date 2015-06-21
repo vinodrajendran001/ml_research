@@ -375,6 +375,10 @@ def get_dihedral_feature(names, paths, **kwargs):
 
 def get_dihedral_bond_feature(names, paths, **kwargs):
     '''
+    This feature vector is an expansion in the same way the angle_bond feature
+    is. It converts (C, C, C, C) type dihedrals into something like
+    ((C, C, 1), (C, C, 2), (C, C, 1)) which is different from
+    ((C, C, 2), (C, C, 1), (C, C, 1)).
     '''
     vectors = []
     for path in paths:
