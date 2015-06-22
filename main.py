@@ -205,6 +205,14 @@ if __name__ == '__main__':
             }
         ),
         # (
+        #     "KernelRidge",
+        #     clfs.KRRLaplace,
+        #     {
+        #         "alpha": [10. ** x for x in xrange(-7, 1, 2)],
+        #         "gamma": [10. ** x for x in xrange(-7, 7, 2)],
+        #     }
+        # ),
+        # (
         #     "SVM",
         #     svm.SVR,
         #     {
@@ -259,4 +267,4 @@ if __name__ == '__main__':
     sys.stdout.flush()
     results = main(feats, properties, groups, CLFS, cross_clf_kfold)
     print_best_methods(results)
-    # pprint.pprint(results)
+
