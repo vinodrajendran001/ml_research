@@ -91,6 +91,12 @@ def homogenize_lengths(vectors):
     return numpy.matrix(feat)
 
 
+def remove_zero_cols(vectors):
+    temp = numpy.array(vectors)
+    sums = temp.sum(0)
+    return temp[:,sums>0]
+
+
 def get_thermometer_encoding(X, step=1):
     '''
     This is another method of encoding floating point values so that they work

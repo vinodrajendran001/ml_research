@@ -11,7 +11,7 @@ from utils import tokenize, \
         get_bond_counts, get_angle_counts, get_dihedral_counts, get_trihedral_counts, \
         get_angle_bond_counts, get_dihedral_angle, get_angle_angle, get_bond_length, \
         map_atom, get_connectivity_matrix, set_vector_length, construct_zmatrix_addition, \
-        get_all_bond_types, get_type_data, get_dihedral_bond_counts
+        get_all_bond_types, get_type_data, get_dihedral_bond_counts, remove_zero_cols
 from constants import ARYL, RGROUPS
 
 
@@ -302,7 +302,7 @@ def get_atom_feature(names, paths, **kwargs):
     for path in paths:
         elements, numbers, coords = read_file_data(path)
         vectors.append(get_atom_counts(elements))
-    return numpy.matrix(vectors)
+    return remove_zero_cols(vectors)
 
 
 def get_atom_thermo_feature(names, paths, **kwargs):
@@ -319,7 +319,7 @@ def get_atom_thermo_feature(names, paths, **kwargs):
         for ele_count, max_count in zip(row.tolist()[0], lengths):
             temp_vec += ele_count * [1] + (max_count - ele_count) * [0]
         vectors.append(temp_vec)
-    return numpy.matrix(vectors)
+    return remove_zero_cols(vectors)
 
 
 def get_bond_feature(names, paths, **kwargs):
@@ -331,7 +331,7 @@ def get_bond_feature(names, paths, **kwargs):
         elements, numbers, coords = read_file_data(path)
         counts, _ = get_bond_counts(elements, coords.tolist())
         vectors.append(counts)
-    return numpy.matrix(vectors)
+    return remove_zero_cols(vectors)
 
 
 def get_angle_feature(names, paths, **kwargs):
@@ -343,7 +343,7 @@ def get_angle_feature(names, paths, **kwargs):
         elements, numbers, coords = read_file_data(path)
         counts, _ = get_angle_counts(elements, coords.tolist())
         vectors.append(counts)
-    return numpy.matrix(vectors)
+    return remove_zero_cols(vectors)
 
 
 def get_angle_bond_feature(names, paths, **kwargs):
@@ -358,7 +358,7 @@ def get_angle_bond_feature(names, paths, **kwargs):
         elements, numbers, coords = read_file_data(path)
         counts, _ = get_angle_bond_counts(elements, coords.tolist())
         vectors.append(counts)
-    return numpy.matrix(vectors)
+    return remove_zero_cols(vectors)
 
 
 def get_dihedral_feature(names, paths, **kwargs):
@@ -370,7 +370,7 @@ def get_dihedral_feature(names, paths, **kwargs):
         elements, numbers, coords = read_file_data(path)
         counts, _ = get_dihedral_counts(elements, coords.tolist())
         vectors.append(counts)
-    return numpy.matrix(vectors)
+    return remove_zero_cols(vectors)
 
 
 def get_dihedral_bond_feature(names, paths, **kwargs):
@@ -385,7 +385,7 @@ def get_dihedral_bond_feature(names, paths, **kwargs):
         elements, numbers, coords = read_file_data(path)
         counts, _ = get_dihedral_bond_counts(elements, coords.tolist())
         vectors.append(counts)
-    return numpy.matrix(vectors)
+    return remove_zero_cols(vectors)
 
 
 def get_trihedral_feature(names, paths, **kwargs):
@@ -397,7 +397,7 @@ def get_trihedral_feature(names, paths, **kwargs):
         elements, numbers, coords = read_file_data(path)
         counts, _ = get_trihedral_counts(elements, coords.tolist())
         vectors.append(counts)
-    return numpy.matrix(vectors)
+    return remove_zero_cols(vectors)
 
 
 def get_binary_feature(names, paths, limit=4, **kwargs):
