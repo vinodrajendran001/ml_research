@@ -218,6 +218,10 @@ def lennard_jones(r):
     return mat
 
 
+def sigmoid(r):
+    return 1. / (1 + numpy.exp(-r))
+
+
 def cosine_distance(r, cutoff=6.):
     '''
     This is based off the distance function from:
@@ -338,6 +342,19 @@ def get_bond_type(element1, element2, dist):
             continue
 
 
+def get_fractional_bond_types(element1, element2, dist, slope=10.):
+    values = []
+    for key in TYPE_ORDER:
+        try:
+            a = BOND_LENGTHS[element1][key]
+            b = BOND_LENGTHS[element2][key]
+            r = (a + b) - dist
+            values.append(sigmoid(slope * r))
+        except KeyError:
+            return values
+    return values
+
+
 def get_bond_counts(elements, coords):
     types = get_all_bond_types()
     typemap, counts = get_type_data(types)
@@ -357,6 +374,25 @@ def get_bond_counts(elements, coords):
                     bonds.append((i, j, bond_type))
                     counts[typemap[element1, element2, bond_type]] += 1
     return counts, bonds
+
+
+def get_fractional_bond_counts(elements, coords, slope=10.):
+    types = get_all_bond_types()
+    typemap, counts = get_type_data(types)
+
+    distances = get_distance_matrix(coords, power=1)
+    for i, element1 in enumerate(elements):
+        for j, element2 in enumerate(elements[i + 1:]):
+            j += i + 1
+            r = distances[i, j]
+            values = get_fractional_bond_types(element1, element2, r, slope=slope)
+            for bond_type, value in zip(TYPE_ORDER, values):
+                if element1 > element2:
+                    # Flip if they are not in alphabetical order
+                    counts[typemap[element2, element1, bond_type]] += value
+                else:
+                    counts[typemap[element1, element2, bond_type]] += value
+    return counts
 
 
 def get_angle_counts(elements, coords, bonds=None):
