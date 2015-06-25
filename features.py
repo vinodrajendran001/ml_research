@@ -12,7 +12,7 @@ from utils import tokenize, \
         get_angle_bond_counts, get_dihedral_angle, get_angle_angle, get_bond_length, \
         map_atom, get_connectivity_matrix, set_vector_length, construct_zmatrix_addition, \
         get_all_bond_types, get_type_data, get_dihedral_bond_counts, remove_zero_cols, \
-        get_fractional_bond_counts
+        get_fractional_bond_counts, get_encoded_lengths
 from constants import ARYL, RGROUPS
 
 
@@ -340,6 +340,16 @@ def get_fractional_bond_feature(names, paths, slope=10., **kwargs):
     for path in paths:
         elements, numbers, coords = read_file_data(path)
         counts = get_fractional_bond_counts(elements, coords.tolist(), slope=slope)
+        vectors.append(counts)
+    return remove_zero_cols(vectors)
+
+
+
+def get_encoded_bond_feature(names, paths, segments=10, slope=1., **kwargs):
+    vectors = []
+    for path in paths:
+        elements, numbers, coords = read_file_data(path)
+        counts = get_encoded_lengths(elements, coords.tolist(), segments=segments, slope=slope)
         vectors.append(counts)
     return remove_zero_cols(vectors)
 

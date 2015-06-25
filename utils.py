@@ -395,6 +395,23 @@ def get_fractional_bond_counts(elements, coords, slope=10.):
     return counts
 
 
+def get_encoded_lengths(elements, coords, segments=10, start=0.2, end=6, slope=1):
+    ele_idx = {ele: i for i, ele in enumerate(ELE_TO_NUM)}
+    vector = numpy.zeros((len(ELE_TO_NUM), len(ELE_TO_NUM), segments))
+    theta = numpy.linspace(start, end, segments)
+
+    distances = get_distance_matrix(coords, power=1)
+    for i, element1 in enumerate(elements):
+        for j, element2 in enumerate(elements[i + 1:]):
+            j += i + 1
+            value = sigmoid(slope * (theta - distances[i, j]))
+            if element1 < element2:
+                vector[ele_idx[element1], ele_idx[element2]] += value
+            else:
+                vector[ele_idx[element2], ele_idx[element1]] += value
+    return vector.flatten().tolist()
+
+
 def get_angle_counts(elements, coords, bonds=None):
     if bonds is None:
         _, bonds = get_bond_counts(elements, coords)
@@ -499,6 +516,7 @@ def get_dihedral_bond_counts(elements, coords, angles=None, bonds=None):
         _, angles = get_angle_bond_counts(elements, coords, bonds=bonds)
     types = get_all_length_types(base_types=get_all_bond_types(), length=3)
     types = [(x,y,z) for (x,y,z) in types if x[1] == y[0] and y[1] == z[0]]
+    # types = [(x,y,z) for (x,y,z) in types if any(a in y for a in x) and any(a in z for a in y)]
     typemap, counts = get_type_data(types)
     dihedrals = []
     for i, angle1 in enumerate(angles):
