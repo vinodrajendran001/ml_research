@@ -254,7 +254,7 @@ if __name__ == '__main__':
             }
         ),
         # (
-        #     "KernelRidge",
+        #     "KernelRidgeLaplace",
         #     clfs.KRRLaplace,
         #     {
         #         "alpha": [10. ** x for x in xrange(-7, 1, 2)],
