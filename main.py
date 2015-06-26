@@ -126,28 +126,61 @@ if __name__ == '__main__':
         # ((features.get_trihedral_feature, {}), ),
         # (
         #     (features.get_atom_feature, {}),
-        #     (features.get_bond_feature, {}),
+        #     (features.get_fractional_bond_feature, {"slope": slopes[:4]}),
         # ),
         # (
         #     (features.get_atom_feature, {}),
-        #     (features.get_bond_feature, {}),
+        #     (features.get_fractional_bond_feature, {"slope": slopes[:4]}),
         #     (features.get_angle_feature, {}),
         # ),
         # (
         #     (features.get_atom_feature, {}),
-        #     (features.get_bond_feature, {}),
-        #     (features.get_angle_bond_feature, {}),
-        # ),
-        # (
-        #     (features.get_atom_feature, {}),
-        #     (features.get_bond_feature, {}),
+        #     (features.get_fractional_bond_feature, {"slope": slopes[:4]}),
         #     (features.get_angle_feature, {}),
         #     (features.get_dihedral_feature, {}),
         # ),
         # (
         #     (features.get_atom_feature, {}),
+        #     (features.get_fractional_bond_feature, {"slope": slopes[:4]}),
+        #     (features.get_angle_feature, {}),
+        #     (features.get_dihedral_feature, {}),
+        #     (features.get_trihedral_feature, {}),
+        # ),
+        # (
+        #     (features.get_atom_feature, {}),
+        #     (features.get_encoded_bond_feature, {"slope": slopes[:3], "segments": segments}),
+        # ),
+        # (
+        #     (features.get_atom_feature, {}),
+        #     (features.get_encoded_bond_feature, {"slope": slopes[:3], "segments": segments}),
+        #     (features.get_angle_feature, {}),
+        # ),
+        # (
+        #     (features.get_atom_feature, {}),
+        #     (features.get_encoded_bond_feature, {"slope": slopes[:3], "segments": segments}),
+        #     (features.get_angle_feature, {}),
+        #     (features.get_dihedral_feature, {}),
+        # ),
+        # (
+        #     (features.get_atom_feature, {}),
+        #     (features.get_encoded_bond_feature, {"slope": slopes[:3], "segments": segments}),
+        #     (features.get_angle_feature, {}),
+        #     (features.get_dihedral_feature, {}),
+        #     (features.get_trihedral_feature, {}),
+        # ),
+        # (
+        #     (features.get_atom_feature, {}),
         #     (features.get_bond_feature, {}),
-        #     (features.get_angle_bond_feature, {}),
+        # ),
+        # (
+        #     (features.get_atom_feature, {}),
+        #     (features.get_bond_feature, {}),
+        #     (features.get_angle_feature, {}),
+        # ),
+        # (
+        #     (features.get_atom_feature, {}),
+        #     (features.get_bond_feature, {}),
+        #     (features.get_angle_feature, {}),
         #     (features.get_dihedral_feature, {}),
         # ),
         # (
@@ -156,6 +189,17 @@ if __name__ == '__main__':
         #     (features.get_angle_feature, {}),
         #     (features.get_dihedral_feature, {}),
         #     (features.get_trihedral_feature, {}),
+        # ),
+        # (
+        #     (features.get_atom_feature, {}),
+        #     (features.get_bond_feature, {}),
+        #     (features.get_angle_bond_feature, {}),
+        # ),
+        # (
+        #     (features.get_atom_feature, {}),
+        #     (features.get_bond_feature, {}),
+        #     (features.get_angle_bond_feature, {}),
+        #     (features.get_dihedral_feature, {}),
         # ),
         # (
         #     (features.get_atom_feature, {}),
