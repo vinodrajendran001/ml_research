@@ -336,6 +336,15 @@ def get_bond_feature(names, paths, **kwargs):
 
 
 def get_fractional_bond_feature(names, paths, slope=10., **kwargs):
+    '''
+    This feature vector makes bond type into a continuous function.
+    This is done by looking at all the atoms in the molecule and applying
+    a sigmoid function based on how close the atoms are to a given bond type.
+    These values are then summed together just like the normal bond feature.
+    The `slope` parameter defines how step the sigmoid is. The limit as this
+    value goes to infinity is the normal bond feature. As it goes to zero, it
+    it turns into just a summation of all possible pairwise interactions.
+    '''
     vectors = []
     for path in paths:
         elements, numbers, coords = read_file_data(path)
@@ -346,6 +355,17 @@ def get_fractional_bond_feature(names, paths, slope=10., **kwargs):
 
 
 def get_encoded_bond_feature(names, paths, segments=10, slope=1., **kwargs):
+    '''
+    This is another feature vector attempting to make the bond feature
+    continuous. This is done by applying a thermometer-like encoding
+    to the distance between any two atoms. These interactions are then
+    summed together just like with the bond counting method. This feature
+    vector can be seen as creating a `segments` amount of bond types that are
+    evenly spaced. The `slope` parameter defines the sharpness of the
+    transition.
+    Note: Increasing the value of `segments` directly increases the size of
+    the resulting feature vector.
+    '''
     vectors = []
     for path in paths:
         elements, numbers, coords = read_file_data(path)
