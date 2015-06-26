@@ -107,17 +107,22 @@ def print_load_stats(names, paths):
 if __name__ == '__main__':
     distance_functions = [cosine_distance, lennard_jones, erf_over_r, one_over_sqrt]
     powers = [-2, -1, -0.5, 0.5, 1, 2]
+    slopes = [1., 5., 10., 20., 50., 100.]
+    segments = [10, 25, 50, 100]
+
     feature_sets = (
-        ((features.get_dihedral_bond_feature, {}), ),
         # ((features.get_null_feature, {}), ),
         # ((features.get_local_atom_zmatrix, {}), ),
         # ((features.get_atom_feature, {}), ),
         # ((features.get_atom_thermo_feature, {}), ),
         # ((features.get_connective_feature, {}), ),
         # ((features.get_bond_feature, {}), ),
+        # ((features.get_fractional_bond_feature, {"slope": slopes}), ),
+        # ((features.get_encoded_bond_feature, {"slope": slopes[:3], "segments": segments}), ),
         # ((features.get_angle_feature, {}), ),
         # ((features.get_angle_bond_feature, {}), ),
         # ((features.get_dihedral_feature, {}), ),
+        # ((features.get_dihedral_bond_feature, {}), ),
         # ((features.get_trihedral_feature, {}), ),
         # (
         #     (features.get_atom_feature, {}),
