@@ -112,7 +112,7 @@ if __name__ == '__main__':
 
     feature_sets = (
         # ((features.get_null_feature, {}), ),
-        # ((features.get_local_atom_zmatrix, {}), ),
+        # ((features.get_local_atom_zmatrix_feature, {}), ),
         # ((features.get_atom_feature, {}), ),
         # ((features.get_atom_thermo_feature, {}), ),
         # ((features.get_connective_feature, {}), ),

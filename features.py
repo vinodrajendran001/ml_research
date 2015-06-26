@@ -169,7 +169,7 @@ def get_local_zmatrix(names, paths, **kwargs):
     return vectors
 
 
-def get_full_local_zmatrix(names, paths, **kwargs):
+def get_full_local_zmatrix_feature(names, paths, **kwargs):
     '''
     A feature vector that uses the idea of a local zmatrix. This expands
     the standard local zmatrix by being applied to every bond within the
