@@ -39,6 +39,14 @@ def get_cross_validation_iter(X, y, groups, folds):
 
 
 def get_cross_validation_pair_iter(X, y, groups):
+    '''
+    Splits test/train into groups if they are already specified by their
+    groups. Once they are split into test and train, all the values in both of
+    the sets are given new group numbers (otherwise all of them would be in
+    the same group).
+
+    This can be used if the test/train split is known beforehand.
+    '''
     train_idx = numpy.where(groups == 0)[0].tolist()[0]
     test_idx = numpy.where(groups == 1)[0].tolist()[0]
     new_groups = numpy.matrix(numpy.arange(max(train_idx + test_idx) + 1)).T
@@ -104,7 +112,10 @@ def cross_clf_kfold(X, y, groups, clf_base, params_sets, cross_folds=10, test_fo
         loop = get_cross_validation_iter(X, y, groups, cross_folds)
 
     # Calculate the cross validation errors for all of the parameter sets.
-    for i, (X_train, X_test, y_train, y_test, groups_train, groups_test) in enumerate(loop):
+    # The `_` variables correspond to the test groups that get left out of the
+    # cross validation portion. They are like this just to reduce confusion
+    # since they are otherwise not used.
+    for i, (X_train, _, y_train, _, groups_train, _) in enumerate(loop):
         data = []
         # This parallelization could probably be more efficient with an
         # iterator
