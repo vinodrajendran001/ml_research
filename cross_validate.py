@@ -7,6 +7,15 @@ from sklearn.metrics import mean_absolute_error
 
 from utils import p_map
 
+def data_split(X, y, groups, train_sel, test_sel):
+    X_train = X[train_sel]
+    X_test = X[test_sel]
+    y_train = y[train_sel].T.tolist()[0]
+    y_test = y[test_sel].T.tolist()[0]
+    groups_train = groups[train_sel].T.tolist()[0]
+    groups_test = groups[test_sel].T.tolist()[0]
+    return X_train, X_test, y_train, y_test, groups_train, groups_test
+
 
 def get_cross_validation_iter(X, y, groups, folds):
     '''
@@ -26,27 +35,14 @@ def get_cross_validation_iter(X, y, groups, folds):
 
         train_mask = numpy.in1d(groups, train_idx)
         test_mask = numpy.in1d(groups, test_idx)
-
-        X_train = X[train_mask]
-        X_test = X[test_mask]
-        y_train = y[train_mask].T.tolist()[0]
-        y_test = y[test_mask].T.tolist()[0]
-        groups_train = groups[train_mask].T.tolist()[0]
-        groups_test = groups[test_mask].T.tolist()[0]
-        yield X_train, X_test, y_train, y_test, groups_train, groups_test
+        yield data_split(X, y, groups, train_mask, test_mask)
 
 
 def get_cross_validation_pair_iter(X, y, groups):
     train_idx = numpy.where(groups == 0)[0].tolist()[0]
     test_idx = numpy.where(groups == 1)[0].tolist()[0]
-
-    X_train = X[train_idx]
-    X_test = X[test_idx]
-    y_train = y[train_idx].T.tolist()[0]
-    y_test = y[test_idx].T.tolist()[0]
-    groups_train = numpy.arange(len(train_idx))
-    groups_test = numpy.arange(len(test_idx))
-    yield X_train, X_test, y_train, y_test, groups_train, groups_test
+    new_groups = numpy.matrix(numpy.arange(max(train_idx + test_idx) + 1)).T
+    yield data_split(X, y, new_groups, train_idx, test_idx)
 
 
 def _parallel_params(params):
