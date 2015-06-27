@@ -1,6 +1,7 @@
 import re
 import os
 from itertools import product
+from multiprocessing import Pool, cpu_count
 
 from scipy.spatial.distance import cdist
 from scipy.special import erf
@@ -11,6 +12,10 @@ from constants import ELE_TO_NUM, BOND_LENGTHS, TYPE_ORDER, ARYL, ARYL0, RGROUPS
 
 
 def mkdir_p(path):
+    '''
+    This function acts the same way as the unix command:
+    $ mkdir -p some/path/
+    '''
     try:
         os.makedirs(path)
     except OSError as exc:
@@ -18,6 +23,19 @@ def mkdir_p(path):
         if exc.errno == errno.EEXIST and os.path.isdir(path):
             pass
         else: raise
+
+
+def p_map(f, data):
+    '''
+    A wrapper function to make parallel mapping easier. This function collects
+    together all of the cleanup code that is required.
+    '''
+    pool = Pool(processes=min(cpu_count(), len(data)))
+    results = pool.map(f, data)
+    pool.close()
+    pool.terminate()
+    pool.join()
+    return results
 
 
 def true_strip(string, left, right):

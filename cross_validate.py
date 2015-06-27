@@ -1,10 +1,11 @@
 import sys
 from itertools import product
-from multiprocessing import Pool, cpu_count
 
 import numpy
 from sklearn import cross_validation
 from sklearn.metrics import mean_absolute_error
+
+from utils import p_map
 
 
 def get_cross_validation_iter(X, y, groups, folds):
@@ -114,13 +115,7 @@ def cross_clf_kfold(X, y, groups, clf_base, params_sets, cross_folds=10, test_fo
         for p_vals in product(*params_sets.values()):
             data.append((X_train, y_train, groups_train, clf_base, param_names, p_vals, test_folds))
 
-        pool = Pool(processes=min(cpu_count(), len(data)))
-        results = pool.map(_parallel_params, data)
-        pool.close()
-        pool.terminate()
-        pool.join()
-
-        cross[i,:] = results
+        cross[i,:] = p_map(_parallel_params, data)
 
     # Get the set of parameters with the lowest cross validation error
     idx = numpy.argmin(cross.mean(0))
