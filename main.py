@@ -4,9 +4,7 @@ import pprint
 from itertools import product
 
 from sklearn import linear_model
-from sklearn import svm
 from sklearn import dummy
-from sklearn import kernel_ridge
 import numpy
 
 import features
@@ -246,32 +244,16 @@ if __name__ == '__main__':
         ),
         (
             "KernelRidge",
-            kernel_ridge.KernelRidge,
+            clfs.KRR,
             {
                 "alpha": [10. ** x for x in xrange(-7, 1, 2)],
-                "kernel": ["rbf"],
+                "kernel": ["rbf", "laplace"],
                 "gamma": [10. ** x for x in xrange(-7, 7, 2)],
             }
         ),
         # (
-        #     "KernelRidgeLaplace",
-        #     clfs.KRRLaplace,
-        #     {
-        #         "alpha": [10. ** x for x in xrange(-7, 1, 2)],
-        #         "gamma": [10. ** x for x in xrange(-7, 7, 2)],
-        #     }
-        # ),
-        # (
         #     "SVM",
-        #     svm.SVR,
-        #     {
-        #         'C': [10. ** x for x in xrange(-1, 4)],
-        #         "gamma": [10. ** x for x in xrange(-4, 0)],
-        #     }
-        # ),
-        # (
-        #     "SVMLaplace",
-        #     clfs.SVMLaplace,
+        #     clfs.SVM,
         #     {
         #         'C': [10. ** x for x in xrange(-1, 4)],
         #         "gamma": [10. ** x for x in xrange(-4, 0)],

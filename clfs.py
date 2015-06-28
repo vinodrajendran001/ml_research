@@ -67,28 +67,39 @@ def laplace_kernel(X, Y, gamma=1.):
     return numpy.exp(-gamma * cdist(X, Y, metric='cityblock'))
 
 
-
-class SVMLaplace(svm.SVR):
+class SVM(svm.SVR):
     def __init__(self, kernel='rbf', degree=3, gamma=0.0, coef0=0.0, tol=1e-3,
                  C=1.0, epsilon=0.1, shrinking=True, cache_size=200,
                  verbose=False, max_iter=-1):
-        super(SVMLaplace, self).__init__(kernel=kernel, degree=degree, gamma=gamma, coef0=coef0, tol=tol,
+        super(SVM, self).__init__(kernel=kernel, degree=degree, gamma=gamma, coef0=coef0, tol=tol,
                  C=C, epsilon=epsilon, shrinking=shrinking, cache_size=cache_size, verbose=verbose,
                  max_iter=max_iter)
-        self.kernel = laplace_kernel_gen(gamma)
+        if kernel == "laplace":
+            self.kernel = laplace_kernel_gen(gamma)
 
 
-class KRRLaplace(kernel_ridge.KernelRidge):
+class KRR(kernel_ridge.KernelRidge):
     def __init__(self, alpha=1, kernel="precomputed", gamma=1., degree=3, coef0=1, kernel_params=None):
-        super(KRRLaplace, self).__init__(alpha=alpha, kernel=kernel, gamma=gamma, degree=degree,
+        super(KRR, self).__init__(alpha=alpha, kernel=kernel, gamma=gamma, degree=degree,
             coef0=coef0, kernel_params=kernel_params)
-        self.kernel = "precomputed"
+        if kernel == "laplace":
+            self.kernel = "precomputed"
+            self._laplace_kernel = True
+        else:
+            self._laplace_kernel = False
 
     def fit(self, X, y):
-        self._input_X = X
-        K = laplace_kernel(X, X, gamma=self.gamma)
-        return super(KRRLaplace, self).fit(K, y)
+        if self._laplace_kernel:
+            self._input_X = X
+            K = laplace_kernel(X, X, gamma=self.gamma)
+        else:
+            K = X
+        return super(KRR, self).fit(K, y)
+
 
     def predict(self, X):
-        K = laplace_kernel(X, self._input_X, gamma=self.gamma)
-        return super(KRRLaplace, self).predict(K)
+        if self._laplace_kernel:
+            K = laplace_kernel(X, self._input_X, gamma=self.gamma)
+        else:
+            K = X
+        return super(KRR, self).predict(K)
