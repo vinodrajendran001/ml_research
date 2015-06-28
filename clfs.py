@@ -56,7 +56,7 @@ def laplace_kernel_gen(sigma):
     the same way that can be done with the normal RBF kernel.
     '''
     def func(X, Y):
-        return numpy.exp(sigma*-cdist(X,Y))
+        return numpy.exp(-sigma*cdist(X, Y, metric='cityblock'))
     return func
 
 
@@ -70,7 +70,7 @@ def laplace_kernel_gen2(sigma):
     hours).
     '''
     def func(X, Y):
-        return numpy.exp(sigma*-norm(X-Y))
+        return numpy.exp(-sigma*norm(X-Y, 1))
     return func
 
 
