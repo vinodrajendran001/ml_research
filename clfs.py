@@ -60,18 +60,12 @@ def laplace_kernel_gen(sigma):
     return func
 
 
-def laplace_kernel_gen2(sigma):
+def laplace_kernel(X, Y, gamma=1.):
     '''
-    This is a hack to be able to pass aribitry sigma values to SVMLaplace in
-    the same way that can be done with the normal RBF kernel.
+    A simple implementation of the Laplace Kernel for KRR.
+    '''
+    return numpy.exp(-gamma * cdist(X, Y, metric='cityblock'))
 
-    This second function is for the KRR. For some reason, in the KRR code it
-    does it per vector, so it is much faster to do it this way (minutes vs
-    hours).
-    '''
-    def func(X, Y):
-        return numpy.exp(-sigma*norm(X-Y, 1))
-    return func
 
 
 class SVMLaplace(svm.SVR):
@@ -85,9 +79,16 @@ class SVMLaplace(svm.SVR):
 
 
 class KRRLaplace(kernel_ridge.KernelRidge):
-    def __init__(self, alpha=1, kernel='linear', gamma=None, degree=3, coef0=1, kernel_params=None):
+    def __init__(self, alpha=1, kernel="precomputed", gamma=1., degree=3, coef0=1, kernel_params=None):
         super(KRRLaplace, self).__init__(alpha=alpha, kernel=kernel, gamma=gamma, degree=degree,
             coef0=coef0, kernel_params=kernel_params)
-        self.kernel = laplace_kernel_gen2(gamma)
+        self.kernel = "precomputed"
 
+    def fit(self, X, y):
+        self._input_X = X
+        K = laplace_kernel(X, X, gamma=self.gamma)
+        return super(KRRLaplace, self).fit(K, y)
 
+    def predict(self, X):
+        K = laplace_kernel(X, self._input_X, gamma=self.gamma)
+        return super(KRRLaplace, self).predict(K)
