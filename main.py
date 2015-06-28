@@ -300,6 +300,9 @@ if __name__ == '__main__':
                                                             struct_set,
                                                             prop_set,
                                                         )
+    else:
+        print "Not a valid dataset"
+        exit(0)
 
     print_load_stats(names, geom_paths)
     sys.stdout.flush()
