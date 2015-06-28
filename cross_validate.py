@@ -25,7 +25,7 @@ def get_cross_validation_iter(X, y, groups, folds):
     unique_groups = list(set([x[0,0] for x in groups]))
     for train_idx, test_idx in cross_validation.KFold(
                                         len(unique_groups),
-                                        n_folds=folds,
+                                        n_folds=min(folds, len(unique_groups)),
                                         shuffle=True,
                                         random_state=1):
         # This is to fix cases when some of the groups may not exist
