@@ -177,10 +177,14 @@ def load_qm7_data():
         R = temp['R']
         T = temp['T']
         P = temp['P']
+    Psets = [set(x.tolist()) for x in P]
 
     for i, (zs, coords, t) in enumerate(zip(Z, R, T)):
         name = "qm-%04d" % i
         path = os.path.join(base_path, name + ".out")
+        for j, value in enumerate(Psets):
+            if i in value:
+                name = str(j)
         names.append(name)
         datasets.append((1, ))
         geom_paths.append(path)
