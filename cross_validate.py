@@ -73,7 +73,8 @@ def _parallel_params(params):
 
 
 def test_clf_kfold(X, y, groups, clf, folds=10):
-    single_split = len(set(groups.T.tolist()[0])) == 2
+    group_set = set(groups.T.tolist()[0])
+    single_split = len(group_set) == 2 and group_set == set([0, 1])
     if single_split:
         loop = get_cross_validation_pair_iter(X, y, groups)
         results = numpy.zeros(1)
@@ -105,7 +106,8 @@ def cross_clf_kfold(X, y, groups, clf_base, params_sets, cross_folds=10, test_fo
     n_sets = len(list(product(*params_sets.values())))
     cross = numpy.zeros((cross_folds, n_sets))
 
-    single_split = len(set(groups.T.tolist()[0])) == 2
+    group_set = set(groups.T.tolist()[0])
+    single_split = len(group_set) == 2 and group_set == set([0, 1])
     if single_split:
         loop = get_cross_validation_pair_iter(X, y, groups)
     else:
