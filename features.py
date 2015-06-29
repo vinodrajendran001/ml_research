@@ -714,6 +714,37 @@ def get_coulomb_feature(names, paths, **kwargs):
     return homogenize_lengths(vectors)
 
 
+def get_bag_of_bonds_feature(names, paths, **kwargs):
+    from itertools import product
+    from constants import ELE_TO_NUM
+
+    keys = set(tuple(sorted(x)) for x in product(ELE_TO_NUM, ELE_TO_NUM))
+
+    bags = {key: [] for key in keys}
+    for path in paths:
+        elements, numbers, coords = read_file_data(path)
+        mat = get_coulomb_matrix(numbers, coords)
+
+        for key in keys:
+            bags[key].append([])
+
+        for i, ele1 in enumerate(elements):
+            for j, ele2 in enumerate(elements):
+                if i >= j:
+                    continue
+                if ele1 < ele2:
+                    bags[ele1, ele2][-1].append(mat[i, j])
+                else:
+                    bags[ele2, ele1][-1].append(mat[i, j])
+
+        for key, vectors in bags.items():
+            for vector in vectors:
+                vector.sort(reverse=True)
+
+    new = [homogenize_lengths(x) for x in bags.values()]
+    return numpy.hstack(new)
+
+
 def get_sum_coulomb_feature(names, paths, **kwargs):
     '''
     This feature vector is based off the idea that the cols/rows of the
