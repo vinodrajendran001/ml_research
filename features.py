@@ -12,7 +12,7 @@ from utils import tokenize, \
         get_angle_bond_counts, get_dihedral_angle, get_angle_angle, get_bond_length, \
         map_atom, get_connectivity_matrix, set_vector_length, construct_zmatrix_addition, \
         get_all_bond_types, get_type_data, get_dihedral_bond_counts, remove_zero_cols, \
-        get_fractional_bond_counts, get_encoded_lengths
+        get_fractional_bond_counts, get_encoded_lengths, get_encoded_angles
 from constants import ARYL, RGROUPS
 
 
@@ -370,6 +370,24 @@ def get_encoded_bond_feature(names, paths, segments=10, slope=1., **kwargs):
     for path in paths:
         elements, numbers, coords = read_file_data(path)
         counts = get_encoded_lengths(elements, coords.tolist(), segments=segments, slope=slope)
+        vectors.append(counts)
+    return remove_zero_cols(vectors)
+
+
+def get_encoded_angle_feature(names, paths, segments=10, sigma=1., sigma2=1., **kwargs):
+    '''
+    This feature vector works in the same sort of way as the encoded bond
+    feature. The `segments` parameter sets the granularity of the resulting
+    feature vector. `sigma` sets the width of the gaussian used for the angle
+    values. `sigma2` is used to apply a decay for when the atoms are far away
+    from the center of the angle.
+    Note: Increasing the value of `segments` directly increases the size of
+    the resulting feature vector.
+    '''
+    vectors = []
+    for path in paths:
+        elements, numbers, coords = read_file_data(path)
+        counts = get_encoded_angles(elements, coords, segments=segments, sigma=sigma, sigma2=sigma2)
         vectors.append(counts)
     return remove_zero_cols(vectors)
 

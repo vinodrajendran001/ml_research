@@ -430,6 +430,29 @@ def get_encoded_lengths(elements, coords, segments=10, start=0.2, end=6, slope=1
     return vector.flatten().tolist()
 
 
+def get_encoded_angles(elements, coords, segments=10, sigma=1., sigma2=1.):
+    ele_idx = {ele: i for i, ele in enumerate(ELE_TO_NUM)}
+    vector = numpy.zeros((len(ELE_TO_NUM), len(ELE_TO_NUM), len(ELE_TO_NUM), segments))
+    theta = numpy.linspace(0, numpy.pi, segments)
+
+    for i, element1 in enumerate(elements):
+        for j, element2 in enumerate(elements[i + 1:]):
+            j += i + 1
+            vec1 = coords[i] - coords[j]
+            d1 = gauss_decay_function(norm(vec1), sigma2)
+            for k, element3 in enumerate(elements[j + 1:]):
+                k += j + 1
+                vec2 = coords[k] - coords[j]
+                d2 = gauss_decay_function(norm(vec2), sigma2)
+                angle = get_angle_between(vec1, vec2)
+                value = gauss_decay_function(theta - angle, sigma=sigma) #* d1 * d2
+            if element1 < element3:
+                vector[ele_idx[element1], ele_idx[element2], ele_idx[element3]] += value
+            else:
+                vector[ele_idx[element3], ele_idx[element2], ele_idx[element1]] += value
+    return vector.flatten().tolist()
+
+
 def get_angle_counts(elements, coords, bonds=None):
     if bonds is None:
         _, bonds = get_bond_counts(elements, coords)
