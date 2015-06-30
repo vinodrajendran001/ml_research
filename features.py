@@ -170,6 +170,11 @@ def get_local_zmatrix(names, paths, **kwargs):
 
 
 def get_bondwise_local_feature(names, paths, **kwargs):
+    '''
+    A feature vector based on the number of bonds in the structure
+
+    NOTE: This feature vector splits out each bond into its own sample.
+    '''
     vectors = []
 
     for i, path in enumerate(paths):
