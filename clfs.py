@@ -67,6 +67,15 @@ def laplace_kernel(X, Y, gamma=1.):
     return numpy.exp(-gamma * cdist(X, Y, metric='cityblock'))
 
 
+def gauss_kernel(X, Y, gamma=1.):
+    '''
+    A simple implementation of the Gauss Kernel for KRR.
+    '''
+    return numpy.exp(-gamma * cdist(X, Y) ** 2)
+
+
+
+
 class SVM(svm.SVR):
     def __init__(self, kernel='rbf', degree=3, gamma=0.0, coef0=0.0, tol=1e-3,
                  C=1.0, epsilon=0.1, shrinking=True, cache_size=200,
@@ -96,10 +105,57 @@ class KRR(kernel_ridge.KernelRidge):
             K = X
         return super(KRR, self).fit(K, y)
 
-
     def predict(self, X):
         if self._laplace_kernel:
             K = laplace_kernel(X, self._input_X, gamma=self.gamma)
         else:
             K = X
         return super(KRR, self).predict(K)
+
+
+class BondKRR(kernel_ridge.KernelRidge):
+    def __init__(self, alpha=1, kernel="precomputed", gamma=1., degree=3, coef0=1, kernel_params=None):
+        super(BondKRR, self).__init__(alpha=alpha, kernel=kernel, gamma=gamma, degree=degree,
+            coef0=coef0, kernel_params=kernel_params)
+        self.kernel = "precomputed"
+        self._my_kernel = kernel
+
+    def _get_M_X(self, X):
+        temp = X[:, 0].T.tolist()[0]
+
+        mapping = {}
+        count = 0
+        for x in temp:
+            if x not in mapping:
+                mapping[x] = count
+                count += 1
+
+        N_mols = len(mapping)
+        N_bonds = len(temp)
+        M = numpy.matrix(numpy.zeros((N_mols, N_bonds)))
+
+        for i, x in enumerate(temp):
+            M[mapping[x], i] = 1
+
+        return M, X[:, 1:]
+
+    def fit(self, X, y):
+        kernels = {
+            "rbf": gauss_kernel,
+            "laplace": laplace_kernel,
+        }
+        M, self._input_X = self._get_M_X(X)
+        K = kernels[self._my_kernel](self._input_X, self._input_X, gamma=self.gamma)
+        MK = M * K
+        temp = (MK.T * MK)
+        self._weights = numpy.linalg.solve((temp + self.alpha * numpy.identity(temp.shape[0])), MK.T * y)
+        return self
+
+    def predict(self, X):
+        kernels = {
+            "rbf": gauss_kernel,
+            "laplace": laplace_kernel,
+        }
+        M, X = self._get_M_X(X)
+        K = kernels[self._my_kernel](X, self._input_X, gamma=self.gamma)
+        return M * (K * self._weights)

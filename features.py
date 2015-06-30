@@ -169,6 +169,21 @@ def get_local_zmatrix(names, paths, **kwargs):
     return vectors
 
 
+def get_bondwise_local_feature(names, paths, **kwargs):
+    vectors = []
+
+    for i, path in enumerate(paths):
+        elements, numbers, coords = read_file_data(path)
+        dist = get_distance_matrix(coords, power=-3)
+        for j, ele1 in enumerate(elements):
+            for k, ele2 in enumerate(elements):
+                if j >= k:
+                    continue
+                temp = [i] + map_atom(ele1) + map_atom(ele2) + [dist[j, k]]
+                vectors.append(temp)
+    return numpy.matrix(vectors)
+
+
 def get_full_local_zmatrix_feature(names, paths, **kwargs):
     '''
     A feature vector that uses the idea of a local zmatrix. This expands

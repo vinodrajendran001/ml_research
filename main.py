@@ -288,17 +288,38 @@ if __name__ == '__main__':
 
     print_load_stats(names, geom_paths)
     sys.stdout.flush()
-    feats, properties, groups = init_data(
-                                            FEATURE_FUNCTIONS,
-                                            names,
-                                            datasets,
-                                            geom_paths,
-                                            meta,
-                                            lengths,
-                                            properties,
-                                        )
-    dummy_results = print_property_statistics(properties, groups, cross_clf_kfold)
-    sys.stdout.flush()
-    results = main(feats, properties, groups, CLFS, cross_clf_kfold)
-    print_best_methods(results)
+    # feats, properties, groups = init_data(
+    #                                         FEATURE_FUNCTIONS,
+    #                                         names,
+    #                                         datasets,
+    #                                         geom_paths,
+    #                                         meta,
+    #                                         lengths,
+    #                                         properties,
+    #                                     )
+    # dummy_results = print_property_statistics(properties, groups, cross_clf_kfold)
+    # sys.stdout.flush()
+    # results = main(feats, properties, groups, CLFS, cross_clf_kfold)
+    # print_best_methods(results)
 
+    X = FEATURE_FUNCTIONS[0][0][0](names, geom_paths)
+    y = numpy.matrix(properties[0][2][0]).T
+    split = int(y.shape[0]*.8)
+
+    X = numpy.array(X)
+    X_train = numpy.matrix(X[numpy.where(X[:,0] < split)])
+    X_test = numpy.matrix(X[numpy.where(X[:,0] >= split)])
+    y_train = y[:split]
+    y_test = y[split:]
+
+    print X.shape
+    vals = []
+    for alpha in [10.**i for i in xrange(-11,1)]:
+        clf = clfs.BondKRR(kernel="rbf", alpha=alpha)
+        clf.fit(X_train, y_train)
+        val = numpy.abs(clf.predict(X_test) - y_test).mean()
+        vals.append(val)
+        print alpha, val
+
+    print
+    print min(vals)
