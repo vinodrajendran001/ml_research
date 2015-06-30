@@ -34,4 +34,10 @@ Todo
     [ ] Restructure code
         [ ] Main running code
         [ ] Split up feature vectors
+        [ ] Split up utils functions
     [ ] NN with summation for atoms
+    [ ] Add another condition to single_split
+    [ ] Parallelize feature vector creation
+    [ ]    (Pipeline this?)
+    [ ] Encoding of angles
+
