@@ -184,6 +184,34 @@ def get_bondwise_local_feature(names, paths, **kwargs):
     return numpy.matrix(vectors)
 
 
+def get_atomwise_local_feature(names, paths, **kwargs):
+    '''
+    A feature vector based entirely off the number of atoms in the structure.
+
+    NOTE: This feature vector splits out each atom into its own sample.
+    '''
+    from itertools import product
+    from constants import BOND_LENGTHS
+    from utils import get_type_data
+    types = sorted(BOND_LENGTHS.keys())
+    types2 = list(product(types, range(1,5)))
+    typemap, base_counts = get_type_data(types2)
+
+    vectors = []
+    for i, path in enumerate(paths):
+        elements, numbers, coords = read_file_data(path)
+        mat = get_connectivity_matrix(elements, coords)
+        mat = (mat != '').astype(int)
+        sums = mat.sum(0).tolist()
+        for j, ele in enumerate(elements):
+            counts = base_counts[:]
+            bal = sums[j] - 1
+            bla = typemap[(ele, bal)]
+            counts[bla] += 1
+            vectors.append([i] + counts)
+    return numpy.matrix(vectors)
+
+
 def get_full_local_zmatrix_feature(names, paths, **kwargs):
     '''
     A feature vector that uses the idea of a local zmatrix. This expands
