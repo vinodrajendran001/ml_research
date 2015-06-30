@@ -179,7 +179,7 @@ def get_bondwise_local_feature(names, paths, **kwargs):
 
     for i, path in enumerate(paths):
         elements, numbers, coords = read_file_data(path)
-        dist = get_distance_matrix(coords, power=-3)
+        dist = get_distance_matrix(coords, power=-2)
         for j, ele1 in enumerate(elements):
             for k, ele2 in enumerate(elements):
                 if j >= k:
