@@ -302,7 +302,9 @@ if __name__ == '__main__':
     # results = main(feats, properties, groups, CLFS, cross_clf_kfold)
     # print_best_methods(results)
 
-    X = FEATURE_FUNCTIONS[0][0][0](names, geom_paths)
+
+    X = features.get_atomwise_local_feature(names, geom_paths); iteration = xrange(-5, 3)
+    X = features.get_bondwise_local_feature(names, geom_paths); iteration = xrange(-11, 1)
     y = numpy.matrix(properties[0][2][0]).T
     split = int(y.shape[0]*.8)
 
@@ -312,9 +314,8 @@ if __name__ == '__main__':
     y_train = y[:split]
     y_test = y[split:]
 
-    print X.shape
     vals = []
-    for alpha in [10.**i for i in xrange(-11,1)]:
+    for alpha in [10.**i for i in iteration]:
         clf = clfs.BondKRR(kernel="rbf", alpha=alpha)
         clf.fit(X_train, y_train)
         val = numpy.abs(clf.predict(X_test) - y_test).mean()
