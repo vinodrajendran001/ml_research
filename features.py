@@ -12,7 +12,8 @@ from utils import tokenize, \
         get_angle_bond_counts, get_dihedral_angle, get_angle_angle, get_bond_length, \
         map_atom, get_connectivity_matrix, set_vector_length, construct_zmatrix_addition, \
         get_all_bond_types, get_type_data, get_dihedral_bond_counts, remove_zero_cols, \
-        get_fractional_bond_counts, get_encoded_lengths, get_encoded_angles
+        get_fractional_bond_counts, get_encoded_lengths, get_encoded_angles, \
+        get_atom_env_counts
 from constants import ARYL, RGROUPS
 
 
@@ -303,6 +304,18 @@ def get_atom_feature(names, paths, **kwargs):
     for path in paths:
         elements, numbers, coords = read_file_data(path)
         vectors.append(get_atom_counts(elements))
+    return remove_zero_cols(vectors)
+
+
+def get_atom_env_feature(names, paths, **kwargs):
+    '''
+    A feature vector based entirely off the number of atoms in the structure.
+    This differs from just counting atoms because it segments based on
+    '''
+    vectors = []
+    for path in paths:
+        elements, numbers, coords = read_file_data(path)
+        vectors.append(get_atom_env_counts(elements, coords))
     return remove_zero_cols(vectors)
 
 

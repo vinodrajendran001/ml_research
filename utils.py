@@ -351,6 +351,21 @@ def get_atom_counts(elements, coords=None):
     return counts
 
 
+def get_atom_env_counts(elements, coords=None):
+    types = sorted(BOND_LENGTHS.keys())
+    types2 = list(product(types, range(1,5)))
+    typemap, counts = get_type_data(types2)
+
+    mat = get_connectivity_matrix(elements, coords)
+    mat = (mat != '').astype(int)
+    sums = mat.sum(0).tolist()
+    for i, ele in enumerate(elements):
+        bal = sums[i] - 1
+        bla = typemap[(ele, bal)]
+        counts[bla] += 1
+    return counts
+
+
 def get_bond_type(element1, element2, dist):
     for key in TYPE_ORDER[::-1]:
         try:
