@@ -12,7 +12,7 @@ from utils import tokenize, \
         get_angle_bond_counts, get_dihedral_angle, get_angle_angle, get_bond_length, \
         map_atom, get_connectivity_matrix, set_vector_length, construct_zmatrix_addition, \
         get_all_bond_types, get_type_data, get_dihedral_bond_counts, remove_zero_cols, \
-        get_fractional_bond_counts, get_encoded_lengths, get_encoded_angles
+        get_fractional_bond_counts, get_encoded_lengths, get_encoded_angles, get_all_length_types
 from constants import ARYL, RGROUPS
 
 
@@ -189,6 +189,35 @@ def get_bondwise_local_feature(names, paths, **kwargs):
                 else:
                     temp = [i] + map_atom(ele2) + map_atom(ele1) + [dist[j, k]]
                 vectors.append(temp)
+    return numpy.matrix(vectors)
+
+
+def get_bondwise_pair_local_feature(names, paths, **kwargs):
+    '''
+    A feature vector based on the number of bonds in the structure. This
+    is a slight change from just the bondwise in that it looks as pairs of
+    atoms instead of [vec(Z1) + vec(Z2)].
+
+    NOTE: This feature vector splits out each bond into its own sample.
+    '''
+    vectors = []
+    types = get_all_length_types()
+    typemap, base_counts = get_type_data(types)
+
+    for i, path in enumerate(paths):
+        elements, numbers, coords = read_file_data(path)
+        dist = get_distance_matrix(coords, power=-2)
+        for j, ele1 in enumerate(elements):
+            for k, ele2 in enumerate(elements):
+                if j >= k:
+                    continue
+                counts = base_counts[:]
+                if ele1 < ele2:
+                    idx = typemap[ele1, ele2]
+                else:
+                    idx = typemap[ele2, ele1]
+                counts[idx] += 1
+                vectors.append([i] + counts + [dist[j, k]])
     return numpy.matrix(vectors)
 
 
