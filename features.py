@@ -184,7 +184,10 @@ def get_bondwise_local_feature(names, paths, **kwargs):
             for k, ele2 in enumerate(elements):
                 if j >= k:
                     continue
-                temp = [i] + map_atom(ele1) + map_atom(ele2) + [dist[j, k]]
+                if ele1 < ele2:
+                    temp = [i] + map_atom(ele1) + map_atom(ele2) + [dist[j, k]]
+                else:
+                    temp = [i] + map_atom(ele2) + map_atom(ele1) + [dist[j, k]]
                 vectors.append(temp)
     return numpy.matrix(vectors)
 
