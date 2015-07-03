@@ -4,15 +4,15 @@ import pprint
 from itertools import product
 
 from sklearn import linear_model
-from sklearn import dummy
 import numpy
 
-import features
-import clfs
-from load_data import load_mol_data, load_qm7_data, load_dave_data, load_gdb13_data
-from init_data import init_data, init_data_multi, init_data_length
-from utils import erf_over_r, one_over_sqrt, lennard_jones, cosine_distance
-from cross_validate import cross_clf_kfold
+import ml.features as features
+import ml.clfs as clfs
+from ml.load_data import load_mol_data, load_qm7_data, load_dave_data, load_gdb13_data
+from ml.init_data import init_data, init_data_multi, init_data_length
+from ml.utils import erf_over_r, one_over_sqrt, lennard_jones, cosine_distance
+from ml.utils import print_property_statistics, print_best_methods ,print_load_stats
+from ml.cross_validate import cross_clf_kfold
 
 
 def main(features, properties, groups, clfs, cross_validate,
@@ -49,57 +49,6 @@ def main(features, properties, groups, clfs, cross_validate,
             sys.stdout.flush()
         print
     return results
-
-
-def print_property_statistics(properties, groups, cross_validate, test_folds=5, cross_folds=2):
-    results = {}
-    print "Property Statistics"
-    for prop_name, units, prop in properties:
-        feat = numpy.zeros(groups.shape)
-        _, (test_mean, test_std) = cross_validate(
-                                                feat,
-                                                prop,
-                                                groups,
-                                                dummy.DummyRegressor,
-                                                {},
-                                                test_folds=test_folds,
-                                                cross_folds=cross_folds,
-                                            )
-        print "\t%s" % prop_name
-        print "\t\tValue range: [%.4f, %.4f] %s" % (prop.min(), prop.max(), units)
-        print "\t\tExpected value: %.4f +- %.4f %s" % (prop.mean(), prop.std(), units)
-        print "\t\tExpected error: %.4f +/- %.4f %s" % (test_mean, test_std, units)
-        results[prop_name] = (test_mean, test_std)
-
-        try:
-            import matplotlib.pyplot as plt
-            n, bins, patches = plt.hist(prop, 50, normed=1, histtype='stepfilled')
-            plt.setp(patches, 'facecolor', 'g', 'alpha', 0.75)
-            plt.show()
-        except:
-            pass
-    print
-    return results
-
-
-def print_best_methods(results):
-    for prop, prop_data in results.items():
-        best = None
-        for feat_name, feat_data in prop_data.items():
-            for clf_name, value in feat_data.items():
-                if best is None or value[0] < best[2][0]:
-                    best = (feat_name, clf_name, value)
-        print prop
-        print best
-        print
-
-
-def print_load_stats(names, paths):
-    print "Loaded data"
-    print "\t%d datapoints" % len(names)
-    print "\t%d unique molecules" % len(set(names))
-    print "\t%d unique geometries" % len(set(geom_paths))
-    print
 
 
 if __name__ == '__main__':
