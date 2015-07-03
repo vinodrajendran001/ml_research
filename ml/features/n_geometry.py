@@ -66,27 +66,36 @@ def get_coulomb_feature(names, paths, **kwargs):
 
 def get_bag_of_bonds_feature(names, paths, **kwargs):
     keys = set(tuple(sorted(x)) for x in product(ELE_TO_NUM, ELE_TO_NUM))
+    keys |= set(ELE_TO_NUM)
+
+    sorted_keys = sorted(ELE_TO_NUM.keys())
 
     bags = {key: [] for key in keys}
     for path in paths:
         elements, numbers, coords = read_file_data(path)
-        mat = get_coulomb_matrix(numbers, coords)
+        bla = sorted(zip(elements, numbers, coords.tolist()), key=lambda x: x[0])
+        elements, numbers, coords = zip(*bla)
+        coords = numpy.matrix(coords)
+
+        ele_array = numpy.array(elements)
+        ele_set = set(elements)
+        mat = numpy.array(get_coulomb_matrix(numbers, coords))
+        diag = numpy.diagonal(mat)
 
         for key in keys:
             bags[key].append([])
 
-        for i, ele1 in enumerate(elements):
-            for j, ele2 in enumerate(elements):
-                if i >= j:
+        for i, ele1 in enumerate(sorted_keys):
+            if ele1 not in ele_set:
+                continue
+            first = ele_array == ele1
+            bags[ele1][-1] = sorted(diag[ele_array == ele1].tolist(), reverse=True)
+            for j, ele2 in enumerate(sorted_keys):
+                if i > j or ele2 not in ele_set:
                     continue
-                if ele1 < ele2:
-                    bags[ele1, ele2][-1].append(mat[i, j])
-                else:
-                    bags[ele2, ele1][-1].append(mat[i, j])
-
-        for key, vectors in bags.items():
-            for vector in vectors:
-                vector.sort(reverse=True)
+                second = ele_array == ele2
+                mask = numpy.triu(numpy.logical_and.outer(first, second), k=1)
+                bags[ele1, ele2][-1] = sorted(mat[mask].tolist(), reverse=True)
 
     new = [homogenize_lengths(x) for x in bags.values()]
     return numpy.hstack(new)
