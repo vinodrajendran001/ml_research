@@ -225,7 +225,7 @@ if __name__ == '__main__':
     try:
         func = options[sys.argv[1]]
     except KeyError:
-        print "Not a valid dataset"
+        print "Not a valid dataset. Must be one of %s" % options.keys()
         exit(0)
     except IndexError:
         print "Needs a dataset argument"
