@@ -167,10 +167,11 @@ def get_bond_counts(elements, coords):
     typemap, counts = get_type_data(types)
 
     bonds = []
-    for i, (element1, xyz1) in enumerate(zip(elements, coords)):
-        for j, (element2, xyz2) in enumerate(zip(elements, coords)[i + 1:]):
+    dist_mat = get_distance_matrix(coords, power=1)
+    for i, element1 in enumerate(elements):
+        for j, element2 in enumerate(elements[i + 1:]):
             j += i + 1
-            dist = sum((x - y) ** 2 for (x, y) in zip(xyz1, xyz2)) ** 0.5
+            dist = dist_mat[i, j]
             bond_type = get_bond_type(element1, element2, dist)
             if bond_type:
                 if element1 > element2:
