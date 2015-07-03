@@ -6,6 +6,7 @@ import numpy
 from numpy.linalg import norm
 
 from ..constants import ELE_TO_NUM, BOND_LENGTHS, TYPE_ORDER
+from ..utils import gauss_decay_function
 
 
 def get_coulomb_matrix(numbers, coords):
