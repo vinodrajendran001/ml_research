@@ -8,6 +8,7 @@ of these functions scale O(n) while others may scale O(n^2) in length.
 '''
 
 import os
+from itertools import product
 
 import numpy
 
@@ -17,7 +18,7 @@ from ..utils import read_file_data
 from .utils import get_coulomb_matrix, homogenize_lengths, \
         get_distance_matrix, get_thermometer_encoding, get_eigenvalues, \
         get_connectivity_matrix
-
+from ..constants import ELE_TO_NUM
 
 def get_connective_feature(names, paths, **kwargs):
     '''
@@ -64,9 +65,6 @@ def get_coulomb_feature(names, paths, **kwargs):
 
 
 def get_bag_of_bonds_feature(names, paths, **kwargs):
-    from itertools import product
-    from constants import ELE_TO_NUM
-
     keys = set(tuple(sorted(x)) for x in product(ELE_TO_NUM, ELE_TO_NUM))
 
     bags = {key: [] for key in keys}
