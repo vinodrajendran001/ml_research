@@ -124,12 +124,15 @@ def load_gdb13_data():
     for name in sorted(os.listdir(out_path))[:10000]:
         path = os.path.join(out_path, name)
         geom_paths.append(path)
-
-        # [:-4] is to strip the file extension
-        names.append(name[:-4])
-        datasets.append((1, ))
         meta.append([1])
-        lengths.append(1)
+        datasets.append((1, ))
+
+        elements, _, _ = read_file_data(path)
+        lengths.append(sum(1 for x in elements if x != 'H'))
+        if lengths[-1] > 7:
+            names.append("test")
+        else:
+            names.append("train")
 
     props = numpy.loadtxt(os.path.join(base_path, "energies.txt"))[:10000]
     prop_out = (("Atomization Energy", "kcal", [props.tolist()]), )
