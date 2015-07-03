@@ -7,12 +7,12 @@ from sklearn import linear_model
 from sklearn import dummy
 import numpy
 
-import features
-import clfs
-from load_data import load_mol_data, load_qm7_data, load_dave_data, load_gdb13_data
-from init_data import init_data, init_data_multi, init_data_length
-from utils import erf_over_r, one_over_sqrt, lennard_jones, cosine_distance
-from cross_validate import cross_clf_kfold
+import ml.features as features
+import ml.clfs as clfs
+from ml.load_data import load_mol_data, load_qm7_data, load_dave_data, load_gdb13_data
+from ml.init_data import init_data, init_data_multi, init_data_length
+from ml.utils import erf_over_r, one_over_sqrt, lennard_jones, cosine_distance
+from ml.cross_validate import cross_clf_kfold
 
 
 def main(features, properties, groups, clfs, cross_validate,
@@ -109,9 +109,9 @@ if __name__ == '__main__':
     segments = [10, 25, 50, 100]
 
     feature_sets = (
-        # ((features.get_null_feature, {}), ),
+        ((features.get_null_feature, {}), ),
         # ((features.get_local_atom_zmatrix_feature, {}), ),
-        # ((features.get_atom_feature, {}), ),
+        ((features.get_atom_feature, {}), ),
         # ((features.get_atom_thermo_feature, {}), ),
         # ((features.get_connective_feature, {}), ),
         # ((features.get_bond_feature, {}), ),
