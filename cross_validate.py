@@ -67,7 +67,7 @@ def _parallel_params(params):
     groups_use = numpy.matrix(groups_train).T
 
     test_mean, test_std = test_clf_kfold(X_use, y_use, groups_use, clf, folds=test_folds)
-    print test_mean, params
+    print "EASY", test_mean, params
     sys.stdout.flush()
     return test_mean
 
