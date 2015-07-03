@@ -55,107 +55,35 @@ def main(features, properties, groups, clfs, cross_validate,
 if __name__ == '__main__':
     distance_functions = [cosine_distance, lennard_jones, erf_over_r, one_over_sqrt]
     powers = [-2, -1, -0.5, 0.5, 1, 2]
-    slopes = [1., 5., 10., 20., 50., 100.]
+    slopes = [10., 20., 30.]
     segments = [10, 25, 50, 100]
 
-    feature_sets = (
-        # ((features.get_null_feature, {}), ),
-        # ((features.get_local_atom_zmatrix_feature, {}), ),
+    atom_features = [
         # ((features.get_atom_feature, {}), ),
+        # ((features.get_atom_env_feature, {}), ),
         # ((features.get_atom_thermo_feature, {}), ),
-        # ((features.get_connective_feature, {}), ),
-        # ((features.get_bond_feature, {}), ),
+    ]
+    bond_features = [
+        ((features.get_bond_feature, {}), ),
         # ((features.get_fractional_bond_feature, {"slope": slopes}), ),
-        # ((features.get_encoded_bond_feature, {"slope": slopes[:3], "segments": segments}), ),
+        # ((features.get_encoded_bond_feature, {"slope": slopes, "segments": segments}), ),
+    ]
+    angle_features = [
         # ((features.get_angle_feature, {}), ),
         # ((features.get_angle_bond_feature, {}), ),
+        # ((features.get_encoded_angle_feature, {"slope": slopes, "segments": segments}), ),
+    ]
+    dihedral_features = [
         # ((features.get_dihedral_feature, {}), ),
         # ((features.get_dihedral_bond_feature, {}), ),
+    ]
+    trihedral_features = [
         # ((features.get_trihedral_feature, {}), ),
-        # (
-        #     (features.get_atom_feature, {}),
-        #     (features.get_fractional_bond_feature, {"slope": slopes[:4]}),
-        # ),
-        # (
-        #     (features.get_atom_feature, {}),
-        #     (features.get_fractional_bond_feature, {"slope": slopes[:4]}),
-        #     (features.get_angle_feature, {}),
-        # ),
-        # (
-        #     (features.get_atom_feature, {}),
-        #     (features.get_fractional_bond_feature, {"slope": slopes[:4]}),
-        #     (features.get_angle_feature, {}),
-        #     (features.get_dihedral_feature, {}),
-        # ),
-        # (
-        #     (features.get_atom_feature, {}),
-        #     (features.get_fractional_bond_feature, {"slope": slopes[:4]}),
-        #     (features.get_angle_feature, {}),
-        #     (features.get_dihedral_feature, {}),
-        #     (features.get_trihedral_feature, {}),
-        # ),
-        # (
-        #     (features.get_atom_feature, {}),
-        #     (features.get_encoded_bond_feature, {"slope": slopes[:3], "segments": segments}),
-        # ),
-        # (
-        #     (features.get_atom_feature, {}),
-        #     (features.get_encoded_bond_feature, {"slope": slopes[:3], "segments": segments}),
-        #     (features.get_angle_feature, {}),
-        # ),
-        # (
-        #     (features.get_atom_feature, {}),
-        #     (features.get_encoded_bond_feature, {"slope": slopes[:3], "segments": segments}),
-        #     (features.get_angle_feature, {}),
-        #     (features.get_dihedral_feature, {}),
-        # ),
-        # (
-        #     (features.get_atom_feature, {}),
-        #     (features.get_encoded_bond_feature, {"slope": slopes[:3], "segments": segments}),
-        #     (features.get_angle_feature, {}),
-        #     (features.get_dihedral_feature, {}),
-        #     (features.get_trihedral_feature, {}),
-        # ),
-        # (
-        #     (features.get_atom_feature, {}),
-        #     (features.get_bond_feature, {}),
-        # ),
-        # (
-        #     (features.get_atom_feature, {}),
-        #     (features.get_bond_feature, {}),
-        #     (features.get_angle_feature, {}),
-        # ),
-        # (
-        #     (features.get_atom_feature, {}),
-        #     (features.get_bond_feature, {}),
-        #     (features.get_angle_feature, {}),
-        #     (features.get_dihedral_feature, {}),
-        # ),
-        # (
-        #     (features.get_atom_feature, {}),
-        #     (features.get_bond_feature, {}),
-        #     (features.get_angle_feature, {}),
-        #     (features.get_dihedral_feature, {}),
-        #     (features.get_trihedral_feature, {}),
-        # ),
-        # (
-        #     (features.get_atom_feature, {}),
-        #     (features.get_bond_feature, {}),
-        #     (features.get_angle_bond_feature, {}),
-        # ),
-        # (
-        #     (features.get_atom_feature, {}),
-        #     (features.get_bond_feature, {}),
-        #     (features.get_angle_bond_feature, {}),
-        #     (features.get_dihedral_feature, {}),
-        # ),
-        # (
-        #     (features.get_atom_feature, {}),
-        #     (features.get_bond_feature, {}),
-        #     (features.get_angle_bond_feature, {}),
-        #     (features.get_dihedral_feature, {}),
-        #     (features.get_trihedral_feature, {}),
-        # ),
+    ]
+    other_features = [
+        # ((features.get_null_feature, {}), ),
+        # ((features.get_local_atom_zmatrix_feature, {}), ),
+        # ((features.get_connective_feature, {}), ),
         # ((features.get_local_zmatrix, {}), ),
         # ((features.get_full_local_zmatrix, {}), ),
         # ((features.get_bin_coulomb_feature, {}), ),
@@ -171,7 +99,31 @@ if __name__ == '__main__':
         # ((features.get_custom_distance_feature, {"f": distance_functions}), ),
         # ((features.get_eigen_custom_distance_feature, {"f": distance_functions}), ),
         # ((features.get_fingerprint_feature, {"size": [128, 1024, 2048]}), ),
-    )
+    ]
+
+    extended_features = []
+    for group in product(
+                        atom_features,
+                        [None] + bond_features,
+                        [None] + angle_features,
+                        [None] + dihedral_features,
+                        [None] + trihedral_features):
+        try:
+            idx = group.index(None)
+            new_group = [x[0] for x in group[:idx]]
+            if all(x is None for x in group[idx:]):
+                extended_features.append(new_group)
+        except ValueError:
+            pass
+
+
+    feature_sets = atom_features \
+                + bond_features \
+                + angle_features \
+                + dihedral_features \
+                + trihedral_features \
+                + other_features \
+                + extended_features
 
     FEATURE_FUNCTIONS = []
     for feature_group in feature_sets:
