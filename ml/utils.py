@@ -2,6 +2,7 @@ import re
 import os
 from multiprocessing import Pool, cpu_count
 
+from sklearn import dummy
 from scipy.special import erf
 import numpy
 
@@ -231,3 +232,54 @@ def calculate_surface(clf, numbers, coords, atom_idx, max_displacement=.5, steps
 
 def map_atom(element):
     return [int(x == element) for x in BOND_LENGTHS]
+
+
+def print_property_statistics(properties, groups, cross_validate, test_folds=5, cross_folds=2):
+    results = {}
+    print "Property Statistics"
+    for prop_name, units, prop in properties:
+        feat = numpy.zeros(groups.shape)
+        _, (test_mean, test_std) = cross_validate(
+                                                feat,
+                                                prop,
+                                                groups,
+                                                dummy.DummyRegressor,
+                                                {},
+                                                test_folds=test_folds,
+                                                cross_folds=cross_folds,
+                                            )
+        print "\t%s" % prop_name
+        print "\t\tValue range: [%.4f, %.4f] %s" % (prop.min(), prop.max(), units)
+        print "\t\tExpected value: %.4f +- %.4f %s" % (prop.mean(), prop.std(), units)
+        print "\t\tExpected error: %.4f +/- %.4f %s" % (test_mean, test_std, units)
+        results[prop_name] = (test_mean, test_std)
+
+        try:
+            import matplotlib.pyplot as plt
+            n, bins, patches = plt.hist(prop, 50, normed=1, histtype='stepfilled')
+            plt.setp(patches, 'facecolor', 'g', 'alpha', 0.75)
+            plt.show()
+        except:
+            pass
+    print
+    return results
+
+
+def print_best_methods(results):
+    for prop, prop_data in results.items():
+        best = None
+        for feat_name, feat_data in prop_data.items():
+            for clf_name, value in feat_data.items():
+                if best is None or value[0] < best[2][0]:
+                    best = (feat_name, clf_name, value)
+        print prop
+        print best
+        print
+
+
+def print_load_stats(names, paths):
+    print "Loaded data"
+    print "\t%d datapoints" % len(names)
+    print "\t%d unique molecules" % len(set(names))
+    print "\t%d unique geometries" % len(set(paths))
+    print
