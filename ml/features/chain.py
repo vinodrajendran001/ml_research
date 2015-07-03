@@ -1,8 +1,8 @@
 import numpy
 
 
-from utils import tokenize, decay_function, gauss_decay_function
-from constants import ARYL, RGROUPS
+from ..utils import tokenize, decay_function, gauss_decay_function
+from ..constants import ARYL, RGROUPS
 
 
 def get_binary_feature(names, paths, limit=4, **kwargs):

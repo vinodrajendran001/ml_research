@@ -13,9 +13,10 @@ import numpy
 
 from sklearn import decomposition
 
-from utils import read_file_data, \
-        get_coulomb_matrix, homogenize_lengths, get_distance_matrix, \
-        get_thermometer_encoding, get_eigenvalues, get_connectivity_matrix
+from ..utils import read_file_data
+from .utils import get_coulomb_matrix, homogenize_lengths, \
+        get_distance_matrix, get_thermometer_encoding, get_eigenvalues, \
+        get_connectivity_matrix
 
 
 def get_connective_feature(names, paths, **kwargs):

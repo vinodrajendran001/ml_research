@@ -7,8 +7,8 @@ atoms/bonds in the system instead of per molecule.
 
 import numpy
 
-from utils import read_file_data, get_bond_counts, map_atom, \
-        get_all_bond_types, get_type_data,
+from ..utils import read_file_data, map_atom
+from .utils import get_bond_counts, get_all_bond_types, get_type_data
 
 
 def get_local_atom_zmatrix(names, paths, **kwargs):

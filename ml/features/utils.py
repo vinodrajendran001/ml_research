@@ -4,7 +4,7 @@ from scipy.spatial.distance import cdist
 import numpy
 from numpy.linalg import norm
 
-from constants import ELE_TO_NUM, BOND_LENGTHS, TYPE_ORDER
+from ..constants import ELE_TO_NUM, BOND_LENGTHS, TYPE_ORDER
 
 
 def get_coulomb_matrix(numbers, coords):

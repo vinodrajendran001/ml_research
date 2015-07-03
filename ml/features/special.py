@@ -8,8 +8,8 @@ import numpy
 
 from sklearn import decomposition
 
-from utils import read_file_data, \
-        get_coulomb_matrix, homogenize_lengths, \
+from ..utils import read_file_data
+from .utils import get_coulomb_matrix, homogenize_lengths, \
         get_bond_counts, get_angle_counts, get_dihedral_counts, \
         get_dihedral_angle, get_angle_angle, \
         set_vector_length, construct_zmatrix_addition

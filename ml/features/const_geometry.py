@@ -13,7 +13,8 @@ import numpy
 
 from sklearn import decomposition
 
-from utils import read_file_data, homogenize_lengths, get_atom_counts, \
+from ..utils import read_file_data 
+from .utils import homogenize_lengths, get_atom_counts, \
         get_bond_counts, get_angle_counts, get_dihedral_counts, \
         get_trihedral_counts, get_angle_bond_counts, get_dihedral_angle, \
         get_angle_angle, get_bond_length, set_vector_length, \
