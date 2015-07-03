@@ -156,10 +156,6 @@ def lennard_jones(r):
     return mat
 
 
-def sigmoid(r):
-    return 1. / (1 + numpy.exp(-r))
-
-
 def cosine_distance(r, cutoff=6.):
     '''
     This is based off the distance function from:

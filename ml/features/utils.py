@@ -1,6 +1,7 @@
 from itertools import product
 
 from scipy.spatial.distance import cdist
+from scipy.special import expit as sigmoid
 import numpy
 from numpy.linalg import norm
 
