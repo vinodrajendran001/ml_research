@@ -2,6 +2,7 @@ import sys
 import time
 import pprint
 from itertools import product
+from functools import partial
 
 from sklearn import linear_model
 import numpy
@@ -209,31 +210,28 @@ if __name__ == '__main__':
         #     }
         # ),
     )
+    calc_set = ("b3lyp", "cam", "m06hf")
+    opt_set = tuple("opt/" + x for x in calc_set)
+    struct_set = ('O', 'N', '4', '8')
+    prop_set = ("homo", "lumo", "gap")
 
-    if len(sys.argv) < 2:
-        print "Needs a dataset argument"
-        exit(0)
-    if sys.argv[1] == "dave":
-        names, datasets, geom_paths, properties, meta, lengths = load_dave_data()
-    elif sys.argv[1] == "qm7":
-        names, datasets, geom_paths, properties, meta, lengths = load_qm7_data()
-    elif sys.argv[1] == "gdb13":
-        names, datasets, geom_paths, properties, meta, lengths = load_gdb13_data()
-    elif sys.argv[1] == "mol":
-        # Select the data set to use
-        calc_set = ("b3lyp", "cam", "m06hf")
-        opt_set = tuple("opt/" + x for x in calc_set)
-        struct_set = ('O', 'N', '4', '8')
-        prop_set = ("homo", "lumo", "gap")
-        names, datasets, geom_paths, properties, meta, lengths = load_mol_data(
-                                                            calc_set,
-                                                            opt_set,
-                                                            struct_set,
-                                                            prop_set,
-                                                        )
-    else:
+    options = {
+        "dave": load_dave_data,
+        "qm7": load_qm7_data,
+        "gdb13": load_gdb13_data,
+        "mol": partial(load_mol_data, calc_set, opt_set, struct_set, prop_set),
+    }
+
+    try:
+        func = options[sys.argv[1]]
+    except KeyError:
         print "Not a valid dataset"
         exit(0)
+    except IndexError:
+        print "Needs a dataset argument"
+        exit(0)
+
+    names, datasets, geom_paths, properties, meta, lengths = func()
 
     print_load_stats(names, geom_paths)
     sys.stdout.flush()
