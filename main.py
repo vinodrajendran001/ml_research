@@ -17,7 +17,7 @@ from ml.cross_validate import cross_clf_kfold
 
 
 def main(features, properties, groups, clfs, cross_validate,
-                        test_folds=5, cross_folds=2):
+                        test_folds=5, cross_folds=5):
     results = {}
     for prop_name, units, prop in properties:
         print prop_name
