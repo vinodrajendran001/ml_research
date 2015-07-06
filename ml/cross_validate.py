@@ -8,6 +8,9 @@ from sklearn.metrics import mean_absolute_error
 from utils import p_map
 
 def data_split(X, y, groups, train_sel, test_sel):
+    '''
+    This splits the data into test/train sets.
+    '''
     X_train = X[train_sel]
     X_test = X[test_sel]
     y_train = y[train_sel].T.tolist()[0]
@@ -73,6 +76,9 @@ def _parallel_params(params):
 
 
 def test_clf_kfold(X, y, groups, clf, folds=10):
+    '''
+    This is the main function for the evaluation of the kfolds error.
+    '''
     group_set = set(groups.T.tolist()[0])
     single_split = len(group_set) == 2 and group_set == set([0, 1])
     if single_split:

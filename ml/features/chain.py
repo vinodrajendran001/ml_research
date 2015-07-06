@@ -1,5 +1,10 @@
-import numpy
+'''
+A collection of functions that create feature vectors for the polymer chain
+style chemical structures. These are all dependent on the `names` parameter.
+'''
 
+
+import numpy
 
 from ..utils import tokenize, decay_function, gauss_decay_function
 from ..constants import ARYL, RGROUPS
