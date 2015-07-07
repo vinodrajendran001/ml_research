@@ -20,6 +20,7 @@ from .utils import get_coulomb_matrix, homogenize_lengths, \
         get_connectivity_matrix
 from ..constants import ELE_TO_NUM
 
+
 def get_connective_feature(names, paths, **kwargs):
     '''
     A simple feature vector based on the connectivity matrix of a molecule.

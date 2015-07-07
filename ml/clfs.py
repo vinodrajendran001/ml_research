@@ -96,7 +96,6 @@ class KRR(kernel_ridge.KernelRidge):
             K = X
         return super(KRR, self).fit(K, y)
 
-
     def predict(self, X):
         if self._laplace_kernel:
             K = laplace_kernel(X, self._input_X, gamma=self.gamma)

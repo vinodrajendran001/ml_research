@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy
 from scipy.optimize import curve_fit
 
+
 def get_histogram_plot(property_name, values, units, title=""):
     n, bins, patches = plt.hist(values, 50, normed=1, histtype='stepfilled')
     plt.setp(patches, 'facecolor', 'g', 'alpha', 0.75)

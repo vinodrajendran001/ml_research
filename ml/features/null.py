@@ -5,6 +5,7 @@ are purely for baseline comparisons only.
 
 import numpy
 
+
 # Example Feature function
 def get_null_feature(names, paths, **kwargs):
     '''
