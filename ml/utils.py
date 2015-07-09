@@ -7,7 +7,10 @@ from scipy.special import erf
 import numpy
 
 from constants import ELE_TO_NUM, ARYL, ARYL0, RGROUPS, BOND_LENGTHS
-
+try:
+    from plots import get_histogram_plot
+except ImportError:
+    pass
 
 def mkdir_p(path):
     '''
@@ -251,11 +254,8 @@ def print_property_statistics(properties, groups, cross_validate, test_folds=5, 
         results[prop_name] = (test_mean, test_std)
 
         try:
-            import matplotlib.pyplot as plt
-            n, bins, patches = plt.hist(prop, 50, normed=1, histtype='stepfilled')
-            plt.setp(patches, 'facecolor', 'g', 'alpha', 0.75)
-            plt.show()
-        except:
+            get_histogram_plot(prop_name, prop, units, title="Distribution of %s Values" % prop_name)
+        except NameError:
             pass
     print
     return results
