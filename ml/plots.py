@@ -7,8 +7,7 @@ from scipy.interpolate import griddata
 
 
 def get_histogram_plot(property_name, values, units, title=""):
-    n, bins, patches = plt.hist(values, 50, normed=1, histtype='stepfilled')
-    plt.setp(patches, 'facecolor', 'g', 'alpha', 0.75)
+    plt.hist(values, bins=50, normed=False, color="g", alpha=0.75, histtype='stepfilled')
     plt.title(title)
     plt.xlabel("%s (%s)" % (property_name, units))
     plt.ylabel("Count")
