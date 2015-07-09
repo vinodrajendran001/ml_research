@@ -23,6 +23,40 @@ def get_coulomb_matrix(numbers, coords):
     return top
 
 
+def invert_distance_matrix(D, dim=3):
+    '''
+    This function converts a distance matrix back into a set of coordinates
+    of dimension `dim`. It does this by a bit of magic and a bit of PCA.
+
+    NOTE: The distance matrix going in must be squared for this to work
+    correctly.
+
+    This implementation is based off the discussion in:
+    http://programmers.stackexchange.com/questions/243199/find-points-whose-pairwise-distances-approximate-a-given-distance-matrix
+    '''
+    n = D.shape[0]
+    J = numpy.matrix(numpy.eye(n) - 1./n)
+    B = -.5 * J * D * J
+    L, U = numpy.linalg.eig(B)
+    idx = L.argsort()
+    L = L[idx]
+    U = numpy.matrix(U[:,idx])
+    X = numpy.matrix(numpy.diag(L[-dim:] **.5)) * U.T[-dim:,:]
+    X[numpy.isnan(X)] = 0.
+    return X.T
+
+
+def invert_coulomb_matrix(M):
+    diag = numpy.diag(M)
+    sel = numpy.nonzero(diag)[0].max() + 1
+    base = M[:sel,:sel]
+    base_diag = numpy.diag(base)
+    ele_nums = (2 * base_diag) ** (1/2.4)
+    D = numpy.outer(ele_nums, ele_nums) / base
+    numpy.fill_diagonal(D, 0)
+    return ele_nums, invert_distance_matrix(D ** 2)
+
+
 def get_distance_matrix(coords, power=-1, inf_val=1):
     dist = cdist(coords, coords)
     with numpy.errstate(divide='ignore'):
