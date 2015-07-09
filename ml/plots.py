@@ -14,6 +14,19 @@ def get_histogram_plot(property_name, values, units, title=""):
     plt.show()
 
 
+def get_multi_histogram_plot(property_names, values_list, title="", normalize=True):
+    plt.title(title)
+    for name, values in zip(property_names, values_list):
+        if normalize:
+            temp = values - values.min()
+            values = temp / temp.max()
+        plt.hist(values, bins=50, normed=False, alpha=1./len(values_list), histtype='stepfilled', label=name)
+    plt.legend(loc="best")
+    plt.xlabel("Values (unitless)")
+    plt.ylabel("Count")
+    plt.show()
+
+
 def get_line_plot(xvals, yvals, title="", fit=None):
     plt.plot(xvals, yvals, '-')
     if fit is not None:
