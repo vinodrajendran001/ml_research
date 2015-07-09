@@ -6,6 +6,7 @@ import numpy
 from utils import tokenize, true_strip, erf_over_r, read_file_data, \
          map_atom, mkdir_p
 from constants import BHOR_TO_ANGSTROM, ARYL, NUM_TO_ELE, HARTREE_TO_KCAL
+from features.utils import invert_coulomb_matrix
 
 DATA_BASE_DIR = "data"
 
@@ -199,6 +200,74 @@ def load_qm7_data():
     return names, datasets, geom_paths, prop_out, meta, lengths
 
 
+def build_qm7b_data():
+    mkdir_p(os.path.join(DATA_BASE_DIR, "qm7b"))
+    with open(os.path.join(DATA_BASE_DIR, "qm7b.pkl"), "r") as f:
+        temp = cPickle.load(f)
+        X = temp['X']
+
+    for i, coulomb_mat in enumerate(X):
+        zs, coords = invert_coulomb_matrix(coulomb_mat)
+        zs = zs.tolist()
+        coords = coords.tolist()
+        name = "qm-%04d" % i
+        path = os.path.join(DATA_BASE_DIR, "qm7b", name + ".out")
+        with open(path, "w") as f:
+            for z, coord in zip(zs, coords):
+                z = int(z)
+                if z:
+                    coord = [x * BHOR_TO_ANGSTROM for x in coord]
+                    f.write("%s %.8f %.8f %.8f\n" % (NUM_TO_ELE[z], coord[0], coord[1], coord[2]))
+
+
+
+def load_qm7b_data():
+    base_path = os.path.join(DATA_BASE_DIR, "qm7b")
+    if not os.path.isdir(base_path) or not os.listdir(base_path):
+        build_qm7b_data()
+
+    names = []
+    datasets = []
+    geom_paths = []
+    properties = []
+    meta = []
+    lengths = []
+
+    with open(os.path.join(DATA_BASE_DIR, "qm7b.pkl"), "r") as f:
+        temp = cPickle.load(f)
+        T = temp['T']
+
+    for i, t in enumerate(T):
+        name = "qm-%04d" % i
+        path = os.path.join(base_path, name + ".out")
+        names.append(name)
+        datasets.append((1, ))
+        geom_paths.append(path)
+        properties.append(t)
+        meta.append([1])
+        lengths.append(1)
+
+    prop_desc = [
+        ('aepbe0', "kcal"),
+        ('zindo-excitation-energy-with-the-most-absorption', "eV?"),
+        ('zindo-highest-absorption', "eV?"),
+        ('zindo-homo', "eV"),
+        ('zindo-lumo', "eV"),
+        ('zindo-1st-excitation-energy', "eV"),
+        ('zindo-ionization-potential', "eV"),
+        ('zindo-electron-affinity', "eV"),
+        ('ks-homo', "eV"),
+        ('ks-lumo', "eV"),
+        ('gw-homo', "eV"),
+        ('gw-lumo', "eV"),
+        ('polarizability-pbe', "A^3"),
+        ('polarizability-scs', "A^3"),
+    ]
+    prop_vals = zip(*properties)
+    prop_out = [(x, y, z) for ((x, y), z) in zip(prop_desc, prop_vals)]
+    return names, datasets, geom_paths, prop_out, meta, lengths
+
+
 def build_dave_data():
     with open(os.path.join(DATA_BASE_DIR, "geom.txt"), 'r') as f:
         elements = []
@@ -298,5 +367,3 @@ def load_quambo_data():
     prop_vals = zip(*properties)
     prop_out = [(x, y, z) for ((x, y), z) in zip(prop_desc, prop_vals)]
     return names, datasets, geom_paths, prop_out, meta, lengths
-
-

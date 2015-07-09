@@ -9,7 +9,7 @@ import numpy
 
 import ml.features as features
 import ml.clfs as clfs
-from ml.load_data import load_mol_data, load_qm7_data, load_dave_data, load_gdb13_data, load_quambo_data
+from ml.load_data import load_mol_data, load_qm7_data, load_dave_data, load_gdb13_data, load_quambo_data, load_qm7b_data
 from ml.init_data import init_data, init_data_multi, init_data_length
 from ml.utils import erf_over_r, one_over_sqrt, lennard_jones, cosine_distance
 from ml.utils import print_property_statistics, print_best_methods ,print_load_stats
@@ -170,6 +170,7 @@ if __name__ == '__main__':
     options = {
         "dave": load_dave_data,
         "qm7": load_qm7_data,
+        "qm7b": load_qm7b_data,
         "gdb13": load_gdb13_data,
         "mol": partial(load_mol_data, calc_set, opt_set, struct_set, prop_set),
         "quambo": load_quambo_data,
