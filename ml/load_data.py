@@ -263,3 +263,40 @@ def load_dave_data(add_extra=True):
     prop_vals = zip(*properties)
     prop_out = [(x, y, z) for ((x, y), z) in zip(prop_desc, prop_vals)]
     return names, datasets, geom_paths, prop_out, meta, lengths
+
+
+def load_quambo_data():
+    names = []
+    datasets = []
+    geom_paths = []
+    properties = []
+    meta = []
+    lengths = []
+
+    with open(os.path.join(DATA_BASE_DIR, "quambo_data.txt"), "r") as f:
+        for i, line in enumerate(f):
+            # Skip header line
+            if not i:
+                continue
+            values = [float(x) for x in line.strip().split(",")]
+
+            names.append(str(i))
+            datasets.append((1, ))
+            geom_paths.append("")
+            properties.append(values[31:])
+            meta.append(values[:31] + [1.])
+            lengths.append(1)
+
+    prop_names = [
+        "QU_CH_1s1s",
+        "QU_CH_2s1s",
+        "QU_CH_2px1s",
+        "QU_CH_2py1s",
+        "QU_CH_2pz1s",
+    ]
+    prop_desc = [(x, "kcal") for x in prop_names]
+    prop_vals = zip(*properties)
+    prop_out = [(x, y, z) for ((x, y), z) in zip(prop_desc, prop_vals)]
+    return names, datasets, geom_paths, prop_out, meta, lengths
+
+
