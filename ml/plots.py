@@ -74,3 +74,10 @@ def get_3d_scatter(xs, ys, zs):
 
     plt.show()
 
+
+def get_matrix_plot(mat, extent=None):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    m = ax.matshow(mat, extent=extent)
+    fig.colorbar(m)
+    plt.show()

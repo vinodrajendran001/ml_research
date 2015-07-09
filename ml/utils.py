@@ -8,7 +8,7 @@ import numpy
 
 from constants import ELE_TO_NUM, ARYL, ARYL0, RGROUPS, BOND_LENGTHS
 try:
-    from plots import get_histogram_plot
+    from plots import get_histogram_plot, get_matrix_plot
 except ImportError:
     pass
 
@@ -219,12 +219,8 @@ def calculate_surface(clf, numbers, coords, atom_idx, max_displacement=.5, steps
             vector = mat[numpy.tril_indices(mat.shape[0])].tolist() + meta
             results[i, j] = clf.predict(numpy.matrix(vector))[0]
 
-    import matplotlib.pyplot as plt
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    m = ax.matshow(results, extent=[-max_displacement,max_displacement,-max_displacement,max_displacement])
-    fig.colorbar(m)
-    plt.show()
+    extent = [-max_displacement,max_displacement,-max_displacement,max_displacement]
+    get_matrix_plot(results, extent)
     print results.max(), results.min(), results.std()
     return results
 
