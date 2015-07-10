@@ -8,7 +8,7 @@ import numpy
 
 from constants import ELE_TO_NUM, ARYL, ARYL0, RGROUPS, BOND_LENGTHS
 try:
-    from plots import get_histogram_plot, get_matrix_plot
+    from plots import get_histogram_plot, get_matrix_plot, get_multi_histogram_plot
 except ImportError:
     pass
 
@@ -250,10 +250,14 @@ def print_property_statistics(properties, groups, cross_validate, test_folds=5, 
         results[prop_name] = (test_mean, test_std)
 
         try:
-            get_histogram_plot(prop_name, prop, units, title="Distribution of %s Values" % prop_name)
-        except NameError:
+            if len(properties) == 1:
+                get_histogram_plot(prop_name, prop, units, title="Distribution of %s Values" % prop_name)
+        except:
             pass
-    print
+
+    if len(properties) > 1:
+        names, units, props = zip(*properties)
+        get_multi_histogram_plot(names, props)
     return results
 
 
