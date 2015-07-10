@@ -142,7 +142,7 @@ def load_gdb13_data():
 
 
 def build_qm7_data():
-    mkdir_p(os.path.join(DATA_BASE_DIR, "qm"))
+    mkdir_p(os.path.join(DATA_BASE_DIR, "qm7"))
     with open(os.path.join(DATA_BASE_DIR, "qm7.pkl"), "r") as f:
         temp = cPickle.load(f)
         X = temp['X'].reshape(7165, 23*23)
@@ -153,7 +153,7 @@ def build_qm7_data():
 
     for i, (zs, coords, t) in enumerate(zip(Z, R, T)):
         name = "qm-%04d" % i
-        path = os.path.join(DATA_BASE_DIR, "qm", name + ".out")
+        path = os.path.join(DATA_BASE_DIR, "qm7", name + ".out")
         with open(path, "w") as f:
             for z, coord in zip(zs, coords):
                 z = int(z)
@@ -163,7 +163,7 @@ def build_qm7_data():
 
 
 def load_qm7_data():
-    base_path = os.path.join(DATA_BASE_DIR, "qm")
+    base_path = os.path.join(DATA_BASE_DIR, "qm7")
     if not os.path.isdir(base_path) or not os.listdir(base_path):
         build_qm7_data()
 
