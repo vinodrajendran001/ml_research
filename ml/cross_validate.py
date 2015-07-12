@@ -61,7 +61,7 @@ def _parallel_params(params):
     This is a helper function to run the parallel code. It contains the same
     code that the cross_clf_kfold had in the inner loop.
     '''
-    X_train, y_train, groups_train, clf_base, param_names, p_vals, test_folds = params
+    coord, X_train, y_train, groups_train, clf_base, param_names, p_vals, test_folds = params
     params = dict(zip(param_names, p_vals))
     clf = clf_base(**params)
 
@@ -72,7 +72,7 @@ def _parallel_params(params):
     test_mean, test_std = test_clf_kfold(X_use, y_use, groups_use, clf, folds=test_folds)
     print "EASY", test_mean, params
     sys.stdout.flush()
-    return test_mean
+    return coord, test_mean
 
 
 def test_clf_kfold(X, y, groups, clf, folds=10):
@@ -119,18 +119,21 @@ def cross_clf_kfold(X, y, groups, clf_base, params_sets, cross_folds=10, test_fo
     else:
         loop = get_cross_validation_iter(X, y, groups, cross_folds)
 
+    data = []
     # Calculate the cross validation errors for all of the parameter sets.
     # The `_` variables correspond to the test groups that get left out of the
     # cross validation portion. They are like this just to reduce confusion
     # since they are otherwise not used.
     for i, (X_train, _, y_train, _, groups_train, _) in enumerate(loop):
-        data = []
         # This parallelization could probably be more efficient with an
         # iterator
-        for p_vals in product(*params_sets.values()):
-            data.append((X_train, y_train, groups_train, clf_base, param_names, p_vals, test_folds))
+        for j, p_vals in enumerate(product(*params_sets.values())):
+            coord = i, j
+            data.append((coord, X_train, y_train, groups_train, clf_base, param_names, p_vals, test_folds))
 
-        cross[i,:] = p_map(_parallel_params, data)
+    results_groups = p_map(_parallel_params, data)
+    for coord, x in results_groups:
+        cross[coord] = x
 
     # Get the set of parameters with the lowest cross validation error
     idx = numpy.argmin(cross.mean(0))
