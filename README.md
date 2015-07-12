@@ -19,6 +19,13 @@ At this point, it is a matter of collecting the data into the `data/` directory.
     $ cd data
     $ git clone https://github.com/crcollins/mol_data
 
+For the `qm7` dataset and the `qm7b` dataset run the following commands.
+
+    $ mkdir data
+    $ data
+    $ wget http://quantum-machine.org/data/qm7{,b}.pkl
+
+
 Todo
 ----
 
