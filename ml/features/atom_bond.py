@@ -23,7 +23,7 @@ def get_local_atom_connections(names, paths, **kwargs):
     types = get_all_bond_types()
     typemap, counts_base = get_type_data(types)
 
-    for i, (name, path) in enumerate(zip(names, paths)):
+    for i, path in enumerate(paths):
         molecule = []
         elements, numbers, coords = read_file_data(path)
 
