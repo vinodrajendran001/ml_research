@@ -40,3 +40,35 @@ def get_local_atom_connections(names, paths, **kwargs):
         for row in molecule:
             vectors.append(sum(row, []))
     return numpy.matrix(vectors)
+
+
+def get_local_atom_zmatrix(names, paths, **kwargs):
+    '''
+    The local atom-wise zmatrix.
+
+    v = [Z_atom] +
+        [(Z_bond_1, r_1), ..., (Z_bond_n, r_m)] +
+        [(Z_angle_1^1, Z_angle_1^2, theta_1), ..., (Z_angle_m^1, Z_angle_m^2, theta_m)] +
+        [(Z_dihedral_1^1, Z_dihedral_1^2, Z_dihedral_1^3, phi_1), ..., (Z_dihedral_p^1, Z_dihedral_p^2, Z_dihedral_p^3, phi_p)]
+    m =  4
+    n =  6  # 3 + 2 + 1
+    p = 36  # 4 * 3 * 3
+    '''
+    pass
+
+
+def get_local_bond_zmatrix(names, paths, **kwargs):
+    '''
+    The local bond-wise zmatrix.
+
+    v = [(Z_atom_1, Z_atom_2, r)] +
+        [(Z_dihedral_1^1, Z_dihedral_1^2, phi_1), ..., (Z_dihedral_p^1, Z_dihedral_p^2, phi_1)]
+
+    for i in sortZ([1, 2]):
+        v += [(Z_bond_1^i, r_1^i), ..., (Z_bond_m^i, r_m^i)]
+        v += [(Z_angle_1^i, theta_1^i), ..., (Z_angle_n^i, theta_1^i)]
+    m = 3
+    n = 3
+    p = 9  # 3 * 3
+    '''
+    pass
