@@ -178,6 +178,7 @@ def get_fingerprint_feature(names, paths, size=2048, **kwargs):
         vectors.append([x == '1' for x in f.ToBitString()])
     return numpy.matrix(vectors)
 
+
 def get_mul_feature(names, paths):
     vectors = []
     for path, name in zip(paths, names):
