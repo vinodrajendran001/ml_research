@@ -11,9 +11,11 @@ from ..utils import read_file_data, map_atom
 from .utils import get_bond_counts, get_all_bond_types, get_type_data
 
 
-def get_local_atom_zmatrix(names, paths, **kwargs):
+def get_local_atom_connections(names, paths, **kwargs):
     '''
-    pass
+    This feature vector returns the types of bonds that are
+
+    v = [Z_atom, bond_count(Z_atom), mol_idx]
     '''
     # [atom_map, bond_map_sum, molecule_idx]
     vectors = []
