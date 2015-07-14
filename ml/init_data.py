@@ -8,6 +8,9 @@ from utils import true_strip, tokenize
 
 
 def get_name_groups(names):
+    '''
+    Return a matrix of groups based on unique names.
+    '''
     groups = []
     seen = {}
     count = 0
@@ -21,6 +24,9 @@ def get_name_groups(names):
 
 
 def get_base_features(function_sets, names, geom_paths):
+    '''
+    Return an OrderedDict of final features.
+    '''
     components = {}
     final_features = OrderedDict()
 
