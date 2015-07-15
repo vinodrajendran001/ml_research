@@ -12,6 +12,7 @@ try:
 except ImportError:
     pass
 
+
 def mkdir_p(path):
     '''
     This function acts the same way as the unix command:

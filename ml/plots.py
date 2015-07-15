@@ -63,6 +63,7 @@ def get_3d_suface(xs, ys, zs, method="linear"):
 
     plt.show()
 
+
 def get_3d_scatter(xs, ys, zs):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
