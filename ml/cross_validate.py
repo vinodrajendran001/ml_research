@@ -83,16 +83,16 @@ def test_clf_kfold(X, y, groups, clf, folds=10):
     single_split = len(group_set) == 2 and group_set == set([0, 1])
     if single_split:
         loop = get_cross_validation_pair_iter(X, y, groups)
-        results = numpy.zeros(1)
     else:
         loop = get_cross_validation_iter(X, y, groups, folds)
-        results = numpy.zeros(folds)
 
+    results = []
     for i, (X_train, X_test, y_train, y_test, _, _) in enumerate(loop):
         clf.fit(X_train, y_train)
         pred = clf.predict(X_test)
-        results[i] = mean_absolute_error(pred, y_test)
+        results.append(mean_absolute_error(pred, y_test))
 
+    results = numpy.array(results)
     if single_split:
         return results.mean(), numpy.abs(pred - y_test).std()
     else:
