@@ -237,17 +237,46 @@ def get_fractional_bond_counts(elements, coords, slope=10.):
     return counts
 
 
-def get_encoded_lengths(elements, coords, segments=10, start=0.2, end=6, slope=1, bonded=True):
+def get_depth_threshold_mask(mat, max_depth=1):
+    '''
+    Given a connectivity matrix (either strings or ints), return a mask that is
+    True at [i,j] if there exists a path from i to j that is of length
+    `max_depth` or fewer.
+
+    This is done by repeated matrix multiplication of the connectivity matrix.
+
+    If `max_depth` is less than 1, this will return all True matrix.
+    '''
+    if max_depth < 1:
+        temp = numpy.ones(mat.shape).astype(bool)
+        return numpy.matrix(temp)
+
+    mask = (mat != '')
+    if isinstance(mask, bool):
+        mask = mat == 1
+
+    d = numpy.matrix(mask).astype(int)
+    acc = d.copy()
+    for i in xrange(2, max_depth + 1):
+        acc *= d
+        mask |= (acc == 1)
+    return mask
+
+
+def get_encoded_lengths(elements, coords, segments=10, start=0.2, end=6., slope=1, max_depth=1):
     ele_idx = {ele: i for i, ele in enumerate(ELE_TO_NUM)}
     vector = numpy.zeros((len(ELE_TO_NUM), len(ELE_TO_NUM), segments))
     theta = numpy.linspace(start, end, segments)
 
     distances = get_distance_matrix(coords, power=1)
     bonds = get_connectivity_matrix(elements, coords)
+    bonds = get_depth_threshold_mask(bonds, max_depth=max_depth)
+
     for i, element1 in enumerate(elements):
         for j, element2 in enumerate(elements[i + 1:]):
-            if not bonds[i,j] and bonded: continue
             j += i + 1
+            if not bonds[i,j]: continue
+
             value = sigmoid(slope * (theta - distances[i, j]))
             if element1 < element2:
                 vector[ele_idx[element1], ele_idx[element2]] += value
