@@ -13,7 +13,7 @@ import numpy
 
 from sklearn import decomposition
 
-from ..utils import read_file_data 
+from ..utils import read_file_data
 from .utils import homogenize_lengths, get_atom_counts, \
         get_bond_counts, get_angle_counts, get_dihedral_counts, \
         get_trihedral_counts, get_angle_bond_counts, get_dihedral_angle, \
@@ -200,7 +200,7 @@ def get_fractional_bond_feature(names, paths, slope=10., **kwargs):
 
 
 
-def get_encoded_bond_feature(names, paths, segments=10, slope=1., **kwargs):
+def get_encoded_bond_feature(names, paths, segments=10, slope=1., bonded=False, **kwargs):
     '''
     This is another feature vector attempting to make the bond feature
     continuous. This is done by applying a thermometer-like encoding
@@ -215,7 +215,7 @@ def get_encoded_bond_feature(names, paths, segments=10, slope=1., **kwargs):
     vectors = []
     for path in paths:
         elements, numbers, coords = read_file_data(path)
-        counts = get_encoded_lengths(elements, coords.tolist(), segments=segments, slope=slope)
+        counts = get_encoded_lengths(elements, coords.tolist(), segments=segments, slope=slope, bonded=bonded)
         vectors.append(counts)
     return remove_zero_cols(vectors)
 

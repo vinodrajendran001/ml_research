@@ -237,14 +237,16 @@ def get_fractional_bond_counts(elements, coords, slope=10.):
     return counts
 
 
-def get_encoded_lengths(elements, coords, segments=10, start=0.2, end=6, slope=1):
+def get_encoded_lengths(elements, coords, segments=10, start=0.2, end=6, slope=1, bonded=True):
     ele_idx = {ele: i for i, ele in enumerate(ELE_TO_NUM)}
     vector = numpy.zeros((len(ELE_TO_NUM), len(ELE_TO_NUM), segments))
     theta = numpy.linspace(start, end, segments)
 
     distances = get_distance_matrix(coords, power=1)
+    bonds = get_connectivity_matrix(elements, coords)
     for i, element1 in enumerate(elements):
         for j, element2 in enumerate(elements[i + 1:]):
+            if not bonds[i,j] and bonded: continue
             j += i + 1
             value = sigmoid(slope * (theta - distances[i, j]))
             if element1 < element2:
