@@ -66,6 +66,12 @@ def get_coulomb_feature(names, paths, **kwargs):
 
 
 def get_bag_of_bonds_feature(names, paths, **kwargs):
+    '''
+    This feature vector is a reordering of the coulomb matrix so that it does
+    not have the same sorts of sorting issuses that the coulomb matrix has.
+
+    NOTE: This feature vector still scales O(N^2).
+    '''
     keys = set(tuple(sorted(x)) for x in product(ELE_TO_NUM, ELE_TO_NUM))
     keys |= set(ELE_TO_NUM)
 
