@@ -1,6 +1,8 @@
 import time
 import sys
 from collections import OrderedDict
+import hashlib
+import os
 
 import numpy
 
@@ -38,7 +40,16 @@ def get_base_features(function_sets, names, geom_paths):
         for function, kwargs in function_set:
             key = true_strip(function.__name__, "get_", "_feature") + " " + repr(kwargs)
             if key not in components:
-                components[key] = function(names, geom_paths, **kwargs)
+                hashed_key = key.replace(" ", "_")
+                path = os.path.join("cache", hashed_key + ".npy")
+                try:
+                    with open(path, 'rb') as f:
+                        temp = numpy.load(f)
+                except IOError:
+                    temp = function(names, geom_paths, **kwargs)
+                    with open(path, 'wb') as f:
+                        numpy.save(f, temp)
+                components[key] = temp
             keys.append(key)
 
         final_key = " | ".join(keys)
