@@ -91,7 +91,7 @@ def init_data_multi(functions, names, datasets, geom_paths, meta, lengths, prope
 
     print
     sys.stdout.flush()
-    temp_properties = numpy.concatenate([numpy.matrix(x).T for x in properties])
+    temp_properties = numpy.concatenate([numpy.matrix(y).T for name, units, y in properties])
     properties = [("all", "units", temp_properties)]
     return features, properties, groups
 
