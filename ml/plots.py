@@ -82,3 +82,12 @@ def get_matrix_plot(mat, extent=None):
     m = ax.matshow(mat, extent=extent)
     fig.colorbar(m)
     plt.show()
+
+
+def plot_encoding(start=0.2, end=6.0, slope=20., segments=5):
+    from scipy.special import expit as sigmoid
+    theta = numpy.linspace(start, end, segments)
+    distance = numpy.linspace(0.6, 20, 100)
+    value = sigmoid(slope*numpy.subtract.outer(theta, distance)).T
+    plt.plot(distance, value)
+    plt.show()
