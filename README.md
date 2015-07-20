@@ -47,4 +47,5 @@ Todo
     [ ] Parallelize feature vector creation
     [ ]    (Pipeline this?)
     [ ] Encoding of angles
+    [ ] Fix caching so it works in all casse
 
