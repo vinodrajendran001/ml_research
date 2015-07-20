@@ -72,14 +72,21 @@ def get_bag_of_bonds_feature(names, paths, **kwargs):
 
     NOTE: This feature vector still scales O(N^2).
     '''
+    # Add all possbile bond pairs (C, C), (C, O)...
     keys = set(tuple(sorted(x)) for x in product(ELE_TO_NUM, ELE_TO_NUM))
+    # Add single element types (for the diag)
     keys |= set(ELE_TO_NUM)
 
+    # Sort the keys to remove duplicates later ((C, H) instead of (H, C))
     sorted_keys = sorted(ELE_TO_NUM.keys())
 
+    # Initialize the bags for all the molecules at the same time
+    # This is to make it easier to make each of the bags of the same type the
+    # same length at the end
     bags = {key: [] for key in keys}
     for path in paths:
         elements, numbers, coords = read_file_data(path)
+        # Sort the elements, numbers, and coords based on the element
         bla = sorted(zip(elements, numbers, coords.tolist()), key=lambda x: x[0])
         elements, numbers, coords = zip(*bla)
         coords = numpy.matrix(coords)
@@ -95,15 +102,25 @@ def get_bag_of_bonds_feature(names, paths, **kwargs):
         for i, ele1 in enumerate(sorted_keys):
             if ele1 not in ele_set:
                 continue
+            # Select only the rows that are of type ele1
             first = ele_array == ele1
+            # Select the diag elements if they match ele1 and store them,
+            # highest to lowest
             bags[ele1][-1] = sorted(diag[ele_array == ele1].tolist(), reverse=True)
             for j, ele2 in enumerate(sorted_keys):
                 if i > j or ele2 not in ele_set:
                     continue
+                # Select only the cols that are of type ele2
                 second = ele_array == ele2
+                # Select only the rows/cols that are in the upper triangle
+                # (This could also be the lower), and are in a row, col with
+                # ele1 and ele2 respectively
                 mask = numpy.triu(numpy.logical_and.outer(first, second), k=1)
+                # Add to correct double element bag
+                # highest to lowest
                 bags[ele1, ele2][-1] = sorted(mat[mask].tolist(), reverse=True)
 
+    # Make all the bags of the same type the same length, and form matrix
     new = [homogenize_lengths(x) for x in bags.values()]
     return numpy.hstack(new)
 
