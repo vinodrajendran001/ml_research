@@ -45,6 +45,8 @@ def get_base_features(function_sets, names, geom_paths):
                 try:
                     with open(path, 'rb') as f:
                         temp = numpy.load(f)
+                        if temp.shape[0] != len(names):
+                            raise IOError
                 except IOError:
                     temp = function(names, geom_paths, **kwargs)
                     with open(path, 'wb') as f:
