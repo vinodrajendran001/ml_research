@@ -72,7 +72,7 @@ def get_bag_of_bonds_feature(names, paths, **kwargs):
 
     NOTE: This feature vector still scales O(N^2).
     '''
-    # Add all possbile bond pairs (C, C), (C, O)...
+    # Add all possible bond pairs (C, C), (C, O)...
     keys = set(tuple(sorted(x)) for x in product(ELE_TO_NUM, ELE_TO_NUM))
     # Add single element types (for the diag)
     keys |= set(ELE_TO_NUM)
@@ -106,7 +106,7 @@ def get_bag_of_bonds_feature(names, paths, **kwargs):
             first = ele_array == ele1
             # Select the diag elements if they match ele1 and store them,
             # highest to lowest
-            bags[ele1][-1] = sorted(diag[ele_array == ele1].tolist(), reverse=True)
+            bags[ele1][-1] = sorted(diag[first].tolist(), reverse=True)
             for j, ele2 in enumerate(sorted_keys):
                 if i > j or ele2 not in ele_set:
                     continue
