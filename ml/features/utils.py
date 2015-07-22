@@ -5,7 +5,7 @@ from scipy.special import expit as sigmoid
 import numpy
 from numpy.linalg import norm
 
-from ..constants import ELE_TO_NUM, BOND_LENGTHS, TYPE_ORDER
+from ..constants import ELE_TO_NUM, BOND_LENGTHS, TYPE_ORDER, BHOR_TO_ANGSTROM
 from ..utils import gauss_decay_function
 
 
@@ -13,8 +13,9 @@ def get_coulomb_matrix(numbers, coords):
     """
     Return the coulomb matrix for the given `coords` and `numbers`
     """
+    ANGSTROM_TO_BHOR = 1. / BHOR_TO_ANGSTROM
     top = numpy.outer(numbers, numbers).astype(numpy.float64)
-    r = get_distance_matrix(coords, power=1)
+    r = get_distance_matrix(ANGSTROM_TO_BHOR * coords, power=1)
     with numpy.errstate(divide='ignore', invalid='ignore'):
         numpy.divide(top, r, top)
     numpy.fill_diagonal(top, 0.5 * numpy.array(numbers) ** 2.4)
