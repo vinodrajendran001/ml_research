@@ -41,10 +41,6 @@ def get_line_plot(xvals, yvals, title="", fit=None):
     plt.show()
 
 
-def get_bar_plots(names, values, title=""):
-    pass
-
-
 def get_3d_suface(xs, ys, zs, method="linear"):
     A = numpy.array(zip(xs, ys))
     X = numpy.linspace(min(xs), max(xs), 100)
