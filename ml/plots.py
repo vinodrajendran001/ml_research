@@ -4,6 +4,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy
 from scipy.optimize import curve_fit
 from scipy.interpolate import griddata
+from scipy.special import expit as sigmoid
 
 
 def get_histogram_plot(property_name, values, units, title=""):
@@ -84,10 +85,15 @@ def get_matrix_plot(mat, extent=None):
     plt.show()
 
 
-def plot_encoding(start=0.2, end=6.0, slope=20., segments=5):
-    from scipy.special import expit as sigmoid
-    theta = numpy.linspace(start, end, segments)
-    distance = numpy.linspace(0.6, 20, 100)
+def plot_bond_encoding(theta=None, start=1.0, end=6.0, slope=20., segments=5):
+    if theta is None:
+        theta = numpy.linspace(start, end, segments)
+    distance = numpy.linspace(0, 8, 250)
     value = sigmoid(slope*numpy.subtract.outer(theta, distance)).T
     plt.plot(distance, value)
+    plt.yticks(numpy.linspace(0, 1.1, 4))
+    plt.xlabel("Bond Length ($\AA$)")
+    plt.ylabel("Weight")
+    plt.show()
+
     plt.show()
