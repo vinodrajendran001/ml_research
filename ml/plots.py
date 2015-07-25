@@ -81,7 +81,7 @@ def get_matrix_plot(mat, extent=None):
     plt.show()
 
 
-def plot_bond_encoding(theta=None, start=1.0, end=6.0, slope=20., segments=5):
+def plot_bond_encoding(theta=None, start=1.0, end=6.0, slope=20., segments=5, show=False):
     if theta is None:
         theta = numpy.linspace(start, end, segments)
     distance = numpy.linspace(0, 8, 250)
@@ -90,10 +90,11 @@ def plot_bond_encoding(theta=None, start=1.0, end=6.0, slope=20., segments=5):
     plt.yticks(numpy.linspace(0, 1.1, 4))
     plt.xlabel("Bond Length ($\AA$)")
     plt.ylabel("Weight")
-    plt.show()
+    if show:
+        plt.show()
 
 
-def plot_bond_threshold(theta=None, start=1.0, end=6.0, segments=5):
+def plot_bond_threshold(theta=None, start=1.0, end=6.0, segments=5, show=False):
     if theta is None:
         theta = numpy.linspace(start, end, segments)
     distance = numpy.linspace(0, 8, 250)
@@ -102,4 +103,5 @@ def plot_bond_threshold(theta=None, start=1.0, end=6.0, segments=5):
     plt.yticks(numpy.linspace(0, 1.1, 4))
     plt.xlabel("Bond Length ($\AA$)")
     plt.ylabel("Weight")
-    plt.show()
+    if show:
+        plt.show()
