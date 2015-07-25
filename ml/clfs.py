@@ -82,15 +82,19 @@ class KRR(kernel_ridge.KernelRidge):
     def __init__(self, alpha=1, kernel="precomputed", gamma=1., degree=3, coef0=1, kernel_params=None):
         super(KRR, self).__init__(alpha=alpha, kernel=kernel, gamma=gamma, degree=degree,
             coef0=coef0, kernel_params=kernel_params)
-        if kernel == "laplace":
-            self.kernel = "precomputed"
+        self._laplace_kernel = False
+        self.set_params(kernel=kernel)
+
+    def set_params(self, **kwargs):
+        if kwargs.get("kernel") == "laplace":
             self._laplace_kernel = True
-        else:
-            self._laplace_kernel = False
+        return super(KRR, self).set_params(**kwargs)
 
     def fit(self, X, y):
         if self._laplace_kernel:
             self._input_X = X
+            # Force the kernel to be precomputed
+            self.set_params(kernel="precomputed")
             K = laplace_kernel(X, X, gamma=self.gamma)
         else:
             K = X
@@ -98,6 +102,8 @@ class KRR(kernel_ridge.KernelRidge):
 
     def predict(self, X):
         if self._laplace_kernel:
+            # Force the kernel to be precomputed
+            self.set_params(kernel="precomputed")
             K = laplace_kernel(X, self._input_X, gamma=self.gamma)
         else:
             K = X
