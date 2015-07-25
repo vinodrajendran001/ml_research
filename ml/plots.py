@@ -7,21 +7,31 @@ from scipy.interpolate import griddata
 from scipy.special import expit as sigmoid
 
 
-def get_histogram_plot(property_name, values, units, title=""):
-    plt.hist(values, bins=50, normed=False, color="g", alpha=0.75, histtype='stepfilled')
+def get_histogram_plot(property_name, values, units, title="", line=False):
+    if line:
+        y, binEdges= numpy.histogram(values, bins=50)
+        bincenters = 0.5 * (binEdges[1:] + binEdges[:-1])
+        plt.plot(bincenters, y, '-')
+    else:
+        plt.hist(values, bins=50, normed=False, color="g", alpha=0.75, histtype='stepfilled')
     plt.title(title)
     plt.xlabel("%s (%s)" % (property_name, units))
     plt.ylabel("Count")
     plt.show()
 
 
-def get_multi_histogram_plot(property_names, values_list, title="", normalize=True):
+def get_multi_histogram_plot(property_names, values_list, title="", normalize=True, line=False):
     plt.title(title)
     for name, values in zip(property_names, values_list):
         if normalize:
             temp = values - values.min()
             values = temp / temp.max()
-        plt.hist(values, bins=50, normed=False, alpha=1./len(values_list), histtype='stepfilled', label=name)
+        if line:
+            y, binEdges= numpy.histogram(values, bins=50)
+            bincenters = 0.5 * (binEdges[1:] + binEdges[:-1])
+            plt.plot(bincenters, y, '-', label=name)
+        else:
+            plt.hist(values, bins=50, normed=False, alpha=1./len(values_list), histtype='stepfilled', label=name)
     plt.legend(loc="best")
     plt.xlabel("Values (unitless)")
     plt.ylabel("Count")
@@ -98,8 +108,9 @@ def plot_bond_threshold(theta=None, start=1.0, end=6.0, segments=5, show=False):
     if theta is None:
         theta = numpy.linspace(start, end, segments)
     distance = numpy.linspace(0, 8, 250)
-    value = numpy.greater.outer(theta, distance).astype(int).T
-    plt.plot(distance, value)
+    value1 = numpy.greater.outer(theta, distance).astype(int).T
+    value2 = numpy.greater.outer(theta, distance).astype(int).T
+    plt.plot(distance, value2 & value2)
     plt.yticks(numpy.linspace(0, 1.1, 4))
     plt.xlabel("Bond Length ($\AA$)")
     plt.ylabel("Weight")
