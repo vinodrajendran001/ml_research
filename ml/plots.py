@@ -116,3 +116,14 @@ def plot_bond_threshold(theta=None, start=1.0, end=6.0, segments=5, show=False):
     plt.ylabel("Weight")
     if show:
         plt.show()
+
+
+def both_bond_methods():
+    plt.figure(1)
+    plt.subplot(211)
+    plot_bond_threshold()
+
+    plt.subplot(212)
+    plot_bond_encoding()
+
+    plt.show()
