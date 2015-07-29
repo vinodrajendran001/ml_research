@@ -25,6 +25,21 @@ def get_name_groups(names):
     return numpy.matrix(groups).T
 
 
+def get_feature_vector(function, key, names, geom_paths, kwargs):
+    cleaned_key = key.replace(" ", "_")
+    path = os.path.join("cache", cleaned_key + ".npy")
+    try:
+        with open(path, 'rb') as f:
+            temp = numpy.load(f)
+            if temp.shape[0] != len(names):
+                raise IOError
+    except IOError:
+        temp = function(names, geom_paths, **kwargs)
+        with open(path, 'wb') as f:
+            numpy.save(f, temp)
+    return temp
+
+
 def get_base_features(function_sets, names, geom_paths):
     '''
     Return an OrderedDict of final features.
@@ -40,18 +55,7 @@ def get_base_features(function_sets, names, geom_paths):
         for function, kwargs in function_set:
             key = true_strip(function.__name__, "get_", "_feature") + " " + repr(kwargs)
             if key not in components:
-                hashed_key = key.replace(" ", "_")
-                path = os.path.join("cache", hashed_key + ".npy")
-                try:
-                    with open(path, 'rb') as f:
-                        temp = numpy.load(f)
-                        if temp.shape[0] != len(names):
-                            raise IOError
-                except IOError:
-                    temp = function(names, geom_paths, **kwargs)
-                    with open(path, 'wb') as f:
-                        numpy.save(f, temp)
-                components[key] = temp
+                components[key] = get_feature_vector(function, key, names, geom_paths, kwargs)
             keys.append(key)
 
         final_key = " | ".join(keys)
