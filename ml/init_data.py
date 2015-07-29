@@ -6,7 +6,7 @@ import os
 
 import numpy
 
-from utils import true_strip, tokenize
+from utils import true_strip, tokenize, mkdir_p
 
 
 def get_name_groups(names):
@@ -26,8 +26,10 @@ def get_name_groups(names):
 
 
 def get_feature_vector(function, key, names, geom_paths, kwargs):
+    base_path = os.path.join("cache", sys.argv[1])
+    mkdir_p(base_path)
     cleaned_key = key.replace(" ", "_")
-    path = os.path.join("cache", cleaned_key + ".npy")
+    path = os.path.join(base_path, cleaned_key + ".npy")
     try:
         with open(path, 'rb') as f:
             temp = numpy.load(f)
