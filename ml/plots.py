@@ -107,10 +107,11 @@ def plot_bond_encoding(theta=None, start=1.0, end=6.0, slope=20., segments=5, sh
 def plot_bond_threshold(theta=None, start=1.0, end=6.0, segments=5, show=False):
     if theta is None:
         theta = numpy.linspace(start, end, segments)
-    distance = numpy.linspace(0, 8, 250)
+    distance = numpy.linspace(0, 8, 1000)
     value1 = numpy.greater.outer(theta, distance).astype(int).T
-    value2 = numpy.greater.outer(theta, distance).astype(int).T
-    plt.plot(distance, value2 & value2)
+    theta2 = numpy.array([0] + theta[:-1].tolist())
+    value2 = numpy.less.outer(theta2, distance).astype(int).T
+    plt.plot(distance, value1 & value2)
     plt.yticks(numpy.linspace(0, 1.1, 4))
     plt.xlabel("Bond Length ($\AA$)")
     plt.ylabel("Weight")
