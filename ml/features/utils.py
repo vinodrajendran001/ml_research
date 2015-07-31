@@ -1,7 +1,8 @@
 from itertools import product
 
 from scipy.spatial.distance import cdist
-from scipy.special import expit as sigmoid
+from scipy.special import expit
+import scipy.stats
 import numpy
 from numpy.linalg import norm
 
@@ -264,7 +265,14 @@ def get_depth_threshold_mask(mat, max_depth=1):
     return mask
 
 
-def get_encoded_lengths(elements, coords, segments=10, start=0.2, end=6., slope=1, max_depth=1):
+def get_encoded_lengths(elements, coords, segments=10, start=0.2, end=6., slope=1, max_depth=1, sigmoid="expit"):
+    sigmoid_options = {
+        "norm_cdf": scipy.stats.norm.cdf,
+        "zero_one": lambda x: (x > 0.) * 1.,
+        "expit": expit,
+    }
+    sigmoid = sigmoid_options[sigmoid]
+
     ele_idx = {ele: i for i, ele in enumerate(ELE_TO_NUM)}
     vector = numpy.zeros((len(ELE_TO_NUM), len(ELE_TO_NUM), segments))
     theta = numpy.linspace(start, end, segments)

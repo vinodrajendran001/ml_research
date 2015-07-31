@@ -200,7 +200,7 @@ def get_fractional_bond_feature(names, paths, slope=10., **kwargs):
 
 
 
-def get_encoded_bond_feature(names, paths, segments=10, slope=1., max_depth=0, **kwargs):
+def get_encoded_bond_feature(names, paths, segments=10, slope=1., max_depth=0, sigmoid="expit", **kwargs):
     '''
     This is another feature vector attempting to make the bond feature
     continuous. This is done by applying a thermometer-like encoding
@@ -215,7 +215,7 @@ def get_encoded_bond_feature(names, paths, segments=10, slope=1., max_depth=0, *
     vectors = []
     for path in paths:
         elements, numbers, coords = read_file_data(path)
-        counts = get_encoded_lengths(elements, coords.tolist(), segments=segments, slope=slope, max_depth=max_depth)
+        counts = get_encoded_lengths(elements, coords.tolist(), segments=segments, slope=slope, max_depth=max_depth, sigmoid=sigmoid)
         vectors.append(counts)
     return remove_zero_cols(vectors)
 
