@@ -55,8 +55,14 @@ def main(features, properties, groups, clfs, cross_validate,
 if __name__ == '__main__':
     distance_functions = [cosine_distance, lennard_jones, erf_over_r, one_over_sqrt]
     powers = [-2, -1, -0.5, 0.5, 1, 2]
-    slopes = [10., 20., 30.]
+    slopes = [5., 10., 20., 30., 50.]
     segments = [10, 25, 50, 100]
+    max_depth = [1, 2, 3, 4, 5, 6, 7, 0]
+    sigmoids = ["norm_cdf", "expit", "zero_one"]
+    slopes = [20., 30.]
+    segments = [100]
+    max_depth = [3]
+
 
     atom_features = [
         # ((features.get_atom_feature, {}), ),
@@ -64,9 +70,11 @@ if __name__ == '__main__':
         # ((features.get_atom_thermo_feature, {}), ),
     ]
     bond_features = [
-        ((features.get_bond_feature, {}), ),
+        # ((features.get_bond_feature, {}), ),
+        # ((features.get_sum_bond_feature, {}), ),
         # ((features.get_fractional_bond_feature, {"slope": slopes}), ),
-        # ((features.get_encoded_bond_feature, {"slope": slopes, "segments": segments}), ),
+        ((features.get_encoded_bond_feature, {"slope": slopes, "segments": segments, "max_depth": max_depth, "sigmoid": sigmoids}), ),
+        # ((features.get_bag_of_bonds_feature, {}), ),
     ]
     angle_features = [
         # ((features.get_angle_feature, {}), ),
