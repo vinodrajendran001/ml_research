@@ -20,7 +20,7 @@ from .utils import homogenize_lengths, get_atom_counts, \
         get_angle_angle, get_bond_length, set_vector_length, \
         construct_zmatrix_addition, get_dihedral_bond_counts, \
         remove_zero_cols, get_fractional_bond_counts, get_encoded_lengths, \
-        get_encoded_angles, get_atom_env_counts
+        get_encoded_angles, get_atom_env_counts, get_sum_bond_counts
 
 
 def get_full_local_zmatrix_feature(names, paths, **kwargs):
@@ -177,6 +177,20 @@ def get_bond_feature(names, paths, **kwargs):
     for path in paths:
         elements, numbers, coords = read_file_data(path)
         counts, _ = get_bond_counts(elements, coords.tolist())
+        vectors.append(counts)
+    return remove_zero_cols(vectors)
+
+
+def get_sum_bond_feature(names, paths, **kwargs):
+    '''
+    A feature vector based entirely off the number of bonds in the structure.
+    This feature vector is intended to match how the bond encoding works, if the
+    segments were bond lengths.
+    '''
+    vectors = []
+    for path in paths:
+        elements, numbers, coords = read_file_data(path)
+        counts, _ = get_sum_bond_counts(elements, coords.tolist())
         vectors.append(counts)
     return remove_zero_cols(vectors)
 

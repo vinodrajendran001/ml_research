@@ -185,19 +185,6 @@ def get_bond_type(element1, element2, dist):
             continue
 
 
-def get_fractional_bond_types(element1, element2, dist, slope=10.):
-    values = []
-    for key in TYPE_ORDER:
-        try:
-            a = BOND_LENGTHS[element1][key]
-            b = BOND_LENGTHS[element2][key]
-            r = (a + b) - dist
-            values.append(sigmoid(slope * r))
-        except KeyError:
-            return values
-    return values
-
-
 def get_bond_counts(elements, coords):
     types = get_all_bond_types()
     typemap, counts = get_type_data(types)
@@ -218,6 +205,44 @@ def get_bond_counts(elements, coords):
                     bonds.append((i, j, bond_type))
                     counts[typemap[element1, element2, bond_type]] += 1
     return counts, bonds
+
+
+def get_sum_bond_counts(elements, coords):
+    types = get_all_bond_types()
+    typemap, counts = get_type_data(types)
+
+    bonds = []
+    dist_mat = get_distance_matrix(coords, power=1)
+    for i, element1 in enumerate(elements):
+        for j, element2 in enumerate(elements[i + 1:]):
+            j += i + 1
+            dist = dist_mat[i, j]
+            bond_type = get_bond_type(element1, element2, dist)
+            if bond_type:
+                for t in TYPE_ORDER:
+                    if element1 > element2:
+                        # Flip if they are not in alphabetical order
+                        bonds.append((j, i, bond_type))
+                        counts[typemap[element2, element1, bond_type]] += 1
+                    else:
+                        bonds.append((i, j, bond_type))
+                        counts[typemap[element1, element2, bond_type]] += 1
+                    if bond_type == t:
+                        break
+    return counts, bonds
+
+
+def get_fractional_bond_types(element1, element2, dist, slope=10.):
+    values = []
+    for key in TYPE_ORDER:
+        try:
+            a = BOND_LENGTHS[element1][key]
+            b = BOND_LENGTHS[element2][key]
+            r = (a + b) - dist
+            values.append(sigmoid(slope * r))
+        except KeyError:
+            return values
+    return values
 
 
 def get_fractional_bond_counts(elements, coords, slope=10.):
