@@ -291,6 +291,22 @@ def get_depth_threshold_mask(mat, max_depth=1):
 
 
 def get_encoded_lengths(elements, coords, segments=10, start=0.2, end=6., slope=1, max_depth=1, sigmoid="expit"):
+    '''
+    This is a function for encoding bond distances into a reasonable form. By
+    reasonable, it means a form that is continous and of constant size relative
+    to the whole molecule.
+
+    `segments` defines the number of sigmoid functions to use. The interval they
+    are spaced at is numpy.linspace(start, end, segments).
+
+    `max_depth` defines the longest distance these bonds will be encoded for, as
+    measured by the number of bonds between them.
+
+    There are three possible kinds of sigmoids for this function. A normal CDF,
+    zero/one, and the standard expit sigmoid. These can be selected with the
+    `sgimoid` parameter as "norm_cdf", "zero_one", or "expit" respectively.
+
+    '''
     sigmoid_options = {
         "norm_cdf": scipy.stats.norm.cdf,
         "zero_one": lambda x: (x > 0.) * 1.,
