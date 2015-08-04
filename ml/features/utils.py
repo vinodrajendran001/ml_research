@@ -125,6 +125,11 @@ def get_eigenvalues(X):
 
 
 def get_connectivity_matrix(elements, coords):
+    '''
+    Returns a connectivity matrix where the bond type is designed as
+    ['', '1', 'Ar', '2', '3']. This is often just used as an intermidate
+    calculation when dealing with connections.
+    '''
     r = get_distance_matrix(coords, power=1)
     results = numpy.empty(r.shape, dtype=str)
     for bond_type in TYPE_ORDER:
@@ -162,6 +167,12 @@ def get_atom_counts(elements, coords=None):
 
 
 def get_atom_env_counts(elements, coords=None):
+    '''
+    Return the atom env counts. This differs from just atom counts in that it
+    takes into account the number of things that are connected to the atom. So
+    instead of just a 'C' it could be a 'C1' or a 'C2' (being carbons attached
+    to 1 thing or 2 things.)
+    '''
     types = sorted(BOND_LENGTHS.keys())
     types2 = list(product(types, range(1,5)))
     typemap, counts = get_type_data(types2)
@@ -186,6 +197,9 @@ def get_bond_type(element1, element2, dist):
 
 
 def get_bond_counts(elements, coords):
+    '''
+    Return the bond type counts and a list of all the bonds in the molecule.
+    '''
     types = get_all_bond_types()
     typemap, counts = get_type_data(types)
 
