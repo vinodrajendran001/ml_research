@@ -325,6 +325,7 @@ def get_encoded_lengths(elements, coords, segments=10, start=0.2, end=6., slope=
         "norm_cdf": scipy.stats.norm.cdf,
         "zero_one": lambda x: (x > 0.) * 1.,
         "expit": expit,
+        "tanh": lambda x: (numpy.tanh(x)+1) / 2,
     }
     sigmoid = sigmoid_options[sigmoid]
 
