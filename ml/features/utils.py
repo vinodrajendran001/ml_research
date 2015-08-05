@@ -6,7 +6,8 @@ import scipy.stats
 import numpy
 from numpy.linalg import norm
 
-from ..constants import ELE_TO_NUM, BOND_LENGTHS, TYPE_ORDER, BHOR_TO_ANGSTROM
+from ..constants import ELE_TO_NUM, BOND_LENGTHS, TYPE_ORDER, BHOR_TO_ANGSTROM, \
+                    EQ_BOND_LENGTHS
 from ..utils import gauss_decay_function
 
 
@@ -601,6 +602,18 @@ def get_bond_length(idxs, coords):
     Get the bond length between 2 atoms given `idxs`.
     '''
     return norm(coords[idxs[0], :] - coords[idxs[1]])
+
+
+def get_eq_bond_length(ele1, ele2, bond_type):
+    '''
+    Get the equillibrium bond length between 2 atoms.
+    '''
+    if bond_type == "A":
+        return (get_eq_bond_length(ele1, ele2, "1") + get_eq_bond_length(ele1, ele2, "2")) / 2
+
+    if ele1 > ele2:
+        ele1, ele2 = ele2, ele1
+    return EQ_BOND_LENGTHS[ele1, ele2, bond_type]
 
 
 def set_vector_length(vector, length, fill=0.0):
