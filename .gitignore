@@ -4,3 +4,4 @@ data/*
 results/*
 scratch
 *.sublime*
+cache/*
