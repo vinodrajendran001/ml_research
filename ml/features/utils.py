@@ -598,7 +598,7 @@ def get_angle_angle(idxs, coords):
 
 def get_bond_length(idxs, coords):
     '''
-    Get the bond length between 2 atoms given in `idxs`.
+    Get the bond length between 2 atoms given `idxs`.
     '''
     return norm(coords[idxs[0], :] - coords[idxs[1]])
 
