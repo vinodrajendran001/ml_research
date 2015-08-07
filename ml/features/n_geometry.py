@@ -65,6 +65,30 @@ def get_coulomb_feature(names, paths, **kwargs):
     return homogenize_lengths(vectors)
 
 
+def get_coulomb_connect_feature(names, paths, **kwargs):
+    '''
+
+    NOTE: This feature vector scales O(N^2) where N is the number of atoms in
+    largest structure.
+    '''
+    cache = {}
+    for path in paths:
+        if path in cache:
+            continue
+        elements, numbers, coords = read_file_data(path)
+        mat = get_coulomb_matrix(numbers, coords)
+        mat2 = get_connectivity_matrix(elements, coords)
+
+        idxs = numpy.where(mat2 != '')
+        for i, j in zip(*idxs):
+            length = get_eq_bond_length(elements[i], elements[j], mat2[i, j])
+            mat[i, j] = numbers[i] * numbers[j] / length
+        cache[path] = mat[numpy.tril_indices(mat.shape[0])]
+
+    vectors = [cache[path] for path in paths]
+    return homogenize_lengths(vectors)
+
+
 
 
 def get_coulomb_chain_feature(names, paths, max_depth=1, **kwargs):
