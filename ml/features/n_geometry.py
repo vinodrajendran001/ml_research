@@ -17,7 +17,7 @@ from sklearn import decomposition
 from ..utils import read_file_data
 from .utils import get_coulomb_matrix, homogenize_lengths, \
         get_distance_matrix, get_thermometer_encoding, get_eigenvalues, \
-        get_connectivity_matrix
+        get_connectivity_matrix, get_depth_threshold_mask, get_eq_bond_length
 from ..constants import ELE_TO_NUM
 
 
@@ -59,6 +59,29 @@ def get_coulomb_feature(names, paths, **kwargs):
             continue
         elements, numbers, coords = read_file_data(path)
         mat = get_coulomb_matrix(numbers, coords)
+        cache[path] = mat[numpy.tril_indices(mat.shape[0])]
+
+    vectors = [cache[path] for path in paths]
+    return homogenize_lengths(vectors)
+
+
+
+
+def get_coulomb_chain_feature(names, paths, max_depth=1, **kwargs):
+    '''
+
+    NOTE: This feature vector scales O(N^2) where N is the number of atoms in
+    largest structure.
+    '''
+    cache = {}
+    for path in paths:
+        if path in cache:
+            continue
+        elements, numbers, coords = read_file_data(path)
+        mat = get_coulomb_matrix(numbers, coords)
+        mat2 = get_connectivity_matrix(elements, coords)
+        mat3 = get_depth_threshold_mask(mat2, max_depth=max_depth)
+        mat[numpy.where(-mat3)] = 0
         cache[path] = mat[numpy.tril_indices(mat.shape[0])]
 
     vectors = [cache[path] for path in paths]
