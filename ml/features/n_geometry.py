@@ -93,6 +93,73 @@ def get_coulomb_connect_feature(names, paths, **kwargs):
     return homogenize_lengths(vectors)
 
 
+def get_bag_of_bonds_connect_feature(names, paths, **kwargs):
+    '''
+    This is the same thing that was done for just the coulomb feature but mapped
+    to the bag of bonds feature.
+
+    NOTE: This feature vector still scales O(N^2).
+    '''
+    # Add all possible bond pairs (C, C), (C, O)...
+    keys = set(tuple(sorted(x)) for x in product(ELE_TO_NUM, ELE_TO_NUM))
+    # Add single element types (for the diag)
+    keys |= set(ELE_TO_NUM)
+
+    # Sort the keys to remove duplicates later ((C, H) instead of (H, C))
+    sorted_keys = sorted(ELE_TO_NUM.keys())
+
+    # Initialize the bags for all the molecules at the same time
+    # This is to make it easier to make each of the bags of the same type the
+    # same length at the end
+    bags = {key: [] for key in keys}
+    for path in paths:
+        elements, numbers, coords = read_file_data(path)
+        # Sort the elements, numbers, and coords based on the element
+        bla = sorted(zip(elements, numbers, coords.tolist()), key=lambda x: x[0])
+        elements, numbers, coords = zip(*bla)
+        coords = numpy.matrix(coords)
+
+        ele_array = numpy.array(elements)
+        ele_set = set(elements)
+
+        mat = get_coulomb_matrix(numbers, coords)
+        mat2 = get_connectivity_matrix(elements, coords)
+
+        idxs = numpy.where(mat2 != '')
+        for i, j in zip(*idxs):
+            length = get_eq_bond_length(elements[i], elements[j], mat2[i, j])
+            mat[i, j] = numbers[i] * numbers[j] / length
+        mat = numpy.array(mat)
+
+        diag = numpy.diagonal(mat)
+
+        for key in keys:
+            bags[key].append([])
+
+        for i, ele1 in enumerate(sorted_keys):
+            if ele1 not in ele_set:
+                continue
+            # Select only the rows that are of type ele1
+            first = ele_array == ele1
+            # Select the diag elements if they match ele1 and store them,
+            # highest to lowest
+            bags[ele1][-1] = sorted(diag[first].tolist(), reverse=True)
+            for j, ele2 in enumerate(sorted_keys):
+                if i > j or ele2 not in ele_set:
+                    continue
+                # Select only the cols that are of type ele2
+                second = ele_array == ele2
+                # Select only the rows/cols that are in the upper triangle
+                # (This could also be the lower), and are in a row, col with
+                # ele1 and ele2 respectively
+                mask = numpy.triu(numpy.logical_and.outer(first, second), k=1)
+                # Add to correct double element bag
+                # highest to lowest
+                bags[ele1, ele2][-1] = sorted(mat[mask].tolist(), reverse=True)
+
+    # Make all the bags of the same type the same length, and form matrix
+    new = [homogenize_lengths(x) for x in bags.values()]
+    return numpy.hstack(new)
 
 
 def get_coulomb_chain_feature(names, paths, max_depth=1, **kwargs):
@@ -119,6 +186,72 @@ def get_coulomb_chain_feature(names, paths, max_depth=1, **kwargs):
 
     vectors = [cache[path] for path in paths]
     return homogenize_lengths(vectors)
+
+
+def get_bag_of_bonds_chain_feature(names, paths, max_depth=1, **kwargs):
+    '''
+    This feature vector is a reordering of the coulomb matrix so that it does
+    not have the same sorts of sorting issuses that the coulomb matrix has.
+
+    NOTE: This feature vector still scales O(N^2).
+    '''
+    # Add all possible bond pairs (C, C), (C, O)...
+    keys = set(tuple(sorted(x)) for x in product(ELE_TO_NUM, ELE_TO_NUM))
+    # Add single element types (for the diag)
+    keys |= set(ELE_TO_NUM)
+
+    # Sort the keys to remove duplicates later ((C, H) instead of (H, C))
+    sorted_keys = sorted(ELE_TO_NUM.keys())
+
+    # Initialize the bags for all the molecules at the same time
+    # This is to make it easier to make each of the bags of the same type the
+    # same length at the end
+    bags = {key: [] for key in keys}
+    for path in paths:
+        elements, numbers, coords = read_file_data(path)
+        # Sort the elements, numbers, and coords based on the element
+        bla = sorted(zip(elements, numbers, coords.tolist()), key=lambda x: x[0])
+        elements, numbers, coords = zip(*bla)
+        coords = numpy.matrix(coords)
+
+        ele_array = numpy.array(elements)
+        ele_set = set(elements)
+
+        mat = get_coulomb_matrix(numbers, coords)
+        mat2 = get_connectivity_matrix(elements, coords)
+        mat3 = get_depth_threshold_mask(mat2, max_depth=max_depth)
+        mat[numpy.where(-mat3)] = 0
+        mat = numpy.array(mat)
+
+        diag = numpy.diagonal(mat)
+
+        for key in keys:
+            bags[key].append([])
+
+        for i, ele1 in enumerate(sorted_keys):
+            if ele1 not in ele_set:
+                continue
+            # Select only the rows that are of type ele1
+            first = ele_array == ele1
+            # Select the diag elements if they match ele1 and store them,
+            # highest to lowest
+            bags[ele1][-1] = sorted(diag[first].tolist(), reverse=True)
+            for j, ele2 in enumerate(sorted_keys):
+                if i > j or ele2 not in ele_set:
+                    continue
+                # Select only the cols that are of type ele2
+                second = ele_array == ele2
+                # Select only the rows/cols that are in the upper triangle
+                # (This could also be the lower), and are in a row, col with
+                # ele1 and ele2 respectively
+                mask = numpy.triu(numpy.logical_and.outer(first, second), k=1)
+                # Add to correct double element bag
+                # highest to lowest
+                bags[ele1, ele2][-1] = sorted(mat[mask].tolist(), reverse=True)
+
+    # Make all the bags of the same type the same length, and form matrix
+    new = [homogenize_lengths(x) for x in bags.values()]
+    return numpy.hstack(new)
 
 
 def get_bag_of_bonds_feature(names, paths, **kwargs):
