@@ -11,7 +11,7 @@ from ..constants import ELE_TO_NUM, BOND_LENGTHS, TYPE_ORDER, BHOR_TO_ANGSTROM, 
 from ..utils import gauss_decay_function
 
 
-def get_coulomb_matrix(numbers, coords):
+def get_coulomb_matrix(numbers, coords, max_depth=None):
     """
     Return the coulomb matrix for the given `coords` and `numbers`
     """
@@ -23,6 +23,11 @@ def get_coulomb_matrix(numbers, coords):
     numpy.fill_diagonal(top, 0.5 * numpy.array(numbers) ** 2.4)
     top[top == numpy.Infinity] = 0
     top[numpy.isnan(top)] = 0
+
+    if max_depth is not None:
+        mat2 = get_connectivity_matrix(elements, coords)
+        mat3 = get_depth_threshold_mask(mat2, max_depth=max_depth)
+        top[numpy.where(-mat3)] = 0
     return top
 
 
