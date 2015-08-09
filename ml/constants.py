@@ -13,16 +13,7 @@ ELE_TO_NUM = {
     'S': 16,
     'Cl': 17,
 }
-NUM_TO_ELE = {
-    1: 'H',
-    6: 'C',
-    7: 'N',
-    8: 'O',
-    9: 'F',
-    15: 'P',
-    16: 'S',
-    17: 'Cl',
-}
+NUM_TO_ELE = {y: x for x, y in ELE_TO_NUM.items()}
 
 BOND_LENGTHS = {
     "C": {
