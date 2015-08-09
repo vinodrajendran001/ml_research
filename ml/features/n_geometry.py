@@ -67,6 +67,10 @@ def get_coulomb_feature(names, paths, **kwargs):
 
 def get_coulomb_connect_feature(names, paths, **kwargs):
     '''
+    This feature vector is the same thing as the coulomb matrix with the
+    alteration that the distances between atoms that are bonded are replaced
+    with the equillibrium bond length. This is done to look at what happens if
+    those distances are not directly known.
 
     NOTE: This feature vector scales O(N^2) where N is the number of atoms in
     largest structure.
@@ -93,6 +97,11 @@ def get_coulomb_connect_feature(names, paths, **kwargs):
 
 def get_coulomb_chain_feature(names, paths, max_depth=1, **kwargs):
     '''
+    This feature takes the coulomb matrix and zeros out any elements of the
+    matrix that are more than `max_depth` steps away (as measured by the number)
+    of bonds between them. As `max_depth` goes to infinity (or the largest
+    distance between any two atoms), this just becomes the same thing as the
+    coulomb matrix.
 
     NOTE: This feature vector scales O(N^2) where N is the number of atoms in
     largest structure.
