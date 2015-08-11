@@ -17,7 +17,7 @@ from sklearn import decomposition
 from ..utils import read_file_data
 from .utils import get_coulomb_matrix, homogenize_lengths, \
         get_distance_matrix, get_thermometer_encoding, get_eigenvalues, \
-        get_connectivity_matrix, get_depth_threshold_mask, get_eq_bond_length
+        get_connectivity_matrix, get_eq_bond_length
 from ..constants import ELE_TO_NUM
 
 
