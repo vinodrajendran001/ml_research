@@ -37,8 +37,6 @@ def get_coulomb_matrix(numbers, coords, max_depth=None, eq_bond=False):
         for i, j in zip(*idxs):
             length = get_eq_bond_length(elements[i], elements[j], mat2[i, j])
             top[i, j] = numbers[i] * numbers[j] / length
-
-
     return top
 
 
@@ -66,6 +64,10 @@ def invert_distance_matrix(D, dim=3):
 
 
 def invert_coulomb_matrix(M):
+    '''
+    This function takes in a coulomb matrix and returns the atomic numbers of
+    the elements and the cartesian coordinates of the atoms in the molecule.
+    '''
     diag = numpy.diag(M)
     sel = numpy.nonzero(diag)[0].max() + 1
     base = M[:sel,:sel]
@@ -77,6 +79,11 @@ def invert_coulomb_matrix(M):
 
 
 def get_distance_matrix(coords, power=-1, inf_val=1):
+    '''
+    Calculate the distance matrix to the given `power`.
+
+    Any values that are infinity are replaced with `inf_val`.
+    '''
     dist = cdist(coords, coords)
     with numpy.errstate(divide='ignore'):
         numpy.power(dist, power, dist)
@@ -85,6 +92,12 @@ def get_distance_matrix(coords, power=-1, inf_val=1):
 
 
 def homogenize_lengths(vectors):
+    '''
+    This takes in a list of vectors and then returns a matrix where each vector
+    is a row in the matrix. The number of columns in the matrix corresponds to
+    the length of the longest vector. All the shorter vectors are filled with
+    zeros.
+    '''
     n = max(len(x) for x in vectors)
     feat = numpy.zeros((len(vectors), n))
     for i, x in enumerate(vectors):
@@ -93,6 +106,11 @@ def homogenize_lengths(vectors):
 
 
 def remove_zero_cols(vectors):
+    '''
+    Delete any column in the vectors that is zero if all of the other vectors
+    also have a zero in that column. This is an attempt to trivially reduce the
+    dimensionality of the data.
+    '''
     temp = numpy.array(vectors)
     sums = temp.sum(0)
     return temp[:,sums>0]
