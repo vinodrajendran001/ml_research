@@ -7,11 +7,11 @@ import numpy
 from numpy.linalg import norm
 
 from ..constants import ELE_TO_NUM, BOND_LENGTHS, TYPE_ORDER, BHOR_TO_ANGSTROM, \
-                    EQ_BOND_LENGTHS
+                    EQ_BOND_LENGTHS, NUM_TO_ELE
 from ..utils import gauss_decay_function
 
 
-def get_coulomb_matrix(numbers, coords, max_depth=None):
+def get_coulomb_matrix(numbers, coords, max_depth=None, eq_bond=False):
     """
     Return the coulomb matrix for the given `coords` and `numbers`
     """
@@ -24,10 +24,21 @@ def get_coulomb_matrix(numbers, coords, max_depth=None):
     top[top == numpy.Infinity] = 0
     top[numpy.isnan(top)] = 0
 
-    if max_depth is not None:
+    if max_depth is not None or eq_bond:
+        elements = [NUM_TO_ELE[x] for x in numbers]
         mat2 = get_connectivity_matrix(elements, coords)
+
+    if max_depth is not None:
         mat3 = get_depth_threshold_mask(mat2, max_depth=max_depth)
         top[numpy.where(-mat3)] = 0
+
+    if eq_bond:
+        idxs = numpy.where(mat2 != '')
+        for i, j in zip(*idxs):
+            length = get_eq_bond_length(elements[i], elements[j], mat2[i, j])
+            top[i, j] = numbers[i] * numbers[j] / length
+
+
     return top
 
 
