@@ -41,7 +41,7 @@ def get_connective_feature(names, paths, **kwargs):
     return homogenize_lengths(vectors)
 
 
-def get_coulomb_feature(names, paths, max_depth=None, **kwargs):
+def get_coulomb_feature(names, paths, max_depth=None, eq_bond=False, **kwargs):
     '''
     This feature vector is based on a distance matrix between all of the atoms
     in the structure with each element multiplied by the number of protons in
