@@ -57,11 +57,13 @@ if __name__ == '__main__':
     powers = [-2, -1, -0.5, 0.5, 1, 2]
     slopes = [5., 10., 20., 30., 50.]
     segments = [10, 25, 50, 100]
-    max_depth = [1, 2, 3, 4, 5, 6, 7, 0]
+    max_depths = [1, 2, 3, 4, 5, 6, 7, 0]
     sigmoids = ["norm_cdf", "expit", "zero_one"]
-    slopes = [20., 30.]
+
+    sigmoids = ["norm_cdf"]
+    slopes = [30.]
     segments = [100]
-    max_depth = [3]
+    max_depths = [3]
 
 
     atom_features = [
@@ -73,8 +75,10 @@ if __name__ == '__main__':
         # ((features.get_bond_feature, {}), ),
         # ((features.get_sum_bond_feature, {}), ),
         # ((features.get_fractional_bond_feature, {"slope": slopes}), ),
-        ((features.get_encoded_bond_feature, {"slope": slopes, "segments": segments, "max_depth": max_depth, "sigmoid": sigmoids}), ),
+        # ((features.get_encoded_bond_feature, {"slope": slopes, "segments": segments, "max_depth": max_depths, "sigmoid": sigmoids}), ),
         # ((features.get_bag_of_bonds_feature, {}), ),
+        # ((features.get_bag_of_bonds_feature, {"max_depth": [2, None]}), ),
+        # ((features.get_bag_of_bonds_feature, {"eq_bond": [True]}), ),
     ]
     angle_features = [
         # ((features.get_angle_feature, {}), ),
@@ -90,6 +94,18 @@ if __name__ == '__main__':
     ]
     other_features = [
         # ((features.get_null_feature, {}), ),
+        # (
+        #     (features.get_atom_feature, {}),
+        #     (features.get_encoded_bond_feature, {"slope": slopes, "segments": segments, "max_depth": max_depths, "sigmoid": sigmoids}),
+        #     (features.get_angle_bond_feature, {}),
+        #     (features.get_dihedral_bond_feature, {}),
+        # ),
+        # (
+        #     (features.get_atom_feature, {}),
+        #     (features.get_encoded_bond_feature, {"slope": slopes, "segments": segments, "max_depth": max_depths, "sigmoid": sigmoids}),
+        #     (features.get_angle_feature, {}),
+        #     (features.get_dihedral_feature, {}),
+        # ),
         # ((features.get_local_atom_zmatrix_feature, {}), ),
         # ((features.get_connective_feature, {}), ),
         # ((features.get_local_zmatrix, {}), ),
@@ -97,7 +113,8 @@ if __name__ == '__main__':
         # ((features.get_bin_coulomb_feature, {}), ),
         # ((features.get_bin_eigen_coulomb_feature, {}), ),
         # ((features.get_flip_binary_feature, {}), ),
-        # ((features.get_coulomb_feature, {}), ),
+        # ((features.get_coulomb_feature, {"max_depth": max_depths}), ),
+        # ((features.get_coulomb_feature, {"eq_bond": [True]}), ),
         # ((features.get_sum_coulomb_feature, {}), ),
         # ((features.get_eigen_coulomb_feature, {}), ),
         # ((features.get_sorted_coulomb_feature, {}), ),
