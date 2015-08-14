@@ -22,7 +22,7 @@ At this point, it is a matter of collecting the data into the `data/` directory.
 For the `qm7` dataset and the `qm7b` dataset run the following commands.
 
     $ mkdir data
-    $ data
+    $ cd data
     $ wget http://quantum-machine.org/data/qm7{,b}.pkl
 
 
@@ -47,5 +47,4 @@ Todo
     [ ] Parallelize feature vector creation
     [ ]    (Pipeline this?)
     [ ] Encoding of angles
-    [ ] Fix caching so it works in all casse
 
