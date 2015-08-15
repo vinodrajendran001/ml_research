@@ -264,7 +264,7 @@ def load_qm7b_data():
         ('polarizability-scs', "A^3"),
     ]
     prop_vals = zip(*properties)
-    prop_out = [(x, y, z) for ((x, y), z) in zip(prop_desc, prop_vals)]
+    prop_out = [(x, y, z) for ((x, y), z) in zip(prop_desc, prop_vals) if x is not None]
     return names, datasets, geom_paths, prop_out, meta, lengths
 
 
