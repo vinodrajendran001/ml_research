@@ -288,7 +288,7 @@ def get_fractional_bond_types(element1, element2, dist, slope=10.):
             a = BOND_LENGTHS[element1][key]
             b = BOND_LENGTHS[element2][key]
             r = (a + b) - dist
-            values.append(sigmoid(slope * r))
+            values.append(expit(slope * r))
         except KeyError:
             return values
     return values
