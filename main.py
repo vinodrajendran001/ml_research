@@ -166,16 +166,16 @@ if __name__ == '__main__':
             "LinearRidge",
             linear_model.Ridge,
             {
-                "alpha": [10. ** x for x in xrange(-3, 4)]
+                "alpha": [10. ** x for x in xrange(-3, 1)]
             }
         ),
         (
             "KernelRidge",
             clfs.KRR,
             {
-                "alpha": [10. ** x for x in xrange(-7, 1, 2)],
+                "alpha": [10. ** x for x in xrange(-11, -3, 2)],
                 "kernel": ["rbf", "laplace"],
-                "gamma": [10. ** x for x in xrange(-7, 7, 2)],
+                "gamma": [10. ** x for x in xrange(-11, -3, 2)],
             }
         ),
         # (
