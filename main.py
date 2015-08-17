@@ -139,7 +139,8 @@ if __name__ == '__main__':
             if all(x is None for x in group[idx:]):
                 extended_features.append(new_group)
         except ValueError:
-            pass
+            # If there is no None, then use the whole thing
+            extended_features.append([x[0] for x in group])
 
 
     feature_sets = atom_features \
