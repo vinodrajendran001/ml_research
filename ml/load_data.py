@@ -121,26 +121,20 @@ def load_gdb13_data():
     meta = []
     lengths = []
 
+    cutoff = 100000
+
     out_path = os.path.join(base_path, "out")
-    idxs = random.sample(range(10000, 100000), 10000)
-    for idx in idxs:
-        name = "dsgdb9nsd_%6d.out" % idx
+    for name in sorted(os.listdir(out_path))[:cutoff]:
         path = os.path.join(out_path, name)
         geom_paths.append(path)
         meta.append([1])
         datasets.append((1, ))
 
-        elements, _, _ = read_file_data(path)
-        lengths.append(sum(1 for x in elements if x != 'H'))
-        if lengths[-1] > 7:
-            names.append("test")
-        else:
-            names.append("train")
-
-    props = numpy.loadtxt(os.path.join(base_path, "energies.txt"))[idxs]
+    lengths = numpy.loadtxt(os.path.join(base_path, "heavy_counts.txt")).astype(int).tolist()[:cutoff]
+    names = ["test" if x > 7 else "train" for x in lengths]
+    props = numpy.loadtxt(os.path.join(base_path, "energies.txt"))[:cutoff]
     prop_out = (("Atomization Energy", "kcal", [props.tolist()]), )
     return names, datasets, geom_paths, prop_out, meta, lengths
-
 
 
 def build_qm7_data():
