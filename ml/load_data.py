@@ -105,9 +105,11 @@ def build_gdb13_data():
                     out_f.write("%s %.8f %.8f %.8f\n" % (ele, float(x), float(y), float(z)))
         energies.append(energy)
         atom_counts.append(counts)
-    atomization = calculate_atomization_energies(numpy.matrix(atom_counts), numpy.matrix(energies).T)
+    atom_counts = numpy.matrix(atom_counts)
+    atomization = calculate_atomization_energies(atom_counts, numpy.matrix(energies).T)
     atomization *= HARTREE_TO_KCAL
     numpy.savetxt(os.path.join(base_path, "energies.txt"), atomization)
+    numpy.savetxt(os.path.join(base_path, "heavy_counts.txt"), atom_counts.sum(1))
 
 
 def load_gdb13_data():
