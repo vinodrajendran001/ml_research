@@ -122,7 +122,9 @@ def load_gdb13_data():
     lengths = []
 
     out_path = os.path.join(base_path, "out")
-    for name in sorted(os.listdir(out_path))[:10000]:
+    idxs = random.sample(range(10000, 100000), 10000)
+    for idx in idxs:
+        name = "dsgdb9nsd_%6d.out" % idx
         path = os.path.join(out_path, name)
         geom_paths.append(path)
         meta.append([1])
@@ -135,7 +137,7 @@ def load_gdb13_data():
         else:
             names.append("train")
 
-    props = numpy.loadtxt(os.path.join(base_path, "energies.txt"))[:10000]
+    props = numpy.loadtxt(os.path.join(base_path, "energies.txt"))[idxs]
     prop_out = (("Atomization Energy", "kcal", [props.tolist()]), )
     return names, datasets, geom_paths, prop_out, meta, lengths
 
