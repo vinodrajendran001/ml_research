@@ -91,40 +91,5 @@ def get_matrix_plot(mat, extent=None):
     plt.show()
 
 
-def plot_bond_encoding(theta=None, start=1.0, end=6.0, slope=20., segments=5, show=False):
-    if theta is None:
-        theta = numpy.linspace(start, end, segments)
-    distance = numpy.linspace(0, 8, 250)
-    value = sigmoid(slope*numpy.subtract.outer(theta, distance)).T
-    plt.plot(distance, value)
-    plt.yticks(numpy.linspace(0, 1.1, 4))
-    plt.xlabel("Bond Length ($\AA$)")
-    plt.ylabel("Weight")
-    if show:
-        plt.show()
-
-
-def plot_bond_threshold(theta=None, start=1.0, end=6.0, segments=5, show=False):
-    if theta is None:
-        theta = numpy.linspace(start, end, segments)
-    distance = numpy.linspace(0, 8, 1000)
-    value1 = numpy.greater.outer(theta, distance).astype(int).T
-    theta2 = numpy.array([0] + theta[:-1].tolist())
-    value2 = numpy.less.outer(theta2, distance).astype(int).T
-    plt.plot(distance, value1 & value2)
-    plt.yticks(numpy.linspace(0, 1.1, 4))
-    plt.xlabel("Bond Length ($\AA$)")
-    plt.ylabel("Weight")
-    if show:
-        plt.show()
-
-
-def both_bond_methods():
-    plt.figure(1)
-    plt.subplot(211)
-    plot_bond_threshold()
-
-    plt.subplot(212)
-    plot_bond_encoding()
 
     plt.show()
