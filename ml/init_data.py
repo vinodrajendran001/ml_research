@@ -26,7 +26,10 @@ def get_name_groups(names):
 
 
 def get_feature_vector(function, key, names, geom_paths, kwargs):
-    base_path = os.path.join("cache", sys.argv[1])
+    try:
+        base_path = os.path.join(sys.argv[2], sys.argv[1])
+    except IndexError:
+        base_path = os.path.join("cache", sys.argv[1])
     mkdir_p(base_path)
     cleaned_key = key.replace(" ", "_")
     path = os.path.join(base_path, cleaned_key + ".npy")
