@@ -46,7 +46,6 @@ def both_bond_methods():
 
 
 def plot_num_sample_data(num, train_mean, train_std, test_mean, test_std):
-    plt.errorbar(num, train_mean, yerr=train_std, label="Train")
     lin_xvals = numpy.linspace(min(num), max(num), 200)
 
     labels = ["Test", "Train"]
@@ -156,7 +155,7 @@ if __name__ == "__main__":
     data = all_data["order_errors"]
     plot_order_errors(data["values"], data["labels"])
 
-    plot_linear_kernel_pairs(data["linear_kernel_pairs"])
+    plot_linear_kernel_pairs(all_data["linear_kernel_pairs"])
 
     data = all_data["connectivity_distance"]
     plot_connectivity_distance(data.values(), data.keys())
