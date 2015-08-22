@@ -89,7 +89,3 @@ def get_matrix_plot(mat, extent=None):
     m = ax.matshow(mat, extent=extent)
     fig.colorbar(m)
     plt.show()
-
-
-
-    plt.show()
