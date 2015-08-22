@@ -60,8 +60,10 @@ if __name__ == '__main__':
     max_depths = [1, 2, 3, 4, 5, 6, 7, 0]
     sigmoids = ["norm_cdf", "expit", "zero_one"]
 
-    sigmoids = ["norm_cdf"]
-    slopes = [30.]
+    # sigmoids = ["norm_cdf"]
+    # slopes = [30.]
+    sigmoids = ["expit"]
+    slopes = [20.]
     segments = [100]
     max_depths = [3]
 
