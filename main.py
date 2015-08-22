@@ -80,9 +80,9 @@ def main2(X, y, clf):
             train_folds.append(train_errors.mean())
             test_folds.append(test_errors.mean())
             print loop, "pre", train_folds[-1], test_folds[-1]
-
+            sys.stdout.flush()
         print m_sub, numpy.mean(train_folds), numpy.std(train_folds), numpy.mean(test_folds), numpy.std(test_folds)
-
+        sys.stdout.flush()
 
 
 if __name__ == '__main__':
@@ -281,6 +281,7 @@ if __name__ == '__main__':
     y = properties[0][2]
     clf = clfs[0]
     print names[0]
+    sys.stdout.flush()
     main2(X, y, clf)
 
 
