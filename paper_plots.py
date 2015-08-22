@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes
 from mpl_toolkits.axes_grid1.inset_locator import mark_inset
+from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes
+from mpl_toolkits.axes_grid1.inset_locator import mark_inset
 import numpy
 from scipy.optimize import curve_fit
 from scipy.special import expit as sigmoid
@@ -138,8 +140,38 @@ def plot_connectivity_distance(data, labels):
     plt.show()
 
 
+def plot_target_pred(train_xdata, test_xdata, train_ydata, test_ydata, loc=5):
+    maxval = max(train_xdata.max(), test_xdata.max(), train_ydata.max(), test_ydata.max())
+    minval = min(train_xdata.min(), test_xdata.min(), train_ydata.min(), test_ydata.min())
+
+    fig, ax = plt.subplots()
+    ax.plot(train_xdata, train_ydata, '.', label="Train")
+    ax.plot(test_xdata, test_ydata, '.', label="Test")
+    plt.legend(loc="best")
+    ax.plot([minval, maxval], [minval, maxval], '--')
+    plt.xlabel("Target Value (kcal/mol)")
+    plt.ylabel("Predicted Value (kcal/mol)")
+
+    axins = zoomed_inset_axes(ax, 30, loc=loc) # 30 is zoom, loc is .... nuts
+    axins.plot(train_xdata, train_ydata, '.', label="Train")
+    axins.plot(test_xdata, test_ydata, '.', label="Test")
+    axins.plot([minval, maxval], [minval, maxval], '--')
+    # sub region of the original image
+    middle = test_xdata.mean() - 170
+    x1, x2, y1, y2 = -15+middle, 15+middle, -15+middle, 15+middle
+    axins.set_xlim(x1, x2)
+    axins.set_ylim(y1, y2)
+
+    mark_inset(ax, axins, loc1=2, loc2=3, fc="none", ec="0.5")
+    plt.draw()
+    plt.show()
+
+
+
+
 if __name__ == "__main__":
     import json
+    import numpy
 
     with open("results/plot_data.json") as f:
         all_data = json.load(f)
@@ -159,3 +191,8 @@ if __name__ == "__main__":
 
     data = all_data["connectivity_distance"]
     plot_connectivity_distance(data.values(), data.keys())
+
+    train = numpy.loadtxt("results/train_results.txt")
+    test = numpy.loadtxt("results/test_results.txt")
+    plot_target_pred(train[:, 1], test[:, 1], train[:, 3], test[:, 3])
+
