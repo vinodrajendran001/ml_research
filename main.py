@@ -54,7 +54,7 @@ def main(features, properties, groups, clfs, cross_validate,
 
 
 def main2(X, y, clf):
-    for frac in numpy.linspace(.05, .2, 20):
+    for frac in numpy.logspace(-2.5, -0.7, 10):
         m = X.shape[0]
         m_sub = int(m * frac)
         train_folds = []
