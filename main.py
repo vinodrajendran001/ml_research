@@ -1,5 +1,6 @@
 import sys
 import time
+import random
 import pprint
 from itertools import product
 from functools import partial
@@ -50,6 +51,38 @@ def main(features, properties, groups, clfs, cross_validate,
             sys.stdout.flush()
         print
     return results
+
+
+def main2(X, y, clf):
+    for frac in numpy.linspace(.05, .2, 20):
+        m = X.shape[0]
+        m_sub = int(m * frac)
+        train_folds = []
+        test_folds = []
+        for loop in xrange(5):
+            train_idx = random.sample(range(m), m_sub)
+            train_set = set(train_idx)
+            test_idx = [i for i in xrange(m) if i not in train_set]
+            random.shuffle(test_idx)
+
+            X_train = X[train_idx, :]
+            X_test = X[test_idx, :]
+            y_train = y[train_idx]
+            y_test = y[test_idx]
+
+            clf.fit(X_train, y_train)
+
+            pred_train = clf.predict(X_train)
+            pred_test = clf.predict(X_test)
+
+            train_errors = numpy.abs(pred_train - y_train)
+            test_errors = numpy.abs(pred_test - y_test)
+            train_folds.append(train_errors.mean())
+            test_folds.append(test_errors.mean())
+            print loop, "pre", train_folds[-1], test_folds[-1]
+
+        print m_sub, numpy.mean(train_folds), numpy.std(train_folds), numpy.mean(test_folds), numpy.std(test_folds)
+
 
 
 if __name__ == '__main__':
@@ -226,8 +259,28 @@ if __name__ == '__main__':
                                             lengths,
                                             properties,
                                         )
-    dummy_results = print_property_statistics(properties, groups, cross_clf_kfold)
-    sys.stdout.flush()
-    results = main(feats, properties, groups, CLFS, cross_clf_kfold)
-    print_best_methods(results)
+    # dummy_results = print_property_statistics(properties, groups, cross_clf_kfold)
+    # sys.stdout.flush()
+    # results = main(feats, properties, groups, CLFS, cross_clf_kfold)
+    # print_best_methods(results)
+
+
+    names = [
+        # "atom {} | encoded_bond {'slope': 20.0, 'segments': 100, 'max_depth': 3, 'sigmoid': 'expit'} | angle_bond {} | dihedral_bond {}",
+        # "bag_of_bonds {'max_depth': 0}",
+        # "encoded_bond {'slope': 20.0, 'segments': 100, 'max_depth': 3, 'sigmoid': 'expit'}",
+        # "bond {}",
+    ]
+    clfs = [
+        # clfs.KRR(alpha=1e-9, gamma=1e-7, kernel='rbf'),
+        # clfs.KRR(alpha=1e-9, gamma=1e-5, kernel='laplace'),
+        # clfs.KRR(alpha=1e-9, gamma=1e-7, kernel='rbf'),
+        # clfs.KRR(alpha=1e-7, gamma=0.001, kernel='rbf'),
+    ]
+    X = feats[names[0]]
+    y = properties[0][2]
+    clf = clfs[0]
+    print names[0]
+    main2(X, y, clf)
+
 
